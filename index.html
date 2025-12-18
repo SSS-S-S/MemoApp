@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MemoCurve - 極簡雲端版</title>
+    <title>MemoCurve - 極簡本地版</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -24,16 +24,9 @@
                     },
                     colors: {
                         gray: {
-                            50: '#f9fafb',
-                            100: '#f3f4f6',
-                            200: '#e5e7eb',
-                            300: '#d1d5db',
-                            400: '#9ca3af',
-                            500: '#6b7280',
-                            600: '#4b5563',
-                            700: '#374151',
-                            800: '#1f2937',
-                            900: '#111827',
+                            50: '#f9fafb', 100: '#f3f4f6', 200: '#e5e7eb', 300: '#d1d5db',
+                            400: '#9ca3af', 500: '#6b7280', 600: '#4b5563', 700: '#374151',
+                            800: '#1f2937', 900: '#111827',
                         }
                     }
                 }
@@ -62,7 +55,6 @@
         ::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
 
-        /* Input specific styles for quiz */
         .quiz-input {
             background: transparent;
             border-bottom: 2px solid #e5e7eb;
@@ -70,20 +62,10 @@
             font-family: 'Inter', monospace;
             transition: all 0.3s;
         }
-        .quiz-input:focus {
-            outline: none;
-            border-color: #111827;
-        }
-        .quiz-input.correct {
-            border-color: #10b981;
-            color: #10b981;
-        }
-        .quiz-input.wrong {
-            border-color: #ef4444;
-            color: #ef4444;
-        }
+        .quiz-input:focus { outline: none; border-color: #111827; }
+        .quiz-input.correct { border-color: #10b981; color: #10b981; }
+        .quiz-input.wrong { border-color: #ef4444; color: #ef4444; }
 
-        /* Checkbox Custom Style */
         .custom-checkbox:checked {
             background-color: #111827;
             border-color: #111827;
@@ -92,35 +74,14 @@
 </head>
 <body class="flex flex-col h-screen overflow-hidden bg-white">
 
-    <!-- Login View (Shown by default, covers everything) -->
-    <div id="login-view" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center p-6 text-center">
-        <div class="mb-12 animate-pulse-slow">
-            <h1 class="text-5xl font-light tracking-tight text-gray-900 mb-2">MemoCurve</h1>
-            <p class="text-gray-400 font-mono text-xs tracking-[0.2em] uppercase">Minimalist Repetition</p>
-        </div>
-        
-        <div class="space-y-4 w-full max-w-xs">
-            <button id="btn-login-google" class="w-full flex items-center justify-center gap-3 bg-gray-900 text-white px-6 py-4 rounded-xl hover:bg-black transition-all shadow-xl shadow-gray-200 hover:shadow-2xl hover:-translate-y-0.5 transform duration-200">
-                <i class="ph-fill ph-google-logo text-xl"></i>
-                <span class="font-medium text-sm">Sign in with Google</span>
-            </button>
-            <p class="text-xs text-gray-300 mt-6">Secure cloud sync powered by Firebase</p>
-        </div>
-    </div>
-
-    <!-- App View (Hidden until logged in) -->
-    <div id="app-view" class="hidden flex flex-col h-full w-full">
-        
+    <div id="app-view" class="flex flex-col h-full w-full">
         <!-- Header -->
         <header class="flex-none pt-8 pb-4 px-6 max-w-2xl mx-auto w-full flex justify-between items-end border-b border-gray-100">
             <div>
                 <h1 class="text-3xl font-light tracking-tight text-gray-900">MemoCurve</h1>
-                <div id="user-info" class="flex items-center gap-2 mt-1 group cursor-pointer" onclick="window.authManager && window.authManager.logout()">
-                    <div class="w-2 h-2 rounded-full bg-green-500"></div>
-                    <p id="user-name-display" class="text-xs text-gray-400 font-mono tracking-wide group-hover:text-gray-900 transition-colors">
-                        Loading...
-                    </p>
-                    <i class="ph ph-sign-out text-gray-300 text-xs opacity-0 group-hover:opacity-100 transition-opacity ml-1"></i>
+                <div class="flex items-center gap-2 mt-1">
+                    <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                    <p class="text-xs text-gray-400 font-mono tracking-wide">Offline Local Mode</p>
                 </div>
             </div>
             <button id="btn-open-add" class="group flex items-center gap-2 text-sm font-medium text-gray-900 hover:text-gray-600 transition-colors">
@@ -134,14 +95,14 @@
             <div class="flex gap-8 border-b border-gray-100">
                 <button onclick="ui.switchTab('review')" id="tab-review" class="pb-3 text-sm font-medium transition-all relative">
                     Review
-                    <span class="active-indicator absolute bottom-0 left-0 w-full h-[1px] bg-black hidden"></span>
+                    <span class="active-indicator absolute bottom-0 left-0 w-full h-[1px] bg-black"></span>
                 </button>
                 <button onclick="ui.switchTab('folders')" id="tab-folders" class="pb-3 text-sm font-medium text-gray-400 hover:text-gray-600 transition-all relative">
                     Folders
                     <span class="active-indicator absolute bottom-0 left-0 w-full h-[1px] bg-black hidden"></span>
                 </button>
                 <button onclick="ui.switchTab('list')" id="tab-list" class="pb-3 text-sm font-medium text-gray-400 hover:text-gray-600 transition-all relative">
-                    List & Settings
+                    List & Data
                     <span class="active-indicator absolute bottom-0 left-0 w-full h-[1px] bg-black hidden"></span>
                 </button>
             </div>
@@ -149,20 +110,14 @@
 
         <!-- Main Content -->
         <main class="flex-1 overflow-hidden relative max-w-2xl mx-auto w-full">
-            
-            <!-- View: Review (Quiz Mode) -->
+            <!-- View: Review -->
             <div id="view-review" class="view-section h-full flex flex-col p-6 relative">
-                
-                <!-- Folder Filter Toggle -->
                 <div class="absolute top-4 left-6 z-10">
                     <button onclick="ui.toggleFilterModal()" class="flex items-center gap-2 text-xs font-bold text-gray-400 hover:text-gray-900 uppercase tracking-widest transition-colors">
                         <i class="ph ph-faders"></i> Filter
                     </button>
                 </div>
-
-                <div id="review-container" class="flex-1 flex flex-col justify-center items-center text-center overflow-y-auto">
-                    <!-- Dynamic Content -->
-                </div>
+                <div id="review-container" class="flex-1 flex flex-col justify-center items-center text-center overflow-y-auto"></div>
             </div>
 
             <!-- View: Folders -->
@@ -171,381 +126,197 @@
                     <input type="text" id="new-folder-name" placeholder="New Folder Name..." class="flex-1 border-b border-gray-200 py-2 focus:outline-none focus:border-gray-900 text-sm">
                     <button id="btn-create-folder" class="text-sm font-medium text-gray-900 hover:bg-gray-50 px-4 py-2 rounded transition-colors">Create</button>
                 </div>
-                <div id="folders-list-container" class="space-y-1">
-                    <!-- Folder Items -->
-                </div>
+                <div id="folders-list-container" class="space-y-1"></div>
             </div>
 
-            <!-- View: List & Settings -->
+            <!-- View: List & Data -->
             <div id="view-list" class="view-section hidden-view h-full flex flex-col p-6 overflow-y-auto">
-                
-                <!-- Settings / IO -->
                 <div class="mb-8 p-4 bg-gray-50 rounded-lg flex flex-wrap gap-4 items-center justify-between">
-                    <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Data Management</span>
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Storage Control</span>
                     <div class="flex gap-3">
                         <button onclick="io.exportData()" class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded text-xs font-medium hover:border-gray-900 transition-colors">
                             <i class="ph ph-download-simple"></i> Export
                         </button>
                         <label class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded text-xs font-medium hover:border-gray-900 transition-colors cursor-pointer">
-                            <i class="ph ph-upload-simple"></i> Import JSON
+                            <i class="ph ph-upload-simple"></i> Import
                             <input type="file" id="import-file" class="hidden" onchange="io.importData(this)">
                         </label>
                     </div>
                 </div>
-
                 <div class="mb-4 flex items-center justify-between">
                     <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wide">All Words</h3>
                     <span id="total-words-count" class="text-xs text-gray-400 font-mono">0</span>
                 </div>
-
-                <div id="word-list-container" class="space-y-0 divide-y divide-gray-100 pb-20">
-                    <!-- List Items -->
-                </div>
-                <div id="empty-list-msg" class="hidden text-center text-gray-400 py-20 font-light">
-                    No words added yet.
-                </div>
+                <div id="word-list-container" class="space-y-0 divide-y divide-gray-100 pb-20"></div>
+                <div id="empty-list-msg" class="hidden text-center text-gray-400 py-20 font-light">No words added yet.</div>
             </div>
-
         </main>
     </div>
 
-    <!-- Add Word Modal -->
+    <!-- Modals -->
     <div id="add-modal" class="fixed inset-0 bg-white/90 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-lg p-8 border border-gray-100 shadow-2xl shadow-gray-200/50 rounded-xl relative">
-            <button id="btn-close-add" class="absolute top-6 right-6 text-gray-400 hover:text-gray-900 transition-colors">
-                <i class="ph ph-x text-xl"></i>
-            </button>
-            
+        <div class="bg-white w-full max-w-lg p-8 border border-gray-100 shadow-2xl rounded-xl relative">
+            <button id="btn-close-add" class="absolute top-6 right-6 text-gray-400 hover:text-gray-900 transition-colors"><i class="ph ph-x text-xl"></i></button>
             <h2 class="text-xl font-light mb-6 text-gray-900">New Entry</h2>
-            
             <div class="space-y-6">
-                <!-- Folder Select -->
                 <div>
                     <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Folder</label>
-                    <select id="new-word-folder" class="w-full text-base border-b border-gray-200 py-2 bg-transparent focus:outline-none focus:border-gray-900 transition-colors">
-                        <!-- Options populated dynamically -->
-                    </select>
+                    <select id="new-word-folder" class="w-full text-base border-b border-gray-200 py-2 bg-transparent focus:outline-none focus:border-gray-900 transition-colors"></select>
                 </div>
-
                 <div>
                     <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Front (Target Word)</label>
-                    <input type="text" id="new-word-front" class="w-full text-lg border-b border-gray-200 py-2 focus:outline-none focus:border-gray-900 transition-colors placeholder-gray-300" placeholder="e.g., Ephemeral">
+                    <input type="text" id="new-word-front" class="w-full text-lg border-b border-gray-200 py-2 focus:outline-none focus:border-gray-900 placeholder-gray-300" placeholder="e.g., Ephemeral">
                 </div>
-                
                 <div>
                     <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Back (Definition)</label>
-                    <input type="text" id="new-word-back" class="w-full text-lg border-b border-gray-200 py-2 focus:outline-none focus:border-gray-900 transition-colors placeholder-gray-300" placeholder="Short-lived">
+                    <input type="text" id="new-word-back" class="w-full text-lg border-b border-gray-200 py-2 focus:outline-none focus:border-gray-900 placeholder-gray-300" placeholder="Short-lived">
                 </div>
-                
                 <div>
                     <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Context Sentence</label>
-                    <textarea id="new-word-sentences" rows="2" class="w-full text-base border-b border-gray-200 py-2 focus:outline-none focus:border-gray-900 transition-colors resize-none placeholder-gray-300" placeholder="[Ephemeral] beauty."></textarea>
-                    <p class="text-[10px] text-gray-400 mt-1">Use brackets [word] to hide word in Review.</p>
+                    <textarea id="new-word-sentences" rows="2" class="w-full text-base border-b border-gray-200 py-2 focus:outline-none focus:border-gray-900 resize-none placeholder-gray-300" placeholder="[Ephemeral] beauty."></textarea>
+                    <p class="text-[10px] text-gray-400 mt-1">Use brackets [word] to hide it in Review.</p>
                 </div>
-                
                 <div class="pt-4 flex justify-end">
-                    <button id="btn-save-word" class="bg-gray-900 text-white px-8 py-3 text-sm font-medium hover:bg-black transition-colors rounded-lg w-full sm:w-auto">
-                        Save Entry
-                    </button>
+                    <button id="btn-save-word" class="bg-gray-900 text-white px-8 py-3 text-sm font-medium hover:bg-black rounded-lg w-full sm:w-auto">Save Entry</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Filter Modal (For Review) -->
     <div id="filter-modal" class="fixed inset-0 bg-black/10 backdrop-blur-sm z-40 hidden flex items-start justify-center pt-24 p-4">
         <div class="bg-white w-full max-w-sm p-6 border border-gray-100 shadow-xl rounded-lg relative">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wide">Review Filters</h3>
                 <button onclick="ui.toggleFilterModal()" class="text-gray-400 hover:text-gray-900"><i class="ph ph-x text-lg"></i></button>
             </div>
-            <div id="filter-list" class="max-h-60 overflow-y-auto space-y-2 mb-4">
-                <!-- Checkboxes populated here -->
-            </div>
+            <div id="filter-list" class="max-h-60 overflow-y-auto space-y-2 mb-4"></div>
             <div class="flex justify-end gap-2">
                 <button onclick="ui.selectAllFilters(false)" class="text-xs text-gray-400 hover:text-gray-900 px-3 py-2">Clear</button>
                 <button onclick="ui.selectAllFilters(true)" class="text-xs text-gray-400 hover:text-gray-900 px-3 py-2">All</button>
-                <button onclick="ui.applyFilters()" class="bg-gray-900 text-white text-xs font-medium px-4 py-2 rounded hover:bg-black">Apply</button>
+                <button onclick="ui.applyFilters()" class="bg-gray-900 text-white text-xs font-medium px-4 py-2 rounded">Apply</button>
             </div>
         </div>
     </div>
 
-    <!-- Firebase Logic (Module) -->
-    <script type="module">
+    <script>
         /* =====================================================
-           Firebase Import
+           Local Storage Data Layer
         ===================================================== */
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-        import {
-          getAuth,
-          signInAnonymously,
-          onAuthStateChanged,
-          GoogleAuthProvider,
-          signInWithPopup,
-          signOut
-        } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
-        import {
-          getFirestore,
-          collection,
-          addDoc,
-          getDocs,
-          doc,
-          deleteDoc,
-          updateDoc,
-          query,
-          writeBatch,
-          onSnapshot
-        } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+        const LS_KEYS = { folders: "mc_folders", cards: "mc_cards" };
         
-        /* =====================================================
-           Firebase Config
-        ===================================================== */
-        const firebaseConfig = {
-          apiKey: "AIzaSyD2CVKzNBn1W2VmSVkBhVKL_c7q3Kq9_28",
-          authDomain: "eff-flashcards-app.firebaseapp.com",
-          projectId: "eff-flashcards-app",
-          storageBucket: "eff-flashcards-app.firebasestorage.app",
-          messagingSenderId: "948003752482",
-          appId: "1:948003752482:web:d86846487661cb31be587b"
-        };
-        
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const googleProvider = new GoogleAuthProvider();
-        
-        /* =====================================================
-           LocalStorage Layer
-        ===================================================== */
-        const LS_KEYS = {
-          folders: "memocurve_folders",
-          cards: "memocurve_cards",
-          dirty: "memocurve_dirty"
-        };
-        
-        const localDB = {
-          load(key, fallback) {
-            try {
-              const raw = localStorage.getItem(key);
-              return raw ? JSON.parse(raw) : fallback;
-            } catch {
-              return fallback;
+        const db = {
+            getFolders: () => JSON.parse(localStorage.getItem(LS_KEYS.folders) || '[]'),
+            saveFolders: (data) => localStorage.setItem(LS_KEYS.folders, JSON.stringify(data)),
+            getCards: () => JSON.parse(localStorage.getItem(LS_KEYS.cards) || '[]'),
+            saveCards: (data) => localStorage.setItem(LS_KEYS.cards, JSON.stringify(data)),
+            init: () => {
+                const folders = db.getFolders();
+                if (folders.length === 0) {
+                    db.saveFolders([{ id: 'default', name: 'General', createdAt: Date.now() }]);
+                }
             }
-          },
-          save(key, value) {
-            localStorage.setItem(key, JSON.stringify(value));
-          }
         };
-        
-        /* =====================================================
-           Global State
-        ===================================================== */
-        window.state = {
-          user: null,
-          folders: [],
-          cards: [],
-          dirty: { folders: {}, cards: {} },
-          activeTab: "review",
-          currentReviewCard: null,
-          selectedFolderIds: new Set()
-        };
-        
-        /* =====================================================
-           Load Local Cache First
-        ===================================================== */
-        function loadLocalState() {
-          window.state.folders = localDB.load(LS_KEYS.folders, []);
-          window.state.cards = localDB.load(LS_KEYS.cards, []);
-          window.state.dirty = localDB.load(LS_KEYS.dirty, { folders: {}, cards: {} });
-        }
-        
-        /* =====================================================
-           Auth Manager
-        ===================================================== */
-        window.authManager = {
-          signInGoogle: async () => {
-            await signInWithPopup(auth, googleProvider);
-          },
-          logout: async () => {
-            await signOut(auth);
-          }
-        };
-        
-        /* =====================================================
-           Firebase Auth
-        ===================================================== */
-        onAuthStateChanged(auth, async (user) => {
-          if (!user) {
-            await signInAnonymously(auth);
-            return;
-          }
 
-          document.getElementById('login-view').classList.add('hidden');
-          document.getElementById('app-view').classList.remove('hidden');
-        
-          window.state.user = user;
-          loadLocalState();
-        
-          ui.renderFolderList();
-          ui.renderFolderSelect();
-          ui.renderWordList();
-          ui.renderReview();
-        
-          setupRealtimeSync(user.uid);
-        });
-        
+        window.state = {
+            folders: [],
+            cards: [],
+            activeTab: "review",
+            currentReviewCard: null,
+            selectedFolderIds: new Set()
+        };
+
         /* =====================================================
-           Firebase Snapshot (Sync Only)
-        ===================================================== */
-        function setupRealtimeSync(uid) {
-          const base = `artifacts/memocurve_v2/users/${uid}`;
-        
-          onSnapshot(query(collection(db, `${base}/folders`)), snap => {
-            const folders = [];
-            snap.forEach(d => folders.push({ id: d.id, ...d.data() }));
-            window.state.folders = folders;
-            localDB.save(LS_KEYS.folders, folders);
-            ui.renderFolderList();
-            ui.renderFolderSelect();
-          });
-        
-          onSnapshot(query(collection(db, `${base}/cards`)), snap => {
-            const cards = [];
-            snap.forEach(d => cards.push({ id: d.id, ...d.data() }));
-            window.state.cards = cards;
-            localDB.save(LS_KEYS.cards, cards);
-            ui.renderWordList();
-            ui.renderReview();
-          });
-        }
-        
-        /* =====================================================
-           Dirty Marker
-        ===================================================== */
-        function markDirty(type, id, data) {
-          window.state.dirty[type][id] = data;
-          localDB.save(LS_KEYS.dirty, window.state.dirty);
-        }
-        
-        /* =====================================================
-           Data Manager (Local-first)
+           Data Manager
         ===================================================== */
         window.dataManager = {
-          addFolder: async () => {
-            const name = newFolderName.value.trim();
-            if (!name) return;
-            const id = crypto.randomUUID();
-            const folder = { id, name, createdAt: Date.now() };
-        
-            window.state.folders.push(folder);
-            localDB.save(LS_KEYS.folders, window.state.folders);
-            markDirty("folders", id, folder);
-            ui.renderFolderList();
-          },
-        
-          updateFolder: (id, name) => {
-            const f = window.state.folders.find(f => f.id === id);
-            if (!f) return;
-            f.name = name;
-            localDB.save(LS_KEYS.folders, window.state.folders);
-            markDirty("folders", id, f);
-          },
-        
-          deleteFolder: (id) => {
-            window.state.folders = window.state.folders.filter(f => f.id !== id);
-            window.state.cards = window.state.cards.filter(c => c.folderId !== id);
-            localDB.save(LS_KEYS.folders, window.state.folders);
-            localDB.save(LS_KEYS.cards, window.state.cards);
-            markDirty("folders", id, null);
-            ui.renderFolderList();
-            ui.renderWordList();
-          },
-        
-          addWord: () => {
-            const front = newWordFront.value.trim();
-            if (!front) return;
-            const card = {
-              id: crypto.randomUUID(),
-              front,
-              back: newWordBack.value.trim(),
-              sentence: newWordSentences.value.trim(),
-              folderId: newWordFolder.value,
-              interval: 0,
-              repetition: 0,
-              ef: 2.5,
-              nextReview: Date.now(),
-              createdAt: Date.now()
-            };
-        
-            window.state.cards.push(card);
-            localDB.save(LS_KEYS.cards, window.state.cards);
-            markDirty("cards", card.id, card);
-            ui.closeAddModal();
-            ui.renderReview();
-          },
-        
-          deleteWord: (id) => {
-            window.state.cards = window.state.cards.filter(c => c.id !== id);
-            localDB.save(LS_KEYS.cards, window.state.cards);
-            markDirty("cards", id, null);
-            ui.renderWordList();
-          },
-        
-          gradeWord: (q) => {
-            const c = window.state.currentReviewCard;
-            if (!c) return;
-        
-            let { interval, repetition, ef } = c;
-            if (q >= 3) {
-              interval = repetition === 0 ? 1 : repetition === 1 ? 6 : Math.round(interval * ef);
-              repetition++;
-              ef += 0.1 - (5 - q) * (0.08 + (5 - q) * 0.02);
-            } else {
-              repetition = 0;
-              interval = 1;
-            }
-            ef = Math.max(1.3, ef);
-        
-            Object.assign(c, {
-              interval,
-              repetition,
-              ef,
-              nextReview: Date.now() + interval * 86400000
-            });
-        
-            localDB.save(LS_KEYS.cards, window.state.cards);
-            markDirty("cards", c.id, c);
-            ui.renderReview();
-          }
-        };
-        
-        /* =====================================================
-           Firebase Background Sync (15s)
-        ===================================================== */
-        setInterval(async () => {
-          if (!window.state.user) return;
-          const base = `artifacts/memocurve_v2/users/${window.state.user.uid}`;
-          const batch = writeBatch(db);
-        
-          for (const [id, data] of Object.entries(window.state.dirty.cards)) {
-            const ref = doc(db, `${base}/cards`, id);
-            data === null ? batch.delete(ref) : batch.set(ref, data);
-          }
-          for (const [id, data] of Object.entries(window.state.dirty.folders)) {
-            const ref = doc(db, `${base}/folders`, id);
-            data === null ? batch.delete(ref) : batch.set(ref, data);
-          }
-        
-          await batch.commit();
-          window.state.dirty = { folders: {}, cards: {} };
-          localDB.save(LS_KEYS.dirty, window.state.dirty);
-        }, 15000);
+            refresh: () => {
+                window.state.folders = db.getFolders();
+                window.state.cards = db.getCards();
+            },
+            addFolder: () => {
+                const name = document.getElementById('new-folder-name').value.trim();
+                if (!name) return;
+                const folder = { id: crypto.randomUUID(), name, createdAt: Date.now() };
+                const folders = [...db.getFolders(), folder];
+                db.saveFolders(folders);
+                document.getElementById('new-folder-name').value = '';
+                ui.init();
+            },
+            updateFolder: (id, name) => {
+                const folders = db.getFolders().map(f => f.id === id ? {...f, name} : f);
+                db.saveFolders(folders);
+            },
+            deleteFolder: (id) => {
+                if(id === 'default') return alert("Cannot delete default folder.");
+                const folders = db.getFolders().filter(f => f.id !== id);
+                const cards = db.getCards().filter(c => c.folderId !== id);
+                db.saveFolders(folders);
+                db.saveCards(cards);
+                ui.init();
+            },
+            addWord: () => {
+                const front = document.getElementById('new-word-front').value.trim();
+                const back = document.getElementById('new-word-back').value.trim();
+                const folderId = document.getElementById('new-word-folder').value;
+                if (!front || !back) return;
 
-        // --- UI Manager ---
+                const card = {
+                    id: crypto.randomUUID(),
+                    front, back,
+                    sentence: document.getElementById('new-word-sentences').value.trim(),
+                    folderId,
+                    interval: 0, repetition: 0, ef: 2.5,
+                    nextReview: Date.now(),
+                    createdAt: Date.now()
+                };
+                const cards = [...db.getCards(), card];
+                db.saveCards(cards);
+                ui.closeAddModal();
+                ui.init();
+            },
+            deleteWord: (id) => {
+                const cards = db.getCards().filter(c => c.id !== id);
+                db.saveCards(cards);
+                ui.init();
+            },
+            gradeWord: (q) => {
+                const c = window.state.currentReviewCard;
+                if (!c) return;
+
+                let { interval, repetition, ef } = c;
+                if (q >= 3) {
+                    interval = repetition === 0 ? 1 : repetition === 1 ? 6 : Math.round(interval * ef);
+                    repetition++;
+                    ef += 0.1 - (5 - q) * (0.08 + (5 - q) * 0.02);
+                } else {
+                    repetition = 0; interval = 1;
+                }
+                ef = Math.max(1.3, ef);
+                
+                const cards = db.getCards().map(item => {
+                    if(item.id === c.id) {
+                        return {...item, interval, repetition, ef, nextReview: Date.now() + interval * 86400000};
+                    }
+                    return item;
+                });
+                db.saveCards(cards);
+                ui.init();
+            }
+        };
+
+        /* =====================================================
+           UI Manager
+        ===================================================== */
         window.ui = {
+            init: () => {
+                dataManager.refresh();
+                ui.renderFolderSelect();
+                ui.renderFolderList();
+                ui.renderWordList();
+                ui.renderReview();
+            },
             switchTab: (tabId) => {
                 const tabs = ['review', 'list', 'folders'];
-                
                 tabs.forEach(t => {
                     const btn = document.getElementById(`tab-${t}`);
                     const indicator = btn.querySelector('.active-indicator');
@@ -557,226 +328,104 @@
                         indicator.classList.add('hidden');
                     }
                 });
-
                 document.querySelectorAll('.view-section').forEach(el => {
-                    if (el.id === `view-${tabId}`) {
-                        el.classList.remove('hidden-view');
-                        el.style.display = 'flex'; 
-                        el.classList.add('fade-in');
-                    } else {
-                        el.classList.add('hidden-view');
-                        el.style.display = 'none';
-                        el.classList.remove('fade-in');
-                    }
+                    el.classList.toggle('hidden-view', el.id !== `view-${tabId}`);
+                    if (el.id === `view-${tabId}`) el.classList.add('fade-in');
                 });
-                
                 window.state.activeTab = tabId;
-                
-                if (tabId === 'review') ui.renderReview();
-                if (tabId === 'list') ui.renderWordList();
-                if (tabId === 'folders') ui.renderFolderList();
+                ui.init();
             },
-
             renderFolderSelect: () => {
                 const sel = document.getElementById('new-word-folder');
-                if(!sel) return;
-                sel.innerHTML = window.state.folders.map(f => 
-                    `<option value="${f.id}">${f.name}</option>`
-                ).join('');
+                sel.innerHTML = window.state.folders.map(f => `<option value="${f.id}">${f.name}</option>`).join('');
             },
-
             renderFolderList: () => {
                 const container = document.getElementById('folders-list-container');
-                if(!container) return;
-                
-                if (window.state.folders.length === 0) {
-                     container.innerHTML = '<div class="text-center text-gray-400 py-10">No folders. Create one above.</div>';
-                     return;
-                }
-
-                container.innerHTML = window.state.folders.map(f => {
-                    const count = window.state.cards.filter(c => c.folderId === f.id).length;
-                    return `
-                    <div class="flex items-center justify-between py-4 border-b border-gray-50 hover:bg-gray-50 px-2 -mx-2 rounded transition-colors group">
+                container.innerHTML = window.state.folders.map(f => `
+                    <div class="flex items-center justify-between py-4 border-b border-gray-50 hover:bg-gray-50 px-2 -mx-2 rounded group">
                         <div class="flex items-center gap-3 flex-1">
                             <i class="ph ph-folder text-lg text-gray-400"></i>
-                            <input type="text" value="${f.name}" 
-                                onchange="dataManager.updateFolder('${f.id}', this.value)"
-                                onfocus="this.select()"
-                                onkeydown="if(event.key === 'Enter') this.blur()"
-                                class="bg-transparent focus:bg-white border-b border-transparent focus:border-gray-300 focus:outline-none text-sm text-gray-900 font-medium w-full transition-colors"
-                                placeholder="Rename folder...">
-                            <i class="ph ph-pencil-simple text-gray-200 text-xs opacity-0 group-hover:opacity-100"></i>
+                            <input type="text" value="${f.name}" onchange="dataManager.updateFolder('${f.id}', this.value)"
+                                class="bg-transparent focus:bg-white border-b border-transparent focus:border-gray-300 focus:outline-none text-sm text-gray-900 font-medium w-full">
                         </div>
                         <div class="flex items-center gap-4 pl-4">
-                            <span class="text-xs text-gray-400 font-mono">${count}</span>
-                            <button onclick="dataManager.deleteFolder('${f.id}')" class="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all">
-                                <i class="ph ph-trash"></i>
-                            </button>
+                            <span class="text-xs text-gray-400 font-mono">${window.state.cards.filter(c => c.folderId === f.id).length}</span>
+                            <button onclick="dataManager.deleteFolder('${f.id}')" class="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"><i class="ph ph-trash"></i></button>
                         </div>
-                    </div>`;
-                }).join('');
+                    </div>`).join('');
             },
-
+            renderWordList: () => {
+                const container = document.getElementById('word-list-container');
+                const sorted = [...window.state.cards].sort((a,b) => b.createdAt - a.createdAt);
+                document.getElementById('total-words-count').innerText = sorted.length;
+                document.getElementById('empty-list-msg').classList.toggle('hidden', sorted.length > 0);
+                
+                container.innerHTML = sorted.map(w => `
+                    <div class="group flex items-center justify-between py-5 hover:bg-gray-50 -mx-4 px-4 rounded-lg">
+                        <div class="flex-1 min-w-0 pr-4">
+                            <div class="flex items-baseline gap-3">
+                                <h3 class="text-base font-medium text-gray-900 truncate">${w.front}</h3>
+                                <span class="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">${window.state.folders.find(f => f.id === w.folderId)?.name || 'Unknown'}</span>
+                            </div>
+                            <p class="text-sm text-gray-500 truncate mt-1 font-light">${w.back}</p>
+                        </div>
+                        <button onclick="dataManager.deleteWord('${w.id}')" class="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 p-2"><i class="ph ph-trash text-lg"></i></button>
+                    </div>`).join('');
+            },
             renderReview: () => {
                 const container = document.getElementById('review-container');
-                
                 let pool = window.state.cards;
-                // Apply Folder Filter
-                if (window.state.selectedFolderIds.size > 0) {
-                    pool = pool.filter(w => window.state.selectedFolderIds.has(w.folderId));
-                }
+                if (window.state.selectedFolderIds.size > 0) pool = pool.filter(w => window.state.selectedFolderIds.has(w.folderId));
 
                 if (pool.length === 0) {
-                    container.innerHTML = `
-                        <div class="flex flex-col items-center justify-center h-full">
-                            <i class="ph ph-cards text-4xl text-gray-200 mb-4"></i>
-                            <h3 class="text-xl font-light text-gray-900">No Cards</h3>
-                            <p class="text-gray-400 mt-2 font-light text-xs">Add cards or check filters</p>
-                        </div>
-                    `;
-                    window.state.currentReviewCard = null;
+                    container.innerHTML = `<div class="flex flex-col items-center"><i class="ph ph-cards text-4xl text-gray-200 mb-4"></i><h3 class="text-xl font-light text-gray-900">No Cards</h3></div>`;
                     return;
                 }
 
-                // Infinite Mode Logic
                 const now = Date.now();
-                let candidates = pool.filter(w => w.nextReview <= now);
-                let isPracticeMode = false;
-
-                if (candidates.length === 0) {
-                    candidates = pool; 
-                    isPracticeMode = true;
-                }
-
+                let due = pool.filter(w => w.nextReview <= now);
+                let isPractice = due.length === 0;
+                const candidates = isPractice ? pool : due;
                 const word = candidates[Math.floor(Math.random() * candidates.length)];
                 window.state.currentReviewCard = word;
-                const folderName = window.state.folders.find(f => f.id === word.folderId)?.name || 'Unknown';
 
-                let displaySentence = '';
-                if (word.sentence) {
-                    displaySentence = word.sentence.replace(/\[.*?\]/g, '______');
-                }
-
-                const statusLabel = isPracticeMode ? 'PRACTICE (INFINITE)' : 'DUE FOR REVIEW';
+                const displaySentence = word.sentence ? word.sentence.replace(/\[.*?\]/g, '______') : '';
 
                 container.innerHTML = `
                     <div class="w-full max-w-lg mx-auto flex flex-col items-center fade-in pb-10">
                         <div class="w-full mb-8">
-                             <div class="flex justify-between items-center mb-10">
-                                <span class="text-[10px] font-mono text-gray-400 uppercase tracking-widest">${statusLabel}</span>
-                                <span class="text-[10px] font-mono text-gray-400 px-2 py-1 bg-gray-50 rounded">${folderName}</span>
+                            <div class="flex justify-between items-center mb-10">
+                                <span class="text-[10px] font-mono text-gray-400 uppercase tracking-widest">${isPractice ? 'PRACTICE' : 'DUE NOW'}</span>
+                                <span class="text-[10px] font-mono text-gray-400 px-2 py-1 bg-gray-50 rounded">${window.state.folders.find(f => f.id === word.folderId)?.name}</span>
                             </div>
-
                             <h2 class="text-2xl font-medium text-gray-900 mb-6 leading-snug">${word.back}</h2>
-                            
-                            ${displaySentence ? `
-                                <div class="text-lg text-gray-500 font-light mb-12 italic leading-relaxed">"${displaySentence}"</div>
-                            ` : ''}
-
-                            <div id="quiz-area" class="w-full relative max-w-xs mx-auto">
-                                <input type="text" id="answer-input" autocomplete="off" spellcheck="false"
-                                    class="quiz-input w-full text-3xl py-2 text-gray-900" 
-                                    placeholder="Type answer..." 
-                                    onkeydown="if(event.key === 'Enter') ui.checkAnswer(this.value)">
-                                <p class="text-xs text-gray-300 mt-4">Press Enter to check</p>
+                            ${displaySentence ? `<div class="text-lg text-gray-500 font-light mb-12 italic">"${displaySentence}"</div>` : ''}
+                            <div id="quiz-area" class="w-full max-w-xs mx-auto">
+                                <input type="text" id="answer-input" autocomplete="off" class="quiz-input w-full text-3xl py-2" placeholder="Type answer..." onkeydown="if(event.key === 'Enter') ui.checkAnswer(this.value)">
                             </div>
                         </div>
-
-                        <div id="result-area" class="hidden w-full mt-auto pt-6 border-t border-gray-100 text-center animate-pulse-once">
+                        <div id="result-area" class="hidden w-full mt-auto pt-6 border-t border-gray-100 text-center">
                             <div id="correct-answer-display" class="text-3xl font-light text-gray-900 mb-8"></div>
-                            
                             <div class="grid grid-cols-2 gap-4 max-w-xs mx-auto">
-                                <button onclick="dataManager.gradeWord(1)" class="py-3 rounded bg-red-50 text-red-600 text-xs font-bold hover:bg-red-100 transition-colors">
-                                    FORGOT (Again)
-                                </button>
-                                <button onclick="dataManager.gradeWord(4)" class="py-3 rounded bg-green-50 text-green-600 text-xs font-bold hover:bg-green-100 transition-colors">
-                                    GOT IT (Good)
-                                </button>
+                                <button onclick="dataManager.gradeWord(1)" class="py-3 rounded bg-red-50 text-red-600 text-xs font-bold">FORGOT</button>
+                                <button onclick="dataManager.gradeWord(4)" class="py-3 rounded bg-green-50 text-green-600 text-xs font-bold">GOT IT</button>
                             </div>
                         </div>
-                    </div>
-                `;
-                
-                setTimeout(() => {
-                    const inp = document.getElementById('answer-input');
-                    if(inp) inp.focus();
-                }, 100);
+                    </div>`;
+                setTimeout(() => document.getElementById('answer-input')?.focus(), 100);
             },
-
-            checkAnswer: (inputVal) => {
+            checkAnswer: (val) => {
                 const card = window.state.currentReviewCard;
-                if(!card) return;
-
-                const inputNormal = inputVal.trim().toLowerCase();
-                const targetNormal = card.front.trim().toLowerCase();
-                const isCorrect = inputNormal === targetNormal;
-
+                const isCorrect = val.trim().toLowerCase() === card.front.trim().toLowerCase();
                 const inputEl = document.getElementById('answer-input');
-                const resultArea = document.getElementById('result-area');
-                const quizArea = document.getElementById('quiz-area');
-                const answerDisplay = document.getElementById('correct-answer-display');
-
                 inputEl.disabled = true;
-                if (isCorrect) {
-                    inputEl.classList.add('correct');
-                    answerDisplay.innerHTML = `<span class="text-green-600 flex items-center justify-center gap-2"><i class="ph ph-check-circle"></i> ${card.front}</span>`;
-                } else {
-                    inputEl.classList.add('wrong');
-                    inputEl.value = inputVal; 
-                    answerDisplay.innerHTML = `
-                        <div class="flex flex-col gap-1">
-                            <span class="text-red-500 line-through text-lg opacity-50">${inputVal || 'Empty'}</span>
-                            <span class="text-gray-900 font-medium">${card.front}</span>
-                        </div>`;
-                }
-
-                quizArea.classList.add('opacity-50');
-                resultArea.classList.remove('hidden');
-                resultArea.classList.add('fade-in');
+                inputEl.classList.add(isCorrect ? 'correct' : 'wrong');
+                document.getElementById('quiz-area').classList.add('opacity-50');
+                document.getElementById('result-area').classList.remove('hidden');
+                document.getElementById('correct-answer-display').innerHTML = isCorrect ? 
+                    `<span class="text-green-600">${card.front}</span>` : 
+                    `<div class="flex flex-col"><span class="text-red-500 line-through text-lg opacity-50">${val || 'None'}</span><span>${card.front}</span></div>`;
             },
-
-            renderWordList: () => {
-                const container = document.getElementById('word-list-container');
-                const countEl = document.getElementById('total-words-count');
-                const emptyMsg = document.getElementById('empty-list-msg');
-                
-                if(!container) return;
-                
-                if (window.state.cards.length === 0) {
-                    container.innerHTML = '';
-                    emptyMsg.classList.remove('hidden');
-                    countEl.innerText = '0';
-                    return;
-                }
-                
-                emptyMsg.classList.add('hidden');
-                countEl.innerText = window.state.cards.length;
-
-                const sortedCards = [...window.state.cards].sort((a,b) => b.createdAt - a.createdAt);
-
-                container.innerHTML = sortedCards.map(word => {
-                    const folder = window.state.folders.find(f => f.id === word.folderId)?.name || 'Unknown';
-                    const previewSentence = word.sentence ? `<div class="text-xs text-gray-400 mt-1 italic">"${word.sentence}"</div>` : '';
-                    
-                    return `
-                    <div class="group flex items-center justify-between py-5 hover:bg-gray-50 transition-colors -mx-4 px-4 rounded-lg">
-                        <div class="flex-1 min-w-0 pr-4">
-                            <div class="flex items-baseline gap-3">
-                                <h3 class="text-base font-medium text-gray-900 truncate">${word.front}</h3>
-                                <span class="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">${folder}</span>
-                            </div>
-                            <p class="text-sm text-gray-500 truncate mt-1 font-light">${word.back}</p>
-                            ${previewSentence}
-                        </div>
-                        <button onclick="dataManager.deleteWord('${word.id}')" class="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 transition-all p-2">
-                            <i class="ph ph-trash text-lg"></i>
-                        </button>
-                    </div>
-                `}).join('');
-            },
-
-            // --- Modal Helpers ---
             showAddModal: () => {
                 document.getElementById('add-modal').classList.remove('hidden');
                 ui.renderFolderSelect();
@@ -784,132 +433,78 @@
             },
             closeAddModal: () => {
                 document.getElementById('add-modal').classList.add('hidden');
-                document.getElementById('new-word-front').value = '';
-                document.getElementById('new-word-back').value = '';
-                document.getElementById('new-word-sentences').value = '';
+                ['new-word-front', 'new-word-back', 'new-word-sentences'].forEach(id => document.getElementById(id).value = '');
             },
             toggleFilterModal: () => {
                 const modal = document.getElementById('filter-modal');
                 modal.classList.toggle('hidden');
-                if (!modal.classList.contains('hidden')) ui.renderFilterList();
+                if (!modal.classList.contains('hidden')) {
+                    document.getElementById('filter-list').innerHTML = window.state.folders.map(f => `
+                        <label class="flex items-center gap-3 cursor-pointer py-2 px-2">
+                            <input type="checkbox" value="${f.id}" ${window.state.selectedFolderIds.has(f.id) ? 'checked' : ''} class="custom-checkbox w-4 h-4 rounded">
+                            <span class="text-sm text-gray-700">${f.name}</span>
+                        </label>`).join('');
+                }
             },
-            renderFilterList: () => {
-                const container = document.getElementById('filter-list');
-                if(!container) return;
-                container.innerHTML = window.state.folders.map(f => `
-                    <label class="flex items-center gap-3 cursor-pointer py-2 hover:bg-gray-50 rounded px-2">
-                        <input type="checkbox" value="${f.id}" 
-                            ${window.state.selectedFolderIds.has(f.id) ? 'checked' : ''}
-                            class="custom-checkbox w-4 h-4 rounded border-gray-300 text-black focus:ring-0">
-                        <span class="text-sm text-gray-700">${f.name}</span>
-                    </label>
-                `).join('');
-            },
-            selectAllFilters: (selectAll) => {
-                document.querySelectorAll('#filter-list input[type="checkbox"]').forEach(cb => cb.checked = selectAll);
-            },
+            selectAllFilters: (all) => document.querySelectorAll('#filter-list input').forEach(i => i.checked = all),
             applyFilters: () => {
-                const cbs = document.querySelectorAll('#filter-list input[type="checkbox"]:checked');
-                window.state.selectedFolderIds = new Set(Array.from(cbs).map(cb => cb.value));
+                const checked = document.querySelectorAll('#filter-list input:checked');
+                window.state.selectedFolderIds = new Set(Array.from(checked).map(i => i.value));
                 ui.toggleFilterModal();
                 ui.renderReview();
             }
         };
 
-        // --- IO (Import/Export) ---
-        // Same logic as before
         window.io = {
             exportData: () => {
-                const data = window.state.cards.map(c => {
-                   // Optional: Export folder name if needed, but current requested format is simple
-                   return {
-                       front: c.front,
-                       back: c.back,
-                       sentences: c.sentence ? [c.sentence] : [] 
-                   };
-                });
+                const data = { folders: db.getFolders(), cards: db.getCards() };
                 const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-                const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
-                a.href = url;
-                a.download = `memocurve_${new Date().toISOString().slice(0,10)}.json`;
-                document.body.appendChild(a);
+                a.href = URL.createObjectURL(blob);
+                a.download = `memocurve_local_${new Date().toISOString().slice(0,10)}.json`;
                 a.click();
-                document.body.removeChild(a);
             },
-            importData: async (inputElement) => {
-                const file = inputElement.files[0];
+            importData: (input) => {
+                const file = input.files[0];
                 if (!file) return;
-                
-                if (!window.state.user) return alert("Please login first.");
-
                 const reader = new FileReader();
-                reader.onload = async (e) => {
+                reader.onload = (e) => {
                     try {
-                        const rawData = JSON.parse(e.target.result);
-                        if (!Array.isArray(rawData)) throw new Error("Format must be an array.");
-
-                        const userId = window.state.user.uid;
-                        const batch = writeBatch(db);
-                        
-                        let generalFolder = window.state.folders.find(f => f.name === "General");
-                        let folderId;
-                        
-                        if (!generalFolder) {
-                             const newFolderRef = doc(collection(db, `artifacts/memocurve_v2/users/${userId}/folders`));
-                             batch.set(newFolderRef, { name: "General", createdAt: Date.now() });
-                             folderId = newFolderRef.id;
+                        const data = JSON.parse(e.target.result);
+                        if (data.folders && data.cards) {
+                            db.saveFolders(data.folders);
+                            db.saveCards(data.cards);
+                            alert("Import successful!");
+                            ui.init();
                         } else {
-                             folderId = generalFolder.id;
+                            // Support legacy simple format
+                            const cards = db.getCards();
+                            const imported = data.map(i => ({
+                                id: crypto.randomUUID(), front: i.front, back: i.back,
+                                sentence: i.sentences?.[0] || '', folderId: 'default',
+                                interval: 0, repetition: 0, ef: 2.5, nextReview: Date.now(), createdAt: Date.now()
+                            }));
+                            db.saveCards([...cards, ...imported]);
+                            alert(`Imported ${imported.length} cards to General.`);
+                            ui.init();
                         }
-
-                        const cardsCollection = collection(db, `artifacts/memocurve_v2/users/${userId}/cards`);
-                        
-                        rawData.forEach(item => {
-                             if (item.front && item.back) {
-                                 const newCardRef = doc(cardsCollection);
-                                 let sentence = "";
-                                 if (Array.isArray(item.sentences) && item.sentences.length > 0) {
-                                     sentence = item.sentences[0];
-                                 }
-
-                                 batch.set(newCardRef, {
-                                     front: item.front,
-                                     back: item.back,
-                                     sentence: sentence,
-                                     folderId: folderId,
-                                     interval: 0, repetition: 0, ef: 2.5, nextReview: Date.now(),
-                                     createdAt: Date.now()
-                                 });
-                             }
-                        });
-
-                        await batch.commit();
-                        alert(`Imported ${rawData.length} cards into "General" folder!`);
-                        inputElement.value = '';
-                    } catch (err) { console.error(err); alert("Import failed: " + err.message); }
+                    } catch (err) { alert("Invalid file format."); }
                 };
                 reader.readAsText(file);
             }
         };
 
-        // --- Event Binding ---
-        const bindBtn = (id, handler) => {
-            const btn = document.getElementById(id);
-            if(btn) btn.addEventListener('click', handler);
+        // Initialize App
+        window.onload = () => {
+            db.init();
+            ui.init();
+            
+            document.getElementById('btn-create-folder').onclick = dataManager.addFolder;
+            document.getElementById('btn-open-add').onclick = ui.showAddModal;
+            document.getElementById('btn-close-add').onclick = ui.closeAddModal;
+            document.getElementById('btn-save-word').onclick = dataManager.addWord;
+            document.getElementById('add-modal').onclick = (e) => { if(e.target.id === 'add-modal') ui.closeAddModal(); };
         };
-
-        bindBtn('btn-login-google', authManager.signInGoogle);
-        bindBtn('btn-create-folder', dataManager.addFolder);
-        bindBtn('btn-open-add', ui.showAddModal);
-        bindBtn('btn-close-add', ui.closeAddModal);
-        bindBtn('btn-save-word', dataManager.addWord);
-
-        // Close modal listener
-        document.getElementById('add-modal').addEventListener('click', function(e) {
-            if (e.target === this) ui.closeAddModal();
-        });
-
     </script>
 </body>
 </html>
