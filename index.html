@@ -81,12 +81,12 @@
                 <h1 class="text-3xl font-light tracking-tight text-gray-900">MemoCurve</h1>
                 <div class="flex items-center gap-2 mt-1">
                     <div class="w-2 h-2 rounded-full bg-blue-500"></div>
-                    <p class="text-xs text-gray-400 font-mono tracking-wide">Offline Local Mode</p>
+                    <p class="text-xs text-gray-400 font-mono tracking-wide">本地存儲模式</p>
                 </div>
             </div>
             <button id="btn-open-add" class="group flex items-center gap-2 text-sm font-medium text-gray-900 hover:text-gray-600 transition-colors">
                 <i class="ph ph-plus text-lg"></i>
-                <span>Add</span>
+                <span>新增</span>
             </button>
         </header>
 
@@ -94,15 +94,15 @@
         <nav class="flex-none max-w-2xl mx-auto w-full px-6 mt-6">
             <div class="flex gap-8 border-b border-gray-100">
                 <button onclick="ui.switchTab('review')" id="tab-review" class="pb-3 text-sm font-medium transition-all relative">
-                    Review
+                    複習
                     <span class="active-indicator absolute bottom-0 left-0 w-full h-[1px] bg-black"></span>
                 </button>
                 <button onclick="ui.switchTab('folders')" id="tab-folders" class="pb-3 text-sm font-medium text-gray-400 hover:text-gray-600 transition-all relative">
-                    Folders
+                    資料夾
                     <span class="active-indicator absolute bottom-0 left-0 w-full h-[1px] bg-black hidden"></span>
                 </button>
                 <button onclick="ui.switchTab('list')" id="tab-list" class="pb-3 text-sm font-medium text-gray-400 hover:text-gray-600 transition-all relative">
-                    List & Data
+                    列表與數據
                     <span class="active-indicator absolute bottom-0 left-0 w-full h-[1px] bg-black hidden"></span>
                 </button>
             </div>
@@ -114,7 +114,7 @@
             <div id="view-review" class="view-section h-full flex flex-col p-6 relative">
                 <div class="absolute top-4 left-6 z-10">
                     <button onclick="ui.toggleFilterModal()" class="flex items-center gap-2 text-xs font-bold text-gray-400 hover:text-gray-900 uppercase tracking-widest transition-colors">
-                        <i class="ph ph-faders"></i> Filter
+                        <i class="ph ph-faders"></i> 篩選資料夾
                     </button>
                 </div>
                 <div id="review-container" class="flex-1 flex flex-col justify-center items-center text-center overflow-y-auto"></div>
@@ -123,8 +123,8 @@
             <!-- View: Folders -->
             <div id="view-folders" class="view-section hidden-view h-full flex flex-col p-6 overflow-y-auto">
                 <div class="mb-6 flex gap-2">
-                    <input type="text" id="new-folder-name" placeholder="New Folder Name..." class="flex-1 border-b border-gray-200 py-2 focus:outline-none focus:border-gray-900 text-sm">
-                    <button id="btn-create-folder" class="text-sm font-medium text-gray-900 hover:bg-gray-50 px-4 py-2 rounded transition-colors">Create</button>
+                    <input type="text" id="new-folder-name" placeholder="新資料夾名稱..." class="flex-1 border-b border-gray-200 py-2 focus:outline-none focus:border-gray-900 text-sm">
+                    <button id="btn-create-folder" class="text-sm font-medium text-gray-900 hover:bg-gray-50 px-4 py-2 rounded transition-colors">建立</button>
                 </div>
                 <div id="folders-list-container" class="space-y-1"></div>
             </div>
@@ -132,23 +132,23 @@
             <!-- View: List & Data -->
             <div id="view-list" class="view-section hidden-view h-full flex flex-col p-6 overflow-y-auto">
                 <div class="mb-8 p-4 bg-gray-50 rounded-lg flex flex-wrap gap-4 items-center justify-between">
-                    <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Storage Control</span>
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">儲存管理</span>
                     <div class="flex gap-3">
                         <button onclick="io.exportData()" class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded text-xs font-medium hover:border-gray-900 transition-colors">
-                            <i class="ph ph-download-simple"></i> Export
+                            <i class="ph ph-download-simple"></i> 匯出 JSON
                         </button>
                         <label class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded text-xs font-medium hover:border-gray-900 transition-colors cursor-pointer">
-                            <i class="ph ph-upload-simple"></i> Import
+                            <i class="ph ph-upload-simple"></i> 匯入 JSON
                             <input type="file" id="import-file" class="hidden" onchange="io.importData(this)">
                         </label>
                     </div>
                 </div>
                 <div class="mb-4 flex items-center justify-between">
-                    <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wide">All Words</h3>
+                    <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wide">所有卡片</h3>
                     <span id="total-words-count" class="text-xs text-gray-400 font-mono">0</span>
                 </div>
                 <div id="word-list-container" class="space-y-0 divide-y divide-gray-100 pb-20"></div>
-                <div id="empty-list-msg" class="hidden text-center text-gray-400 py-20 font-light">No words added yet.</div>
+                <div id="empty-list-msg" class="hidden text-center text-gray-400 py-20 font-light">目前沒有卡片。</div>
             </div>
         </main>
     </div>
@@ -157,27 +157,27 @@
     <div id="add-modal" class="fixed inset-0 bg-white/90 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-lg p-8 border border-gray-100 shadow-2xl rounded-xl relative">
             <button id="btn-close-add" class="absolute top-6 right-6 text-gray-400 hover:text-gray-900 transition-colors"><i class="ph ph-x text-xl"></i></button>
-            <h2 class="text-xl font-light mb-6 text-gray-900">New Entry</h2>
+            <h2 class="text-xl font-light mb-6 text-gray-900">新增卡片</h2>
             <div class="space-y-6">
                 <div>
-                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Folder</label>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">所屬資料夾</label>
                     <select id="new-word-folder" class="w-full text-base border-b border-gray-200 py-2 bg-transparent focus:outline-none focus:border-gray-900 transition-colors"></select>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Front (Target Word)</label>
-                    <input type="text" id="new-word-front" class="w-full text-lg border-b border-gray-200 py-2 focus:outline-none focus:border-gray-900 placeholder-gray-300" placeholder="e.g., Ephemeral">
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">正面 (題目)</label>
+                    <input type="text" id="new-word-front" class="w-full text-lg border-b border-gray-200 py-2 focus:outline-none focus:border-gray-900 placeholder-gray-300" placeholder="例如：Ephemeral">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Back (Definition)</label>
-                    <input type="text" id="new-word-back" class="w-full text-lg border-b border-gray-200 py-2 focus:outline-none focus:border-gray-900 placeholder-gray-300" placeholder="Short-lived">
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">背面 (答案/定義)</label>
+                    <input type="text" id="new-word-back" class="w-full text-lg border-b border-gray-200 py-2 focus:outline-none focus:border-gray-900 placeholder-gray-300" placeholder="例如：轉瞬即逝的">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Context Sentence</label>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">上下文/例句</label>
                     <textarea id="new-word-sentences" rows="2" class="w-full text-base border-b border-gray-200 py-2 focus:outline-none focus:border-gray-900 resize-none placeholder-gray-300" placeholder="[Ephemeral] beauty."></textarea>
-                    <p class="text-[10px] text-gray-400 mt-1">Use brackets [word] to hide it in Review.</p>
+                    <p class="text-[10px] text-gray-400 mt-1">使用中括號 [單字] 可在複習時隱藏該字。</p>
                 </div>
                 <div class="pt-4 flex justify-end">
-                    <button id="btn-save-word" class="bg-gray-900 text-white px-8 py-3 text-sm font-medium hover:bg-black rounded-lg w-full sm:w-auto">Save Entry</button>
+                    <button id="btn-save-word" class="bg-gray-900 text-white px-8 py-3 text-sm font-medium hover:bg-black rounded-lg w-full sm:w-auto">儲存卡片</button>
                 </div>
             </div>
         </div>
@@ -186,14 +186,14 @@
     <div id="filter-modal" class="fixed inset-0 bg-black/10 backdrop-blur-sm z-40 hidden flex items-start justify-center pt-24 p-4">
         <div class="bg-white w-full max-w-sm p-6 border border-gray-100 shadow-xl rounded-lg relative">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wide">Review Filters</h3>
+                <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wide">複習篩選</h3>
                 <button onclick="ui.toggleFilterModal()" class="text-gray-400 hover:text-gray-900"><i class="ph ph-x text-lg"></i></button>
             </div>
             <div id="filter-list" class="max-h-60 overflow-y-auto space-y-2 mb-4"></div>
             <div class="flex justify-end gap-2">
-                <button onclick="ui.selectAllFilters(false)" class="text-xs text-gray-400 hover:text-gray-900 px-3 py-2">Clear</button>
-                <button onclick="ui.selectAllFilters(true)" class="text-xs text-gray-400 hover:text-gray-900 px-3 py-2">All</button>
-                <button onclick="ui.applyFilters()" class="bg-gray-900 text-white text-xs font-medium px-4 py-2 rounded">Apply</button>
+                <button onclick="ui.selectAllFilters(false)" class="text-xs text-gray-400 hover:text-gray-900 px-3 py-2">全部取消</button>
+                <button onclick="ui.selectAllFilters(true)" class="text-xs text-gray-400 hover:text-gray-900 px-3 py-2">全選</button>
+                <button onclick="ui.applyFilters()" class="bg-gray-900 text-white text-xs font-medium px-4 py-2 rounded">應用</button>
             </div>
         </div>
     </div>
@@ -233,45 +233,67 @@
                 window.state.folders = db.getFolders();
                 window.state.cards = db.getCards();
             },
-            addFolder: () => {
-                const name = document.getElementById('new-folder-name').value.trim();
-                if (!name) return;
+            addFolder: (optionalName = null) => {
+                const nameInput = document.getElementById('new-folder-name');
+                const name = (optionalName || nameInput.value).trim();
+                if (!name) return null;
+
+                const existing = db.getFolders().find(f => f.name.toLowerCase() === name.toLowerCase());
+                if (existing) return existing;
+
                 const folder = { id: crypto.randomUUID(), name, createdAt: Date.now() };
                 const folders = [...db.getFolders(), folder];
                 db.saveFolders(folders);
-                document.getElementById('new-folder-name').value = '';
+                if (nameInput) nameInput.value = '';
                 ui.init();
+                return folder;
             },
             updateFolder: (id, name) => {
                 const folders = db.getFolders().map(f => f.id === id ? {...f, name} : f);
                 db.saveFolders(folders);
             },
             deleteFolder: (id) => {
-                if(id === 'default') return alert("Cannot delete default folder.");
+                if(id === 'default') return alert("無法刪除預設資料夾。");
                 const folders = db.getFolders().filter(f => f.id !== id);
                 const cards = db.getCards().filter(c => c.folderId !== id);
                 db.saveFolders(folders);
                 db.saveCards(cards);
                 ui.init();
             },
-            addWord: () => {
-                const front = document.getElementById('new-word-front').value.trim();
-                const back = document.getElementById('new-word-back').value.trim();
-                const folderId = document.getElementById('new-word-folder').value;
-                if (!front || !back) return;
-
-                const card = {
-                    id: crypto.randomUUID(),
-                    front, back,
-                    sentence: document.getElementById('new-word-sentences').value.trim(),
-                    folderId,
-                    interval: 0, repetition: 0, ef: 2.5,
-                    nextReview: Date.now(),
-                    createdAt: Date.now()
-                };
+            addWord: (data = null) => {
+                let card;
+                if (data) {
+                    // 用於匯入
+                    card = {
+                        id: crypto.randomUUID(),
+                        front: data.front,
+                        back: data.back,
+                        sentence: data.sentence || '',
+                        folderId: data.folderId,
+                        interval: 0, repetition: 0, ef: 2.5,
+                        nextReview: Date.now(),
+                        createdAt: Date.now()
+                    };
+                } else {
+                    // 用於 UI 新增
+                    const front = document.getElementById('new-word-front').value.trim();
+                    const back = document.getElementById('new-word-back').value.trim();
+                    const folderId = document.getElementById('new-word-folder').value;
+                    if (!front || !back) return;
+                    card = {
+                        id: crypto.randomUUID(),
+                        front, back,
+                        sentence: document.getElementById('new-word-sentences').value.trim(),
+                        folderId,
+                        interval: 0, repetition: 0, ef: 2.5,
+                        nextReview: Date.now(),
+                        createdAt: Date.now()
+                    };
+                }
+                
                 const cards = [...db.getCards(), card];
                 db.saveCards(cards);
-                ui.closeAddModal();
+                if (!data) ui.closeAddModal();
                 ui.init();
             },
             deleteWord: (id) => {
@@ -365,7 +387,7 @@
                         <div class="flex-1 min-w-0 pr-4">
                             <div class="flex items-baseline gap-3">
                                 <h3 class="text-base font-medium text-gray-900 truncate">${w.front}</h3>
-                                <span class="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">${window.state.folders.find(f => f.id === w.folderId)?.name || 'Unknown'}</span>
+                                <span class="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">${window.state.folders.find(f => f.id === w.folderId)?.name || '未指定'}</span>
                             </div>
                             <p class="text-sm text-gray-500 truncate mt-1 font-light">${w.back}</p>
                         </div>
@@ -378,7 +400,7 @@
                 if (window.state.selectedFolderIds.size > 0) pool = pool.filter(w => window.state.selectedFolderIds.has(w.folderId));
 
                 if (pool.length === 0) {
-                    container.innerHTML = `<div class="flex flex-col items-center"><i class="ph ph-cards text-4xl text-gray-200 mb-4"></i><h3 class="text-xl font-light text-gray-900">No Cards</h3></div>`;
+                    container.innerHTML = `<div class="flex flex-col items-center"><i class="ph ph-cards text-4xl text-gray-200 mb-4"></i><h3 class="text-xl font-light text-gray-900">沒有卡片</h3><p class="text-xs text-gray-400 mt-2">請先新增卡片或調整篩選器</p></div>`;
                     return;
                 }
 
@@ -395,20 +417,20 @@
                     <div class="w-full max-w-lg mx-auto flex flex-col items-center fade-in pb-10">
                         <div class="w-full mb-8">
                             <div class="flex justify-between items-center mb-10">
-                                <span class="text-[10px] font-mono text-gray-400 uppercase tracking-widest">${isPractice ? 'PRACTICE' : 'DUE NOW'}</span>
+                                <span class="text-[10px] font-mono text-gray-400 uppercase tracking-widest">${isPractice ? '自由練習模式' : '複習時間已到'}</span>
                                 <span class="text-[10px] font-mono text-gray-400 px-2 py-1 bg-gray-50 rounded">${window.state.folders.find(f => f.id === word.folderId)?.name}</span>
                             </div>
                             <h2 class="text-2xl font-medium text-gray-900 mb-6 leading-snug">${word.back}</h2>
                             ${displaySentence ? `<div class="text-lg text-gray-500 font-light mb-12 italic">"${displaySentence}"</div>` : ''}
                             <div id="quiz-area" class="w-full max-w-xs mx-auto">
-                                <input type="text" id="answer-input" autocomplete="off" class="quiz-input w-full text-3xl py-2" placeholder="Type answer..." onkeydown="if(event.key === 'Enter') ui.checkAnswer(this.value)">
+                                <input type="text" id="answer-input" autocomplete="off" class="quiz-input w-full text-3xl py-2" placeholder="輸入答案..." onkeydown="if(event.key === 'Enter') ui.checkAnswer(this.value)">
                             </div>
                         </div>
                         <div id="result-area" class="hidden w-full mt-auto pt-6 border-t border-gray-100 text-center">
                             <div id="correct-answer-display" class="text-3xl font-light text-gray-900 mb-8"></div>
                             <div class="grid grid-cols-2 gap-4 max-w-xs mx-auto">
-                                <button onclick="dataManager.gradeWord(1)" class="py-3 rounded bg-red-50 text-red-600 text-xs font-bold">FORGOT</button>
-                                <button onclick="dataManager.gradeWord(4)" class="py-3 rounded bg-green-50 text-green-600 text-xs font-bold">GOT IT</button>
+                                <button onclick="dataManager.gradeWord(1)" class="py-3 rounded bg-red-50 text-red-600 text-xs font-bold">忘了 (再次)</button>
+                                <button onclick="dataManager.gradeWord(4)" class="py-3 rounded bg-green-50 text-green-600 text-xs font-bold">記得 (很好)</button>
                             </div>
                         </div>
                     </div>`;
@@ -424,7 +446,7 @@
                 document.getElementById('result-area').classList.remove('hidden');
                 document.getElementById('correct-answer-display').innerHTML = isCorrect ? 
                     `<span class="text-green-600">${card.front}</span>` : 
-                    `<div class="flex flex-col"><span class="text-red-500 line-through text-lg opacity-50">${val || 'None'}</span><span>${card.front}</span></div>`;
+                    `<div class="flex flex-col"><span class="text-red-500 line-through text-lg opacity-50">${val || '未填寫'}</span><span>${card.front}</span></div>`;
             },
             showAddModal: () => {
                 document.getElementById('add-modal').classList.remove('hidden');
@@ -457,7 +479,13 @@
 
         window.io = {
             exportData: () => {
-                const data = { folders: db.getFolders(), cards: db.getCards() };
+                const data = { 
+                    folders: db.getFolders(), 
+                    cards: db.getCards().map(c => ({
+                        ...c,
+                        folderName: db.getFolders().find(f => f.id === c.folderId)?.name || 'General'
+                    }))
+                };
                 const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
                 const a = document.createElement('a');
                 a.href = URL.createObjectURL(blob);
@@ -470,25 +498,45 @@
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     try {
-                        const data = JSON.parse(e.target.result);
-                        if (data.folders && data.cards) {
-                            db.saveFolders(data.folders);
-                            db.saveCards(data.cards);
-                            alert("Import successful!");
-                            ui.init();
-                        } else {
-                            // Support legacy simple format
-                            const cards = db.getCards();
-                            const imported = data.map(i => ({
-                                id: crypto.randomUUID(), front: i.front, back: i.back,
-                                sentence: i.sentences?.[0] || '', folderId: 'default',
-                                interval: 0, repetition: 0, ef: 2.5, nextReview: Date.now(), createdAt: Date.now()
-                            }));
-                            db.saveCards([...cards, ...imported]);
-                            alert(`Imported ${imported.length} cards to General.`);
-                            ui.init();
+                        const raw = JSON.parse(e.target.result);
+                        let importedCount = 0;
+
+                        if (raw.folders && raw.cards) {
+                            // 完整格式匯入
+                            // 為避免 UUID 衝突，若本地已存在則不覆蓋資料夾，而是尋找名稱匹配者
+                            const localFolders = db.getFolders();
+                            const idMap = {}; // mapping from old id to new/local id
+
+                            raw.folders.forEach(f => {
+                                let target = localFolders.find(lf => lf.name === f.name);
+                                if (!target) {
+                                    target = dataManager.addFolder(f.name);
+                                }
+                                idMap[f.id] = target.id;
+                            });
+
+                            raw.cards.forEach(c => {
+                                const folderId = idMap[c.folderId] || 'default';
+                                dataManager.addWord({ ...c, folderId });
+                                importedCount++;
+                            });
+                        } else if (Array.isArray(raw)) {
+                            // 簡單格式匯入 [ { front, back, sentences, folderName? } ]
+                            raw.forEach(item => {
+                                const folderName = item.folderName || 'General';
+                                const targetFolder = dataManager.addFolder(folderName);
+                                dataManager.addWord({
+                                    front: item.front,
+                                    back: item.back,
+                                    sentence: Array.isArray(item.sentences) ? item.sentences[0] : (item.sentence || ''),
+                                    folderId: targetFolder.id
+                                });
+                                importedCount++;
+                            });
                         }
-                    } catch (err) { alert("Invalid file format."); }
+                        alert(`成功匯入 ${importedCount} 張卡片！`);
+                        ui.init();
+                    } catch (err) { alert("無效的文件格式。"); console.error(err); }
                 };
                 reader.readAsText(file);
             }
@@ -499,12 +547,13 @@
             db.init();
             ui.init();
             
-            document.getElementById('btn-create-folder').onclick = dataManager.addFolder;
+            document.getElementById('btn-create-folder').onclick = () => dataManager.addFolder();
             document.getElementById('btn-open-add').onclick = ui.showAddModal;
             document.getElementById('btn-close-add').onclick = ui.closeAddModal;
-            document.getElementById('btn-save-word').onclick = dataManager.addWord;
+            document.getElementById('btn-save-word').onclick = () => dataManager.addWord();
             document.getElementById('add-modal').onclick = (e) => { if(e.target.id === 'add-modal') ui.closeAddModal(); };
         };
     </script>
 </body>
 </html>
+
