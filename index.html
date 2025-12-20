@@ -84,6 +84,26 @@
         .transition-all-smooth {
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        
+        /* 統計圖表相關 */
+        .progress-bar {
+            height: 6px;
+            background-color: #e5e7eb;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+        
+        .stat-card {
+            border-radius: 10px;
+            padding: 16px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        }
     </style>
 </head>
 <body class="flex flex-col h-screen overflow-hidden bg-white text-gray-800">
@@ -116,6 +136,10 @@
                     卡片庫
                     <span class="active-indicator absolute inset-x-0 bottom-0 h-0.5 bg-gray-900 hidden"></span>
                 </button>
+                <button onclick="ui.switchTab('stats')" id="tab-stats" class="pb-3 text-sm font-normal text-gray-500 hover:text-gray-900 relative transition-all-smooth">
+                    統計
+                    <span class="active-indicator absolute inset-x-0 bottom-0 h-0.5 bg-gray-900 hidden"></span>
+                </button>
             </div>
         </nav>
 
@@ -123,6 +147,27 @@
         <main class="flex-1 overflow-hidden max-w-2xl mx-auto w-full px-6">
             <!-- 視圖：複習 -->
             <div id="view-review" class="view-section h-full flex flex-col">
+                <!-- 複習篩選欄 -->
+                <div class="flex-none pt-4 pb-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <button onclick="ui.toggleFilterModal()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs border border-gray-200 rounded-lg hover:border-gray-900 transition-all-smooth">
+                                <i class="ph ph-funnel-simple"></i>
+                                <span>篩選</span>
+                                <span id="active-filter-count" class="bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5 rounded-full">0</span>
+                            </button>
+                            <div id="filter-summary" class="text-xs text-gray-500 hidden">
+                                <span id="selected-folders-text"></span>
+                                <span id="selected-difficulties-text"></span>
+                            </div>
+                        </div>
+                        <button onclick="ui.showReviewStats()" class="text-xs text-gray-500 hover:text-gray-900 flex items-center gap-1">
+                            <i class="ph ph-chart-bar"></i>
+                            <span>統計</span>
+                        </button>
+                    </div>
+                </div>
+                
                 <div id="review-container" class="flex-1 flex flex-col justify-center items-center text-center overflow-y-auto py-4"></div>
             </div>
 
@@ -151,6 +196,51 @@
                 </div>
                 <div id="word-list-container" class="space-y-4 pb-20"></div>
                 <div id="empty-list-msg" class="hidden text-center text-gray-400 py-16 text-sm">目前沒有卡片</div>
+            </div>
+            
+            <!-- 視圖：統計資料 -->
+            <div id="view-stats" class="view-section hidden-view h-full flex flex-col overflow-y-auto pt-6">
+                <div class="space-y-8 pb-20">
+                    <!-- 整體統計 -->
+                    <div class="space-y-4">
+                        <h3 class="text-base font-normal text-gray-900">整體統計</h3>
+                        <div id="overall-stats" class="grid grid-cols-2 gap-3">
+                            <!-- 將由JavaScript動態生成 -->
+                        </div>
+                    </div>
+                    
+                    <!-- 難度分佈 -->
+                    <div class="space-y-4">
+                        <h3 class="text-base font-normal text-gray-900">難度分佈</h3>
+                        <div id="difficulty-distribution" class="space-y-3">
+                            <!-- 將由JavaScript動態生成 -->
+                        </div>
+                    </div>
+                    
+                    <!-- 記憶包統計 -->
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-base font-normal text-gray-900">記憶包統計</h3>
+                            <button onclick="ui.toggleFolderStats()" class="text-xs text-gray-500 hover:text-gray-900">
+                                <span id="toggle-folder-stats-text">顯示詳細</span>
+                            </button>
+                        </div>
+                        <div id="folder-stats-summary" class="space-y-3">
+                            <!-- 摘要將由JavaScript動態生成 -->
+                        </div>
+                        <div id="folder-stats-detailed" class="hidden space-y-4">
+                            <!-- 詳細統計將由JavaScript動態生成 -->
+                        </div>
+                    </div>
+                    
+                    <!-- 複習進度 -->
+                    <div class="space-y-4">
+                        <h3 class="text-base font-normal text-gray-900">最近7天複習記錄</h3>
+                        <div id="review-progress" class="space-y-4">
+                            <!-- 將由JavaScript動態生成 -->
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -216,7 +306,23 @@
             </div>
             <div class="flex justify-between gap-3 mt-8">
                 <button onclick="ui.clearAllFilters()" class="text-sm text-gray-500 hover:text-gray-900 px-3 py-2">清除</button>
+                <button onclick="ui.selectAllFilters()" class="text-sm text-gray-500 hover:text-gray-900 px-3 py-2">全選</button>
                 <button onclick="ui.applyFilters()" class="flex-1 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-black transition-all-smooth">套用篩選</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 複習統計模態框 -->
+    <div id="review-stats-modal" class="fixed inset-0 z-40 hidden flex items-start justify-center pt-20 px-4 modal-backdrop">
+        <div class="bg-white w-full max-w-sm p-5 rounded-xl card-shadow">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-base font-normal text-gray-900">本次複習統計</h3>
+                <button onclick="ui.closeReviewStats()" class="text-gray-400 hover:text-gray-900">
+                    <i class="ph ph-x text-lg"></i>
+                </button>
+            </div>
+            <div id="review-stats-content" class="space-y-4">
+                <!-- 動態生成統計內容 -->
             </div>
         </div>
     </div>
@@ -273,10 +379,10 @@
             // 難度等級對應的顏色和文字
             getDifficultyDisplay: (difficulty) => {
                 switch(difficulty) {
-                    case 'easy': return { text: '簡單', color: 'grade-easy', bg: 'bg-green-50' };
-                    case 'medium': return { text: '普通', color: 'grade-medium', bg: 'bg-yellow-50' };
-                    case 'hard': return { text: '困難', color: 'grade-hard', bg: 'bg-red-50' };
-                    default: return { text: '普通', color: 'grade-medium', bg: 'bg-yellow-50' };
+                    case 'easy': return { text: '簡單', color: 'grade-easy', bg: 'bg-green-50', progress: 'bg-green-500' };
+                    case 'medium': return { text: '普通', color: 'grade-medium', bg: 'bg-yellow-50', progress: 'bg-yellow-500' };
+                    case 'hard': return { text: '困難', color: 'grade-hard', bg: 'bg-red-50', progress: 'bg-red-500' };
+                    default: return { text: '普通', color: 'grade-medium', bg: 'bg-yellow-50', progress: 'bg-yellow-500' };
                 }
             }
         };
@@ -284,13 +390,34 @@
         /* =====================================================
            本地存儲數據層
         ===================================================== */
-        const LS_KEYS = { folders: "mc_folders_v2", cards: "mc_cards_v2" };
+        const LS_KEYS = { 
+            folders: "mc_folders_v2", 
+            cards: "mc_cards_v2",
+            reviewHistory: "mc_review_history_v1" 
+        };
         
         const db = {
             getFolders: () => JSON.parse(localStorage.getItem(LS_KEYS.folders) || '[]'),
             saveFolders: (data) => localStorage.setItem(LS_KEYS.folders, JSON.stringify(data)),
             getCards: () => JSON.parse(localStorage.getItem(LS_KEYS.cards) || '[]'),
             saveCards: (data) => localStorage.setItem(LS_KEYS.cards, JSON.stringify(data)),
+            getReviewHistory: () => JSON.parse(localStorage.getItem(LS_KEYS.reviewHistory) || '[]'),
+            saveReviewHistory: (data) => localStorage.setItem(LS_KEYS.reviewHistory, JSON.stringify(data)),
+            
+            addReviewRecord: (cardId, rating) => {
+                const history = db.getReviewHistory();
+                const record = {
+                    id: crypto.randomUUID(),
+                    cardId,
+                    rating,
+                    timestamp: Date.now(),
+                    date: new Date().toISOString().split('T')[0] // YYYY-MM-DD
+                };
+                history.push(record);
+                db.saveReviewHistory(history);
+                return record;
+            },
+            
             init: () => {
                 if (db.getFolders().length === 0) {
                     db.saveFolders([{ id: 'default', name: '預設記憶包', createdAt: Date.now() }]);
@@ -305,7 +432,16 @@
             currentReviewCard: null,
             selectedFolderIds: new Set(),
             selectedDifficulties: new Set(['easy', 'medium', 'hard']), // 預設全選
-            currentEditCard: null
+            currentEditCard: null,
+            reviewStats: {
+                total: 0,
+                due: 0,
+                easy: 0,
+                medium: 0,
+                hard: 0,
+                filteredTotal: 0,
+                filteredDue: 0
+            }
         };
 
         /* =====================================================
@@ -320,10 +456,69 @@
                     difficulty: Algorithm.getDifficulty(card.ef || 2.0)
                 }));
                 
-                // 更新到期卡片計數
+                // 計算統計資料
                 const now = Date.now();
-                const dueCount = window.state.cards.filter(c => c.nextReview <= now).length;
-                document.getElementById('review-count').textContent = dueCount;
+                const dueCards = window.state.cards.filter(c => c.nextReview <= now);
+                const easyCards = window.state.cards.filter(c => Algorithm.getDifficulty(c.ef) === 'easy');
+                const mediumCards = window.state.cards.filter(c => Algorithm.getDifficulty(c.ef) === 'medium');
+                const hardCards = window.state.cards.filter(c => Algorithm.getDifficulty(c.ef) === 'hard');
+                
+                // 計算篩選後的統計
+                let filteredCards = window.state.cards;
+                if (window.state.selectedFolderIds.size > 0) {
+                    filteredCards = filteredCards.filter(w => window.state.selectedFolderIds.has(w.folderId));
+                }
+                if (window.state.selectedDifficulties.size > 0 && window.state.selectedDifficulties.size < 3) {
+                    filteredCards = filteredCards.filter(w => window.state.selectedDifficulties.has(w.difficulty || Algorithm.getDifficulty(w.ef)));
+                }
+                const filteredDueCards = filteredCards.filter(c => c.nextReview <= now);
+                
+                window.state.reviewStats = {
+                    total: window.state.cards.length,
+                    due: dueCards.length,
+                    easy: easyCards.length,
+                    medium: mediumCards.length,
+                    hard: hardCards.length,
+                    filteredTotal: filteredCards.length,
+                    filteredDue: filteredDueCards.length
+                };
+                
+                // 更新到期卡片計數
+                document.getElementById('review-count').textContent = dueCards.length;
+                
+                // 更新篩選計數顯示
+                const activeFilterCount = 
+                    (window.state.selectedFolderIds.size > 0 ? 1 : 0) + 
+                    (window.state.selectedDifficulties.size < 3 ? 1 : 0);
+                document.getElementById('active-filter-count').textContent = activeFilterCount;
+                
+                // 更新篩選摘要顯示
+                const filterSummary = document.getElementById('filter-summary');
+                if (activeFilterCount > 0) {
+                    filterSummary.classList.remove('hidden');
+                    
+                    let foldersText = '';
+                    if (window.state.selectedFolderIds.size > 0) {
+                        const selectedFolders = window.state.folders.filter(f => 
+                            window.state.selectedFolderIds.has(f.id)
+                        );
+                        foldersText = `記憶包: ${selectedFolders.map(f => f.name).join(', ')}`;
+                    }
+                    
+                    let difficultiesText = '';
+                    if (window.state.selectedDifficulties.size < 3) {
+                        const difficulties = [];
+                        if (window.state.selectedDifficulties.has('easy')) difficulties.push('簡單');
+                        if (window.state.selectedDifficulties.has('medium')) difficulties.push('普通');
+                        if (window.state.selectedDifficulties.has('hard')) difficulties.push('困難');
+                        difficultiesText = `難度: ${difficulties.join(', ')}`;
+                    }
+                    
+                    document.getElementById('selected-folders-text').textContent = foldersText;
+                    document.getElementById('selected-difficulties-text').textContent = difficultiesText;
+                } else {
+                    filterSummary.classList.add('hidden');
+                }
             },
             
             addFolder: (optionalName = null) => {
@@ -422,7 +617,89 @@
                 );
 
                 db.saveCards(updatedCards);
+                db.addReviewRecord(card.id, rating);
                 ui.renderReview();
+            }
+        };
+
+        /* =====================================================
+           統計計算函數
+        ===================================================== */
+        const StatsCalculator = {
+            // 計算整體統計
+            calculateOverallStats: () => {
+                const cards = window.state.cards;
+                const now = Date.now();
+                
+                return {
+                    total: cards.length,
+                    due: cards.filter(c => c.nextReview <= now).length,
+                    easy: cards.filter(c => Algorithm.getDifficulty(c.ef) === 'easy').length,
+                    medium: cards.filter(c => Algorithm.getDifficulty(c.ef) === 'medium').length,
+                    hard: cards.filter(c => Algorithm.getDifficulty(c.ef) === 'hard').length,
+                    avgEF: cards.reduce((sum, c) => sum + (c.ef || 2.0), 0) / cards.length || 0,
+                    avgInterval: cards.reduce((sum, c) => sum + (c.interval || 0), 0) / cards.length || 0
+                };
+            },
+            
+            // 計算記憶包統計
+            calculateFolderStats: () => {
+                const folders = window.state.folders;
+                const cards = window.state.cards;
+                const now = Date.now();
+                
+                return folders.map(folder => {
+                    const folderCards = cards.filter(c => c.folderId === folder.id);
+                    const dueCards = folderCards.filter(c => c.nextReview <= now);
+                    
+                    return {
+                        id: folder.id,
+                        name: folder.name,
+                        total: folderCards.length,
+                        due: dueCards.length,
+                        easy: folderCards.filter(c => Algorithm.getDifficulty(c.ef) === 'easy').length,
+                        medium: folderCards.filter(c => Algorithm.getDifficulty(c.ef) === 'medium').length,
+                        hard: folderCards.filter(c => Algorithm.getDifficulty(c.ef) === 'hard').length,
+                        avgEF: folderCards.reduce((sum, c) => sum + (c.ef || 2.0), 0) / folderCards.length || 0,
+                        duePercentage: folderCards.length > 0 ? (dueCards.length / folderCards.length * 100).toFixed(1) : 0
+                    };
+                }).filter(f => f.total > 0); // 只顯示有卡片的記憶包
+            },
+            
+            // 計算最近7天複習記錄
+            calculateReviewHistory: () => {
+                const history = db.getReviewHistory();
+                const now = new Date();
+                const last7Days = [];
+                
+                for (let i = 6; i >= 0; i--) {
+                    const date = new Date(now);
+                    date.setDate(date.getDate() - i);
+                    const dateStr = date.toISOString().split('T')[0];
+                    
+                    const dayHistory = history.filter(h => h.date === dateStr);
+                    last7Days.push({
+                        date: dateStr,
+                        day: date.getDate(),
+                        weekday: ['日', '一', '二', '三', '四', '五', '六'][date.getDay()],
+                        total: dayHistory.length,
+                        easy: dayHistory.filter(h => h.rating === 2).length,
+                        medium: dayHistory.filter(h => h.rating === 1).length,
+                        hard: dayHistory.filter(h => h.rating === 0).length
+                    });
+                }
+                
+                return last7Days;
+            },
+            
+            // 計算複習進度
+            calculateProgress: () => {
+                const overall = StatsCalculator.calculateOverallStats();
+                const totalCards = overall.total;
+                const dueCards = overall.due;
+                
+                if (totalCards === 0) return 0;
+                return Math.max(0, 100 - (dueCards / totalCards * 100));
             }
         };
 
@@ -436,10 +713,11 @@
                 ui.renderFolderList();
                 ui.renderWordList();
                 ui.renderReview();
+                ui.renderStats();
             },
             
             switchTab: (tabId) => {
-                ['review', 'list', 'folders'].forEach(t => {
+                ['review', 'list', 'folders', 'stats'].forEach(t => {
                     const btn = document.getElementById(`tab-${t}`);
                     const indicator = btn.querySelector('.active-indicator');
                     if (t === tabId) {
@@ -474,15 +752,22 @@
                 
                 container.innerHTML = window.state.folders.map(f => {
                     const cardCount = window.state.cards.filter(c => c.folderId === f.id).length;
+                    const dueCount = window.state.cards.filter(c => c.folderId === f.id && c.nextReview <= Date.now()).length;
+                    
                     return `
                     <div class="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition-all-smooth">
                         <div class="flex items-center gap-3 flex-1">
                             <i class="ph ph-folder text-gray-400"></i>
-                            <input type="text" value="${f.name}" onchange="dataManager.updateFolder('${f.id}', this.value)"
-                                class="flex-1 bg-transparent focus:outline-none text-sm min-w-0">
+                            <div class="flex-1">
+                                <input type="text" value="${f.name}" onchange="dataManager.updateFolder('${f.id}', this.value)"
+                                    class="w-full bg-transparent focus:outline-none text-sm min-w-0 mb-1">
+                                <div class="flex items-center gap-3 text-xs text-gray-500">
+                                    <span>${cardCount} 張</span>
+                                    ${dueCount > 0 ? `<span class="text-red-500">${dueCount} 張到期</span>` : ''}
+                                </div>
+                            </div>
                         </div>
                         <div class="flex items-center gap-4">
-                            <span class="text-xs text-gray-500">${cardCount} 張</span>
                             <button onclick="dataManager.deleteFolder('${f.id}')" class="text-gray-300 hover:text-red-500 p-1 transition-all-smooth">
                                 <i class="ph ph-trash"></i>
                             </button>
@@ -500,13 +785,15 @@
                 container.innerHTML = sorted.map(w => {
                     const folderName = window.state.folders.find(f => f.id === w.folderId)?.name || '未知';
                     const diff = Algorithm.getDifficultyDisplay(w.difficulty || Algorithm.getDifficulty(w.ef));
+                    const due = w.nextReview <= Date.now();
                     
                     return `
-                    <div class="group flex items-center justify-between p-4 rounded-lg border border-gray-100 hover:border-gray-300 transition-all-smooth">
+                    <div class="group flex items-center justify-between p-4 rounded-lg border ${due ? 'border-red-100 bg-red-50' : 'border-gray-100'} hover:border-gray-300 transition-all-smooth">
                         <div class="flex-1 pr-4">
                             <div class="flex items-center gap-3 mb-1">
                                 <h3 class="text-base font-normal text-gray-900">${w.front}</h3>
                                 <span class="text-xs px-2 py-0.5 rounded ${diff.bg} ${diff.color}">${diff.text}</span>
+                                ${due ? '<span class="text-xs px-2 py-0.5 rounded bg-red-100 text-red-600">到期</span>' : ''}
                             </div>
                             <p class="text-sm text-gray-600">${w.back}</p>
                             <div class="flex items-center gap-2 mt-2">
@@ -545,6 +832,9 @@
                             <i class="ph ph-smiley text-6xl text-gray-200 mb-6"></i>
                             <h3 class="text-base font-normal text-gray-900 mb-2">沒有可複習的卡片</h3>
                             <p class="text-sm text-gray-500 max-w-xs">請新增卡片或調整篩選條件</p>
+                            <button onclick="ui.clearAllFilters()" class="mt-4 px-4 py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:border-gray-900 transition-all-smooth">
+                                清除篩選條件
+                            </button>
                         </div>`;
                     return;
                 }
@@ -656,6 +946,183 @@
                 }
             },
             
+            renderStats: () => {
+                const overall = StatsCalculator.calculateOverallStats();
+                const folderStats = StatsCalculator.calculateFolderStats();
+                const reviewHistory = StatsCalculator.calculateReviewHistory();
+                const progress = StatsCalculator.calculateProgress();
+                
+                // 整體統計
+                const overallContainer = document.getElementById('overall-stats');
+                overallContainer.innerHTML = `
+                    <div class="stat-card">
+                        <div class="text-xs text-gray-500 mb-2">卡片總數</div>
+                        <div class="text-2xl font-normal text-gray-900">${overall.total}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="text-xs text-gray-500 mb-2">到期卡片</div>
+                        <div class="text-2xl font-normal ${overall.due > 0 ? 'text-red-600' : 'text-gray-900'}">${overall.due}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="text-xs text-gray-500 mb-2">平均EF值</div>
+                        <div class="text-2xl font-normal text-gray-900">${overall.avgEF.toFixed(1)}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="text-xs text-gray-500 mb-2">平均間隔</div>
+                        <div class="text-2xl font-normal text-gray-900">${overall.avgInterval.toFixed(0)} 天</div>
+                    </div>
+                `;
+                
+                // 難度分佈
+                const diffContainer = document.getElementById('difficulty-distribution');
+                const difficulties = [
+                    { id: 'easy', label: '簡單', color: 'grade-easy', bg: 'bg-green-50', progress: 'bg-green-500', count: overall.easy },
+                    { id: 'medium', label: '普通', color: 'grade-medium', bg: 'bg-yellow-50', progress: 'bg-yellow-500', count: overall.medium },
+                    { id: 'hard', label: '困難', color: 'grade-hard', bg: 'bg-red-50', progress: 'bg-red-500', count: overall.hard }
+                ];
+                
+                diffContainer.innerHTML = difficulties.map(d => {
+                    const percentage = overall.total > 0 ? (d.count / overall.total * 100).toFixed(1) : 0;
+                    return `
+                    <div class="space-y-1.5">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full ${d.progress}"></div>
+                                <span class="text-sm text-gray-700">${d.label}</span>
+                            </div>
+                            <div class="text-sm font-medium text-gray-900">${d.count} 張 (${percentage}%)</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill ${d.progress}" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>`;
+                }).join('');
+                
+                // 記憶包統計摘要
+                const folderSummary = document.getElementById('folder-stats-summary');
+                folderSummary.innerHTML = folderStats.map(f => {
+                    const easyPct = f.total > 0 ? (f.easy / f.total * 100).toFixed(0) : 0;
+                    const mediumPct = f.total > 0 ? (f.medium / f.total * 100).toFixed(0) : 0;
+                    const hardPct = f.total > 0 ? (f.hard / f.total * 100).toFixed(0) : 0;
+                    
+                    return `
+                    <div class="p-3 rounded-lg border border-gray-100">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium text-gray-900">${f.name}</span>
+                            <span class="text-xs text-gray-500">${f.total} 張</span>
+                        </div>
+                        <div class="flex items-center gap-1 text-xs text-gray-500 mb-3">
+                            <span>簡單 ${easyPct}%</span>
+                            <span>•</span>
+                            <span>普通 ${mediumPct}%</span>
+                            <span>•</span>
+                            <span>困難 ${hardPct}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill bg-green-500" style="width: ${easyPct}%"></div>
+                            <div class="progress-fill bg-yellow-500" style="width: ${mediumPct}%"></div>
+                            <div class="progress-fill bg-red-500" style="width: ${hardPct}%"></div>
+                        </div>
+                    </div>`;
+                }).join('');
+                
+                // 記憶包統計詳細
+                const folderDetailed = document.getElementById('folder-stats-detailed');
+                folderDetailed.innerHTML = folderStats.map(f => {
+                    return `
+                    <div class="p-4 rounded-lg border border-gray-100 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <i class="ph ph-folder text-gray-400"></i>
+                                <h4 class="text-sm font-medium text-gray-900">${f.name}</h4>
+                            </div>
+                            <span class="text-xs px-2 py-1 rounded ${f.due > 0 ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'}">
+                                ${f.due} 張到期
+                            </span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-3 text-sm">
+                            <div class="text-center p-2 bg-green-50 rounded">
+                                <div class="text-green-600 font-medium">${f.easy}</div>
+                                <div class="text-xs text-gray-500">簡單</div>
+                            </div>
+                            <div class="text-center p-2 bg-yellow-50 rounded">
+                                <div class="text-yellow-600 font-medium">${f.medium}</div>
+                                <div class="text-xs text-gray-500">普通</div>
+                            </div>
+                            <div class="text-center p-2 bg-red-50 rounded">
+                                <div class="text-red-600 font-medium">${f.hard}</div>
+                                <div class="text-xs text-gray-500">困難</div>
+                            </div>
+                            <div class="text-center p-2 bg-gray-50 rounded">
+                                <div class="text-gray-600 font-medium">${f.avgEF.toFixed(1)}</div>
+                                <div class="text-xs text-gray-500">平均EF</div>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+                
+                // 複習進度
+                const progressContainer = document.getElementById('review-progress');
+                if (reviewHistory.some(day => day.total > 0)) {
+                    const maxReviews = Math.max(...reviewHistory.map(day => day.total));
+                    
+                    progressContainer.innerHTML = reviewHistory.map(day => {
+                        const easyPercentage = day.total > 0 ? (day.easy / day.total * 100) : 0;
+                        const mediumPercentage = day.total > 0 ? (day.medium / day.total * 100) : 0;
+                        const hardPercentage = day.total > 0 ? (day.hard / day.total * 100) : 0;
+                        
+                        return `
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <div class="text-sm text-gray-700">
+                                    ${day.weekday} ${day.day}日
+                                </div>
+                                <div class="text-xs text-gray-500">${day.total} 張</div>
+                            </div>
+                            <div class="flex items-end h-6 gap-0.5">
+                                <div class="flex-1 bg-green-100 rounded-t" style="height: ${day.easy > 0 ? (day.easy / maxReviews * 100) : 0}%"></div>
+                                <div class="flex-1 bg-yellow-100 rounded-t" style="height: ${day.medium > 0 ? (day.medium / maxReviews * 100) : 0}%"></div>
+                                <div class="flex-1 bg-red-100 rounded-t" style="height: ${day.hard > 0 ? (day.hard / maxReviews * 100) : 0}%"></div>
+                            </div>
+                            <div class="flex gap-2 text-xs text-gray-500 justify-center">
+                                <div class="flex items-center gap-1">
+                                    <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                                    <span>${day.easy}</span>
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
+                                    <span>${day.medium}</span>
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <div class="w-2 h-2 rounded-full bg-red-500"></div>
+                                    <span>${day.hard}</span>
+                                </div>
+                            </div>
+                        </div>`;
+                    }).join('');
+                } else {
+                    progressContainer.innerHTML = `
+                        <div class="text-center py-8 text-gray-400 text-sm">
+                            <i class="ph ph-chart-line text-3xl mb-2"></i>
+                            <p>還沒有複習記錄</p>
+                        </div>`;
+                }
+            },
+            
+            toggleFolderStats: () => {
+                const detailed = document.getElementById('folder-stats-detailed');
+                const toggleText = document.getElementById('toggle-folder-stats-text');
+                
+                if (detailed.classList.contains('hidden')) {
+                    detailed.classList.remove('hidden');
+                    toggleText.textContent = '隱藏詳細';
+                } else {
+                    detailed.classList.add('hidden');
+                    toggleText.textContent = '顯示詳細';
+                }
+            },
+            
             showAddModal: () => {
                 window.state.currentEditCard = null;
                 document.getElementById('modal-title').innerText = '新增卡片';
@@ -745,9 +1212,10 @@
             },
             
             clearAllFilters: () => {
-                document.querySelectorAll('#filter-folders input, #filter-grades input').forEach(i => {
-                    i.checked = false;
-                });
+                window.state.selectedFolderIds.clear();
+                window.state.selectedDifficulties = new Set(['easy', 'medium', 'hard']);
+                ui.toggleFilterModal();
+                ui.init();
             },
             
             selectAllFilters: () => {
@@ -769,7 +1237,70 @@
                 }
 
                 ui.toggleFilterModal();
-                ui.renderReview();
+                ui.init();
+            },
+            
+            showReviewStats: () => {
+                const modal = document.getElementById('review-stats-modal');
+                const content = document.getElementById('review-stats-content');
+                
+                const stats = window.state.reviewStats;
+                const totalDue = window.state.cards.filter(c => c.nextReview <= Date.now()).length;
+                
+                content.innerHTML = `
+                    <div class="space-y-4">
+                        <div>
+                            <div class="text-xs text-gray-500 mb-1">篩選範圍統計</div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="p-3 bg-gray-50 rounded-lg text-center">
+                                    <div class="text-lg font-medium text-gray-900">${stats.filteredTotal}</div>
+                                    <div class="text-xs text-gray-500">可複習卡片</div>
+                                </div>
+                                <div class="p-3 bg-gray-50 rounded-lg text-center">
+                                    <div class="text-lg font-medium ${stats.filteredDue > 0 ? 'text-red-600' : 'text-gray-900'}">${stats.filteredDue}</div>
+                                    <div class="text-xs text-gray-500">到期卡片</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="text-xs text-gray-500 mb-1">整體統計</div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="p-3 bg-gray-50 rounded-lg text-center">
+                                    <div class="text-lg font-medium text-gray-900">${stats.total}</div>
+                                    <div class="text-xs text-gray-500">卡片總數</div>
+                                </div>
+                                <div class="p-3 bg-gray-50 rounded-lg text-center">
+                                    <div class="text-lg font-medium ${totalDue > 0 ? 'text-red-600' : 'text-gray-900'}">${totalDue}</div>
+                                    <div class="text-xs text-gray-500">總到期數</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="text-xs text-gray-500 mb-1">難度分佈</div>
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="p-2 bg-green-50 rounded text-center">
+                                    <div class="text-sm font-medium text-green-600">${stats.easy}</div>
+                                    <div class="text-xs text-gray-500">簡單</div>
+                                </div>
+                                <div class="p-2 bg-yellow-50 rounded text-center">
+                                    <div class="text-sm font-medium text-yellow-600">${stats.medium}</div>
+                                    <div class="text-xs text-gray-500">普通</div>
+                                </div>
+                                <div class="p-2 bg-red-50 rounded text-center">
+                                    <div class="text-sm font-medium text-red-600">${stats.hard}</div>
+                                    <div class="text-xs text-gray-500">困難</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                
+                modal.classList.remove('hidden');
+            },
+            
+            closeReviewStats: () => {
+                document.getElementById('review-stats-modal').classList.add('hidden');
             }
         };
 
@@ -876,8 +1407,12 @@
             document.getElementById('card-modal').onclick = (e) => { 
                 if (e.target.id === 'card-modal') ui.closeCardModal(); 
             };
-            
-            // Enter鍵檢查答案（已在renderReview中綁定）
+            document.getElementById('filter-modal').onclick = (e) => { 
+                if (e.target.id === 'filter-modal') ui.toggleFilterModal(); 
+            };
+            document.getElementById('review-stats-modal').onclick = (e) => { 
+                if (e.target.id === 'review-stats-modal') ui.closeReviewStats(); 
+            };
         };
     </script>
 </body>
