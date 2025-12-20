@@ -55,6 +55,7 @@
             background-color: rgba(0, 0, 0, 0.02);
         }
 
+        .grade-new { color: #8b5cf6; }
         .grade-easy { color: #10b981; }
         .grade-medium { color: #f59e0b; }
         .grade-hard { color: #ef4444; }
@@ -103,6 +104,18 @@
             border-radius: 10px;
             padding: 16px;
             background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+        
+        /* 語音按鈕動畫 */
+        @keyframes pulse-speech {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .speech-playing {
+            animation: pulse-speech 1s ease-in-out infinite;
+            color: #8b5cf6 !important;
         }
     </style>
 </head>
@@ -267,11 +280,21 @@
                     <select id="card-folder" class="w-full text-sm border border-gray-200 rounded-lg py-2 px-3 bg-white focus:outline-none focus:border-gray-900 transition-all-smooth"></select>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-500 mb-2">正面（題目）</label>
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="block text-xs font-medium text-gray-500">正面（題目）</label>
+                        <button type="button" onclick="speechManager.speakText(document.getElementById('card-front').value)" class="text-gray-400 hover:text-purple-600 transition-all-smooth p-1">
+                            <i class="ph ph-speaker-high text-sm"></i>
+                        </button>
+                    </div>
                     <input type="text" id="card-front" class="w-full text-base font-normal border border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:border-gray-900 placeholder-gray-400" placeholder="例如：apple">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-500 mb-2">背面（答案）</label>
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="block text-xs font-medium text-gray-500">背面（答案）</label>
+                        <button type="button" onclick="speechManager.speakText(document.getElementById('card-back').value)" class="text-gray-400 hover:text-purple-600 transition-all-smooth p-1">
+                            <i class="ph ph-speaker-high text-sm"></i>
+                        </button>
+                    </div>
                     <input type="text" id="card-back" class="w-full text-base font-normal border border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:border-gray-900 placeholder-gray-400" placeholder="例如：蘋果">
                 </div>
                 <div>
@@ -329,10 +352,104 @@
 
     <script>
         /* =====================================================
+           語音管理器
+        ===================================================== */
+        const speechManager = {
+            speechSynthesis: window.speechSynthesis,
+            isSpeaking: false,
+            currentSpeech: null,
+            
+            // 檢查瀏覽器是否支援語音合成
+            isSupported: () => {
+                return 'speechSynthesis' in window;
+            },
+            
+            // 朗讀文字
+            speakText: (text, lang = 'en-US') => {
+                if (!speechManager.isSupported()) {
+                    alert('您的瀏覽器不支援語音合成功能');
+                    return;
+                }
+                
+                // 停止當前的語音
+                if (speechManager.isSpeaking) {
+                    speechManager.stopSpeaking();
+                    return;
+                }
+                
+                if (!text || text.trim() === '') {
+                    return;
+                }
+                
+                // 清除事件監聽器
+                if (speechManager.currentSpeech) {
+                    speechManager.currentSpeech.onend = null;
+                    speechManager.currentSpeech.onerror = null;
+                }
+                
+                // 創建新的語音實例
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = lang;
+                utterance.rate = 0.9; // 語速
+                utterance.pitch = 1.0; // 音高
+                utterance.volume = 1.0; // 音量
+                
+                // 添加動畫效果
+                const speechButton = event?.target?.closest('button') || event?.target;
+                if (speechButton) {
+                    speechButton.classList.add('speech-playing');
+                }
+                
+                utterance.onstart = () => {
+                    speechManager.isSpeaking = true;
+                };
+                
+                utterance.onend = () => {
+                    speechManager.isSpeaking = false;
+                    if (speechButton) {
+                        speechButton.classList.remove('speech-playing');
+                    }
+                };
+                
+                utterance.onerror = (error) => {
+                    speechManager.isSpeaking = false;
+                    if (speechButton) {
+                        speechButton.classList.remove('speech-playing');
+                    }
+                    console.error('語音合成錯誤:', error);
+                };
+                
+                speechManager.speechSynthesis.speak(utterance);
+                speechManager.currentSpeech = utterance;
+            },
+            
+            // 停止朗讀
+            stopSpeaking: () => {
+                if (speechManager.isSpeaking) {
+                    speechManager.speechSynthesis.cancel();
+                    speechManager.isSpeaking = false;
+                    
+                    // 移除所有語音按鈕的動畫
+                    document.querySelectorAll('.speech-playing').forEach(btn => {
+                        btn.classList.remove('speech-playing');
+                    });
+                }
+            },
+            
+            // 自動偵測語言並朗讀（簡單實現）
+            autoSpeak: (text) => {
+                // 簡單的語言偵測
+                const isEnglish = /^[a-zA-Z\s]+$/.test(text);
+                const lang = isEnglish ? 'en-US' : 'zh-TW';
+                speechManager.speakText(text, lang);
+            }
+        };
+
+        /* =====================================================
            優化演算法：簡化SM-2
         ===================================================== */
         const Algorithm = {
-            // 簡化難度計算：只有三個等級
+            // 簡化難度計算：有四個等級（新、困難、普通、簡單）
             calculateNextReview: (card, rating) => {
                 // rating: 0=困難, 1=普通, 2=簡單
                 let { interval, repetition, ef = 2.5 } = card;
@@ -369,8 +486,14 @@
                 return { interval, repetition, ef, nextReview };
             },
             
-            // 根據EF值取得難度等級
-            getDifficulty: (ef) => {
+            // 根據EF值取得難度等級（新增"new"類別）
+            getDifficulty: (card) => {
+                // 新卡片（repetition為0且interval為0）標記為"new"
+                if ((card.repetition === 0 && card.interval === 0) || card.difficulty === 'new') {
+                    return 'new';
+                }
+                
+                const ef = card.ef || 2.0;
                 if (ef >= 2.0) return 'easy';
                 if (ef >= 1.5) return 'medium';
                 return 'hard';
@@ -379,11 +502,17 @@
             // 難度等級對應的顏色和文字
             getDifficultyDisplay: (difficulty) => {
                 switch(difficulty) {
+                    case 'new': return { text: '新', color: 'grade-new', bg: 'bg-purple-50', progress: 'bg-purple-500' };
                     case 'easy': return { text: '簡單', color: 'grade-easy', bg: 'bg-green-50', progress: 'bg-green-500' };
                     case 'medium': return { text: '普通', color: 'grade-medium', bg: 'bg-yellow-50', progress: 'bg-yellow-500' };
                     case 'hard': return { text: '困難', color: 'grade-hard', bg: 'bg-red-50', progress: 'bg-red-500' };
-                    default: return { text: '普通', color: 'grade-medium', bg: 'bg-yellow-50', progress: 'bg-yellow-500' };
+                    default: return { text: '新', color: 'grade-new', bg: 'bg-purple-50', progress: 'bg-purple-500' };
                 }
+            },
+            
+            // 判斷是否為新卡片
+            isNewCard: (card) => {
+                return Algorithm.getDifficulty(card) === 'new';
             }
         };
 
@@ -431,11 +560,12 @@
             activeTab: "review",
             currentReviewCard: null,
             selectedFolderIds: new Set(),
-            selectedDifficulties: new Set(['easy', 'medium', 'hard']), // 預設全選
+            selectedDifficulties: new Set(['new', 'hard', 'medium', 'easy']), // 預設全選（包含"新"類別）
             currentEditCard: null,
             reviewStats: {
                 total: 0,
                 due: 0,
+                new: 0,
                 easy: 0,
                 medium: 0,
                 hard: 0,
@@ -453,29 +583,31 @@
                 window.state.cards = db.getCards().map(card => ({
                     ...card,
                     ef: card.ef || 2.0,
-                    difficulty: Algorithm.getDifficulty(card.ef || 2.0)
+                    difficulty: Algorithm.getDifficulty(card)
                 }));
                 
                 // 計算統計資料
                 const now = Date.now();
                 const dueCards = window.state.cards.filter(c => c.nextReview <= now);
-                const easyCards = window.state.cards.filter(c => Algorithm.getDifficulty(c.ef) === 'easy');
-                const mediumCards = window.state.cards.filter(c => Algorithm.getDifficulty(c.ef) === 'medium');
-                const hardCards = window.state.cards.filter(c => Algorithm.getDifficulty(c.ef) === 'hard');
+                const newCards = window.state.cards.filter(c => Algorithm.isNewCard(c));
+                const easyCards = window.state.cards.filter(c => Algorithm.getDifficulty(c) === 'easy');
+                const mediumCards = window.state.cards.filter(c => Algorithm.getDifficulty(c) === 'medium');
+                const hardCards = window.state.cards.filter(c => Algorithm.getDifficulty(c) === 'hard');
                 
                 // 計算篩選後的統計
                 let filteredCards = window.state.cards;
                 if (window.state.selectedFolderIds.size > 0) {
                     filteredCards = filteredCards.filter(w => window.state.selectedFolderIds.has(w.folderId));
                 }
-                if (window.state.selectedDifficulties.size > 0 && window.state.selectedDifficulties.size < 3) {
-                    filteredCards = filteredCards.filter(w => window.state.selectedDifficulties.has(w.difficulty || Algorithm.getDifficulty(w.ef)));
+                if (window.state.selectedDifficulties.size > 0 && window.state.selectedDifficulties.size < 4) {
+                    filteredCards = filteredCards.filter(w => window.state.selectedDifficulties.has(w.difficulty || Algorithm.getDifficulty(w)));
                 }
                 const filteredDueCards = filteredCards.filter(c => c.nextReview <= now);
                 
                 window.state.reviewStats = {
                     total: window.state.cards.length,
                     due: dueCards.length,
+                    new: newCards.length,
                     easy: easyCards.length,
                     medium: mediumCards.length,
                     hard: hardCards.length,
@@ -489,7 +621,7 @@
                 // 更新篩選計數顯示
                 const activeFilterCount = 
                     (window.state.selectedFolderIds.size > 0 ? 1 : 0) + 
-                    (window.state.selectedDifficulties.size < 3 ? 1 : 0);
+                    (window.state.selectedDifficulties.size < 4 ? 1 : 0);
                 document.getElementById('active-filter-count').textContent = activeFilterCount;
                 
                 // 更新篩選摘要顯示
@@ -506,8 +638,9 @@
                     }
                     
                     let difficultiesText = '';
-                    if (window.state.selectedDifficulties.size < 3) {
+                    if (window.state.selectedDifficulties.size < 4) {
                         const difficulties = [];
+                        if (window.state.selectedDifficulties.has('new')) difficulties.push('新');
                         if (window.state.selectedDifficulties.has('easy')) difficulties.push('簡單');
                         if (window.state.selectedDifficulties.has('medium')) difficulties.push('普通');
                         if (window.state.selectedDifficulties.has('hard')) difficulties.push('困難');
@@ -566,20 +699,29 @@
                     // 編輯現有卡片
                     const updatedCards = window.state.cards.map(c => 
                         c.id === window.state.currentEditCard.id 
-                            ? {...c, front, back, sentence, folderId, difficulty: Algorithm.getDifficulty(c.ef)}
+                            ? {
+                                ...c, 
+                                front, 
+                                back, 
+                                sentence, 
+                                folderId, 
+                                difficulty: Algorithm.getDifficulty(c)
+                            }
                             : c
                     );
                     db.saveCards(updatedCards);
                 } else {
-                    // 新增卡片
+                    // 新增卡片 - 一律標記為"新"
                     const newCard = {
                         id: crypto.randomUUID(),
-                        front, back, sentence,
+                        front, 
+                        back, 
+                        sentence,
                         folderId,
                         interval: 0,
                         repetition: 0,
                         ef: 2.0,
-                        difficulty: 'medium',
+                        difficulty: 'new',
                         nextReview: Date.now(),
                         createdAt: Date.now()
                     };
@@ -611,7 +753,7 @@
                             repetition, 
                             ef, 
                             nextReview,
-                            difficulty: Algorithm.getDifficulty(ef)
+                            difficulty: Algorithm.getDifficulty({...item, interval, repetition, ef})
                         }
                         : item
                 );
@@ -634,9 +776,10 @@
                 return {
                     total: cards.length,
                     due: cards.filter(c => c.nextReview <= now).length,
-                    easy: cards.filter(c => Algorithm.getDifficulty(c.ef) === 'easy').length,
-                    medium: cards.filter(c => Algorithm.getDifficulty(c.ef) === 'medium').length,
-                    hard: cards.filter(c => Algorithm.getDifficulty(c.ef) === 'hard').length,
+                    new: cards.filter(c => Algorithm.isNewCard(c)).length,
+                    easy: cards.filter(c => Algorithm.getDifficulty(c) === 'easy').length,
+                    medium: cards.filter(c => Algorithm.getDifficulty(c) === 'medium').length,
+                    hard: cards.filter(c => Algorithm.getDifficulty(c) === 'hard').length,
                     avgEF: cards.reduce((sum, c) => sum + (c.ef || 2.0), 0) / cards.length || 0,
                     avgInterval: cards.reduce((sum, c) => sum + (c.interval || 0), 0) / cards.length || 0
                 };
@@ -651,15 +794,17 @@
                 return folders.map(folder => {
                     const folderCards = cards.filter(c => c.folderId === folder.id);
                     const dueCards = folderCards.filter(c => c.nextReview <= now);
+                    const newCards = folderCards.filter(c => Algorithm.isNewCard(c));
                     
                     return {
                         id: folder.id,
                         name: folder.name,
                         total: folderCards.length,
                         due: dueCards.length,
-                        easy: folderCards.filter(c => Algorithm.getDifficulty(c.ef) === 'easy').length,
-                        medium: folderCards.filter(c => Algorithm.getDifficulty(c.ef) === 'medium').length,
-                        hard: folderCards.filter(c => Algorithm.getDifficulty(c.ef) === 'hard').length,
+                        new: newCards.length,
+                        easy: folderCards.filter(c => Algorithm.getDifficulty(c) === 'easy').length,
+                        medium: folderCards.filter(c => Algorithm.getDifficulty(c) === 'medium').length,
+                        hard: folderCards.filter(c => Algorithm.getDifficulty(c) === 'hard').length,
                         avgEF: folderCards.reduce((sum, c) => sum + (c.ef || 2.0), 0) / folderCards.length || 0,
                         duePercentage: folderCards.length > 0 ? (dueCards.length / folderCards.length * 100).toFixed(1) : 0
                     };
@@ -753,6 +898,7 @@
                 container.innerHTML = window.state.folders.map(f => {
                     const cardCount = window.state.cards.filter(c => c.folderId === f.id).length;
                     const dueCount = window.state.cards.filter(c => c.folderId === f.id && c.nextReview <= Date.now()).length;
+                    const newCount = window.state.cards.filter(c => c.folderId === f.id && Algorithm.isNewCard(c)).length;
                     
                     return `
                     <div class="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition-all-smooth">
@@ -763,6 +909,7 @@
                                     class="w-full bg-transparent focus:outline-none text-sm min-w-0 mb-1">
                                 <div class="flex items-center gap-3 text-xs text-gray-500">
                                     <span>${cardCount} 張</span>
+                                    ${newCount > 0 ? `<span class="text-purple-600">${newCount} 張新</span>` : ''}
                                     ${dueCount > 0 ? `<span class="text-red-500">${dueCount} 張到期</span>` : ''}
                                 </div>
                             </div>
@@ -784,18 +931,26 @@
                 
                 container.innerHTML = sorted.map(w => {
                     const folderName = window.state.folders.find(f => f.id === w.folderId)?.name || '未知';
-                    const diff = Algorithm.getDifficultyDisplay(w.difficulty || Algorithm.getDifficulty(w.ef));
+                    const diff = Algorithm.getDifficultyDisplay(w.difficulty || Algorithm.getDifficulty(w));
                     const due = w.nextReview <= Date.now();
+                    const isNew = Algorithm.isNewCard(w);
                     
                     return `
-                    <div class="group flex items-center justify-between p-4 rounded-lg border ${due ? 'border-red-100 bg-red-50' : 'border-gray-100'} hover:border-gray-300 transition-all-smooth">
+                    <div class="group flex items-center justify-between p-4 rounded-lg border ${due ? 'border-red-100 bg-red-50' : isNew ? 'border-purple-100 bg-purple-50' : 'border-gray-100'} hover:border-gray-300 transition-all-smooth">
                         <div class="flex-1 pr-4">
                             <div class="flex items-center gap-3 mb-1">
                                 <h3 class="text-base font-normal text-gray-900">${w.front}</h3>
                                 <span class="text-xs px-2 py-0.5 rounded ${diff.bg} ${diff.color}">${diff.text}</span>
                                 ${due ? '<span class="text-xs px-2 py-0.5 rounded bg-red-100 text-red-600">到期</span>' : ''}
+                                ${isNew ? '<span class="text-xs px-2 py-0.5 rounded bg-purple-100 text-purple-600">新</span>' : ''}
                             </div>
-                            <p class="text-sm text-gray-600">${w.back}</p>
+                            <div class="flex items-center justify-between">
+                                <p class="text-sm text-gray-600">${w.back}</p>
+                                <button onclick="speechManager.autoSpeak('${w.front.replace(/'/g, "\\'")}')" 
+                                    class="text-gray-400 hover:text-purple-600 p-1 transition-all-smooth opacity-0 group-hover:opacity-100">
+                                    <i class="ph ph-speaker-high"></i>
+                                </button>
+                            </div>
                             <div class="flex items-center gap-2 mt-2">
                                 <span class="text-xs text-gray-400">${folderName}</span>
                                 <span class="text-xs text-gray-400">•</span>
@@ -822,8 +977,8 @@
                 if (window.state.selectedFolderIds.size > 0) {
                     pool = pool.filter(w => window.state.selectedFolderIds.has(w.folderId));
                 }
-                if (window.state.selectedDifficulties.size > 0 && window.state.selectedDifficulties.size < 3) {
-                    pool = pool.filter(w => window.state.selectedDifficulties.has(w.difficulty || Algorithm.getDifficulty(w.ef)));
+                if (window.state.selectedDifficulties.size > 0 && window.state.selectedDifficulties.size < 4) {
+                    pool = pool.filter(w => window.state.selectedDifficulties.has(w.difficulty || Algorithm.getDifficulty(w)));
                 }
 
                 if (pool.length === 0) {
@@ -847,7 +1002,7 @@
                 window.state.currentReviewCard = word;
 
                 const folderName = window.state.folders.find(f => f.id === word.folderId)?.name || '未知';
-                const diff = Algorithm.getDifficultyDisplay(word.difficulty || Algorithm.getDifficulty(word.ef));
+                const diff = Algorithm.getDifficultyDisplay(word.difficulty || Algorithm.getDifficulty(word));
                 const displaySentence = word.sentence ? word.sentence.replace(/\[.*?\]/g, '______') : '';
 
                 container.innerHTML = `
@@ -861,7 +1016,13 @@
                         </div>
 
                         <div class="w-full mb-8">
-                            <h2 class="text-2xl font-normal text-gray-900 mb-6 text-center px-4">${word.back}</h2>
+                            <div class="flex items-center justify-center gap-3 mb-6">
+                                <h2 class="text-2xl font-normal text-gray-900 text-center px-4">${word.back}</h2>
+                                <button onclick="speechManager.autoSpeak('${word.back.replace(/'/g, "\\'")}')" 
+                                    class="text-gray-400 hover:text-purple-600 p-1 transition-all-smooth">
+                                    <i class="ph ph-speaker-high text-xl"></i>
+                                </button>
+                            </div>
                             
                             ${displaySentence ? `
                                 <div class="px-4 py-3 bg-gray-50 rounded-lg mb-8">
@@ -937,12 +1098,19 @@
 
                 const displayEl = document.getElementById('correct-answer-display');
                 if (displayEl) {
-                    displayEl.innerHTML = isCorrect 
-                        ? `<span class="text-green-600">${card.front}</span>`
-                        : `<div class="space-y-2">
-                            <div class="text-red-500 line-through opacity-60">${val || '—'}</div>
-                            <div class="text-gray-900">${card.front}</div>
-                           </div>`;
+                    displayEl.innerHTML = `
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-center gap-3">
+                                <span class="text-gray-900 ${isCorrect ? 'text-green-600' : 'text-red-600'}">${card.front}</span>
+                                <button onclick="speechManager.autoSpeak('${card.front.replace(/'/g, "\\'")}')" 
+                                    class="text-gray-400 hover:text-purple-600 p-1 transition-all-smooth">
+                                    <i class="ph ph-speaker-high"></i>
+                                </button>
+                            </div>
+                            ${!isCorrect && val ? 
+                                `<div class="text-sm text-red-500 opacity-70">你的答案: ${val}</div>` 
+                                : ''}
+                        </div>`;
                 }
             },
             
@@ -964,18 +1132,19 @@
                         <div class="text-2xl font-normal ${overall.due > 0 ? 'text-red-600' : 'text-gray-900'}">${overall.due}</div>
                     </div>
                     <div class="stat-card">
-                        <div class="text-xs text-gray-500 mb-2">平均EF值</div>
-                        <div class="text-2xl font-normal text-gray-900">${overall.avgEF.toFixed(1)}</div>
+                        <div class="text-xs text-gray-500 mb-2">新卡片</div>
+                        <div class="text-2xl font-normal text-purple-600">${overall.new}</div>
                     </div>
                     <div class="stat-card">
-                        <div class="text-xs text-gray-500 mb-2">平均間隔</div>
-                        <div class="text-2xl font-normal text-gray-900">${overall.avgInterval.toFixed(0)} 天</div>
+                        <div class="text-xs text-gray-500 mb-2">平均EF值</div>
+                        <div class="text-2xl font-normal text-gray-900">${overall.avgEF.toFixed(1)}</div>
                     </div>
                 `;
                 
                 // 難度分佈
                 const diffContainer = document.getElementById('difficulty-distribution');
                 const difficulties = [
+                    { id: 'new', label: '新', color: 'grade-new', bg: 'bg-purple-50', progress: 'bg-purple-500', count: overall.new },
                     { id: 'easy', label: '簡單', color: 'grade-easy', bg: 'bg-green-50', progress: 'bg-green-500', count: overall.easy },
                     { id: 'medium', label: '普通', color: 'grade-medium', bg: 'bg-yellow-50', progress: 'bg-yellow-500', count: overall.medium },
                     { id: 'hard', label: '困難', color: 'grade-hard', bg: 'bg-red-50', progress: 'bg-red-500', count: overall.hard }
@@ -1001,6 +1170,7 @@
                 // 記憶包統計摘要
                 const folderSummary = document.getElementById('folder-stats-summary');
                 folderSummary.innerHTML = folderStats.map(f => {
+                    const newPct = f.total > 0 ? (f.new / f.total * 100).toFixed(0) : 0;
                     const easyPct = f.total > 0 ? (f.easy / f.total * 100).toFixed(0) : 0;
                     const mediumPct = f.total > 0 ? (f.medium / f.total * 100).toFixed(0) : 0;
                     const hardPct = f.total > 0 ? (f.hard / f.total * 100).toFixed(0) : 0;
@@ -1012,6 +1182,7 @@
                             <span class="text-xs text-gray-500">${f.total} 張</span>
                         </div>
                         <div class="flex items-center gap-1 text-xs text-gray-500 mb-3">
+                            ${f.new > 0 ? `<span class="text-purple-600">新 ${newPct}%</span><span>•</span>` : ''}
                             <span>簡單 ${easyPct}%</span>
                             <span>•</span>
                             <span>普通 ${mediumPct}%</span>
@@ -1019,6 +1190,7 @@
                             <span>困難 ${hardPct}%</span>
                         </div>
                         <div class="progress-bar">
+                            <div class="progress-fill bg-purple-500" style="width: ${newPct}%"></div>
                             <div class="progress-fill bg-green-500" style="width: ${easyPct}%"></div>
                             <div class="progress-fill bg-yellow-500" style="width: ${mediumPct}%"></div>
                             <div class="progress-fill bg-red-500" style="width: ${hardPct}%"></div>
@@ -1036,12 +1208,19 @@
                                 <i class="ph ph-folder text-gray-400"></i>
                                 <h4 class="text-sm font-medium text-gray-900">${f.name}</h4>
                             </div>
-                            <span class="text-xs px-2 py-1 rounded ${f.due > 0 ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'}">
-                                ${f.due} 張到期
-                            </span>
+                            <div class="flex gap-2">
+                                ${f.new > 0 ? `<span class="text-xs px-2 py-1 rounded bg-purple-100 text-purple-600">${f.new} 張新</span>` : ''}
+                                <span class="text-xs px-2 py-1 rounded ${f.due > 0 ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'}">
+                                    ${f.due} 張到期
+                                </span>
+                            </div>
                         </div>
                         
-                        <div class="grid grid-cols-2 gap-3 text-sm">
+                        <div class="grid grid-cols-4 gap-2 text-sm">
+                            <div class="text-center p-2 bg-purple-50 rounded">
+                                <div class="text-purple-600 font-medium">${f.new}</div>
+                                <div class="text-xs text-gray-500">新</div>
+                            </div>
                             <div class="text-center p-2 bg-green-50 rounded">
                                 <div class="text-green-600 font-medium">${f.easy}</div>
                                 <div class="text-xs text-gray-500">簡單</div>
@@ -1053,10 +1232,6 @@
                             <div class="text-center p-2 bg-red-50 rounded">
                                 <div class="text-red-600 font-medium">${f.hard}</div>
                                 <div class="text-xs text-gray-500">困難</div>
-                            </div>
-                            <div class="text-center p-2 bg-gray-50 rounded">
-                                <div class="text-gray-600 font-medium">${f.avgEF.toFixed(1)}</div>
-                                <div class="text-xs text-gray-500">平均EF</div>
                             </div>
                         </div>
                     </div>`;
@@ -1176,8 +1351,9 @@
                             </label>`;
                         }).join('');
 
-                    // 難度篩選
+                    // 難度篩選（包含"新"類別）
                     const difficulties = [
+                        { id: 'new', label: '新', color: 'grade-new', bg: 'bg-purple-50' },
                         { id: 'easy', label: '簡單', color: 'grade-easy', bg: 'bg-green-50' },
                         { id: 'medium', label: '普通', color: 'grade-medium', bg: 'bg-yellow-50' },
                         { id: 'hard', label: '困難', color: 'grade-hard', bg: 'bg-red-50' }
@@ -1185,7 +1361,7 @@
                     
                     gradeContainer.innerHTML = difficulties.map(d => {
                         const count = window.state.cards.filter(c => 
-                            (c.difficulty || Algorithm.getDifficulty(c.ef)) === d.id
+                            (c.difficulty || Algorithm.getDifficulty(c)) === d.id
                         ).length;
                         const isChecked = window.state.selectedDifficulties.has(d.id);
                         
@@ -1213,7 +1389,7 @@
             
             clearAllFilters: () => {
                 window.state.selectedFolderIds.clear();
-                window.state.selectedDifficulties = new Set(['easy', 'medium', 'hard']);
+                window.state.selectedDifficulties = new Set(['new', 'easy', 'medium', 'hard']);
                 ui.toggleFilterModal();
                 ui.init();
             },
@@ -1233,7 +1409,7 @@
                 
                 // 如果沒有任何難度被選擇，則選擇所有難度
                 if (window.state.selectedDifficulties.size === 0) {
-                    window.state.selectedDifficulties = new Set(['easy', 'medium', 'hard']);
+                    window.state.selectedDifficulties = new Set(['new', 'easy', 'medium', 'hard']);
                 }
 
                 ui.toggleFilterModal();
@@ -1279,7 +1455,11 @@
                         
                         <div>
                             <div class="text-xs text-gray-500 mb-1">難度分佈</div>
-                            <div class="grid grid-cols-3 gap-2">
+                            <div class="grid grid-cols-4 gap-2">
+                                <div class="p-2 bg-purple-50 rounded text-center">
+                                    <div class="text-sm font-medium text-purple-600">${stats.new}</div>
+                                    <div class="text-xs text-gray-500">新</div>
+                                </div>
                                 <div class="p-2 bg-green-50 rounded text-center">
                                     <div class="text-sm font-medium text-green-600">${stats.easy}</div>
                                     <div class="text-xs text-gray-500">簡單</div>
@@ -1357,7 +1537,7 @@
                             }
                         });
                         
-                        // 處理卡片
+                        // 處理卡片 - 匯入的卡片一律標記為"新"
                         (raw.cards || []).forEach(c => {
                             const folderId = idMap[c.folderId] || window.state.folders[0]?.id;
                             if (folderId) {
@@ -1366,10 +1546,10 @@
                                     id: crypto.randomUUID(), // 新ID避免衝突
                                     folderId,
                                     ef: c.ef || 2.0,
-                                    difficulty: Algorithm.getDifficulty(c.ef || 2.0),
-                                    interval: c.interval || 0,
-                                    repetition: c.repetition || 0,
-                                    nextReview: c.nextReview || Date.now(),
+                                    difficulty: 'new', // 匯入的卡片標記為"新"
+                                    interval: 0, // 重置間隔
+                                    repetition: 0, // 重置重複次數
+                                    nextReview: Date.now(), // 立即需要複習
                                     createdAt: c.createdAt || Date.now()
                                 };
                                 
@@ -1378,7 +1558,7 @@
                             }
                         });
                         
-                        alert(`成功匯入 ${importedCount} 張卡片`);
+                        alert(`成功匯入 ${importedCount} 張卡片（已標記為"新"）`);
                         ui.init();
                     } catch (err) {
                         alert("檔案格式錯誤，請確認檔案是否正確");
@@ -1413,6 +1593,16 @@
             document.getElementById('review-stats-modal').onclick = (e) => { 
                 if (e.target.id === 'review-stats-modal') ui.closeReviewStats(); 
             };
+            
+            // 頁面關閉時停止語音
+            window.addEventListener('beforeunload', () => {
+                speechManager.stopSpeaking();
+            });
+            
+            // 檢查瀏覽器是否支援語音合成
+            if (!speechManager.isSupported()) {
+                console.warn('此瀏覽器不支援Web Speech API，語音功能將無法使用');
+            }
         };
     </script>
 </body>
