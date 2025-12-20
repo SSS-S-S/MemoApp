@@ -11,16 +11,13 @@
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-
     <!-- Tailwind Configuration -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+                        sans: ['Inter', '-apple-system', 'sans-serif'],
                     },
                 }
             }
@@ -32,199 +29,262 @@
             background-color: #ffffff;
             color: #111827;
             -webkit-font-smoothing: antialiased;
+            font-feature-settings: 'ss02' on; /* 更好的中文排版 */
         }
         
-        .fade-in { animation: fadeIn 0.4s ease-out; }
+        .fade-in { animation: fadeIn 0.3s ease-out; }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
+            from { opacity: 0; transform: translateY(6px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .hidden-view { display: none !important; }
 
-        /* Minimal Scrollbar */
-        ::-webkit-scrollbar { width: 5px; }
+        /* 極細滾動條 */
+        ::-webkit-scrollbar { width: 3px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 2px; }
         ::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
 
-        .quiz-input {
-            background: transparent;
-            border-bottom: 2px solid #e5e7eb;
-            text-align: center;
-            font-family: 'Inter', sans-serif;
-            font-weight: 300;
-            transition: all 0.3s;
+        .card-shadow {
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
         }
-        .quiz-input:focus { outline: none; border-color: #111827; }
-        .quiz-input.correct { border-color: #10b981; }
-        .quiz-input.wrong { border-color: #ef4444; }
-
+        
         .modal-backdrop {
-            backdrop-filter: blur(6px);
+            backdrop-filter: blur(4px);
+            background-color: rgba(0, 0, 0, 0.02);
         }
 
-        .grade-A { @apply text-green-600; }
-        .grade-B { @apply text-lime-600; }
-        .grade-C { @apply text-yellow-600; }
-        .grade-D { @apply text-orange-600; }
-        .grade-E { @apply text-red-600; }
-        .grade-F { @apply text-red-800; }
+        .grade-easy { color: #10b981; }
+        .grade-medium { color: #f59e0b; }
+        .grade-hard { color: #ef4444; }
+        
+        .border-custom {
+            border-color: #e5e7eb;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            transition: transform 0.2s ease;
+        }
+        
+        .input-minimal {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #e5e7eb;
+            transition: border-color 0.2s;
+        }
+        
+        .input-minimal:focus {
+            outline: none;
+            border-bottom-color: #111827;
+        }
+        
+        /* 平滑過渡效果 */
+        .transition-all-smooth {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
     </style>
 </head>
-<body class="flex flex-col h-screen overflow-hidden bg-white">
+<body class="flex flex-col h-screen overflow-hidden bg-white text-gray-800">
 
+    <!-- 主應用視圖 -->
     <div id="app-view" class="flex flex-col h-full w-full">
-        <!-- Header -->
-        <header class="flex-none py-12 px-8 max-w-3xl mx-auto w-full">
-            <h1 class="text-5xl font-extralight tracking-tight text-gray-900">MemoCurve</h1>
+        <!-- 頂部標題區域 -->
+        <header class="flex-none pt-8 pb-6 px-6 max-w-2xl mx-auto w-full">
+            <div class="flex items-center justify-between">
+                <h1 class="text-2xl font-normal tracking-tight text-gray-900">MemoCurve</h1>
+                <div class="flex items-center gap-2 text-sm text-gray-500">
+                    <span id="review-count">0</span>
+                    <span>張到期</span>
+                </div>
+            </div>
         </header>
 
-        <!-- Navigation Tabs -->
-        <nav class="flex-none max-w-3xl mx-auto w-full px-8 mb-8">
-            <div class="flex gap-12">
-                <button onclick="ui.switchTab('review')" id="tab-review" class="pb-4 text-base font-normal text-gray-900 relative">
+        <!-- 導航標籤 -->
+        <nav class="flex-none max-w-2xl mx-auto w-full px-6 mb-2">
+            <div class="flex gap-8 border-b border-gray-100">
+                <button onclick="ui.switchTab('review')" id="tab-review" class="pb-3 text-sm font-normal text-gray-900 relative">
                     複習
-                    <span class="active-indicator absolute inset-x-0 bottom-0 h-px bg-gray-900"></span>
+                    <span class="active-indicator absolute inset-x-0 bottom-0 h-0.5 bg-gray-900"></span>
                 </button>
-                <button onclick="ui.switchTab('folders')" id="tab-folders" class="pb-4 text-base font-normal text-gray-500 hover:text-gray-900 relative transition">
-                    記憶包管理
-                    <span class="active-indicator absolute inset-x-0 bottom-0 h-px bg-gray-900 hidden"></span>
+                <button onclick="ui.switchTab('folders')" id="tab-folders" class="pb-3 text-sm font-normal text-gray-500 hover:text-gray-900 relative transition-all-smooth">
+                    記憶包
+                    <span class="active-indicator absolute inset-x-0 bottom-0 h-0.5 bg-gray-900 hidden"></span>
                 </button>
-                <button onclick="ui.switchTab('list')" id="tab-list" class="pb-4 text-base font-normal text-gray-500 hover:text-gray-900 relative transition">
-                    卡片清單
-                    <span class="active-indicator absolute inset-x-0 bottom-0 h-px bg-gray-900 hidden"></span>
+                <button onclick="ui.switchTab('list')" id="tab-list" class="pb-3 text-sm font-normal text-gray-500 hover:text-gray-900 relative transition-all-smooth">
+                    卡片庫
+                    <span class="active-indicator absolute inset-x-0 bottom-0 h-0.5 bg-gray-900 hidden"></span>
                 </button>
             </div>
         </nav>
 
-        <!-- Main Content -->
-        <main class="flex-1 overflow-hidden max-w-3xl mx-auto w-full px-8">
-            <!-- View: Review -->
-            <div id="view-review" class="view-section h-full flex flex-col relative">
-                <div class="absolute top-8 left-0">
-                    <button onclick="ui.toggleFilterModal()" class="p-3 rounded-full hover:bg-gray-100 transition">
-                        <i class="ph ph-faders-horizontal text-xl text-gray-500 hover:text-gray-900"></i>
-                    </button>
-                </div>
-                <div id="review-container" class="flex-1 flex flex-col justify-center items-center text-center overflow-y-auto"></div>
+        <!-- 主內容區域 -->
+        <main class="flex-1 overflow-hidden max-w-2xl mx-auto w-full px-6">
+            <!-- 視圖：複習 -->
+            <div id="view-review" class="view-section h-full flex flex-col">
+                <div id="review-container" class="flex-1 flex flex-col justify-center items-center text-center overflow-y-auto py-4"></div>
             </div>
 
-            <!-- View: Folders -->
-            <div id="view-folders" class="view-section hidden-view h-full flex flex-col overflow-y-auto pt-8">
-                <div class="mb-8 flex gap-3">
-                    <input type="text" id="new-folder-name" placeholder="新記憶包名稱" class="flex-1 border-b border-gray-200 py-3 focus:outline-none focus:border-gray-900 text-base font-light">
-                    <button id="btn-create-folder" class="px-6 py-3 text-gray-900 hover:bg-gray-50 rounded-xl transition">建立</button>
+            <!-- 視圖：記憶包管理 -->
+            <div id="view-folders" class="view-section hidden-view h-full flex flex-col overflow-y-auto pt-6">
+                <div class="mb-6 flex gap-2">
+                    <input type="text" id="new-folder-name" placeholder="輸入記憶包名稱" class="flex-1 input-minimal py-2 text-sm">
+                    <button id="btn-create-folder" class="px-4 py-2 bg-gray-900 text-white text-sm rounded-lg hover:bg-black transition-all-smooth">建立</button>
                 </div>
-                <div id="folders-list-container" class="space-y-6"></div>
+                <div id="folders-list-container" class="space-y-3"></div>
             </div>
 
-            <!-- View: List & Data -->
-            <div id="view-list" class="view-section hidden-view h-full flex flex-col overflow-y-auto pt-8">
-                <div class="mb-12 p-6 bg-gray-50 rounded-2xl flex flex-wrap gap-4 items-center justify-between">
-                    <span class="text-xs font-medium text-gray-500 uppercase tracking-widest">資料匯入匯出</span>
-                    <div class="flex gap-4">
-                        <button onclick="io.exportData()" class="flex items-center gap-2 px-5 py-3 bg-white border border-gray-200 rounded-xl text-sm hover:border-gray-900 transition">
-                            <i class="ph ph-download-simple"></i> 匯出
+            <!-- 視圖：卡片清單 -->
+            <div id="view-list" class="view-section hidden-view h-full flex flex-col overflow-y-auto pt-6">
+                <div class="mb-8 flex items-center justify-between">
+                    <h3 class="text-sm font-medium text-gray-900">所有卡片</h3>
+                    <div class="flex gap-3">
+                        <button onclick="io.exportData()" class="flex items-center gap-1 px-3 py-2 text-xs border border-gray-200 rounded-lg hover:border-gray-900 transition-all-smooth">
+                            <i class="ph ph-download-simple text-sm"></i> 匯出
                         </button>
-                        <label class="flex items-center gap-2 px-5 py-3 bg-white border border-gray-200 rounded-xl text-sm hover:border-gray-900 transition cursor-pointer">
-                            <i class="ph ph-upload-simple"></i> 匯入
+                        <label class="flex items-center gap-1 px-3 py-2 text-xs border border-gray-200 rounded-lg hover:border-gray-900 transition-all-smooth cursor-pointer">
+                            <i class="ph ph-upload-simple text-sm"></i> 匯入
                             <input type="file" id="import-file" class="hidden" onchange="io.importData(this)">
                         </label>
                     </div>
                 </div>
-                <div class="mb-6 flex items-center justify-between">
-                    <h3 class="text-base font-medium text-gray-900">卡片庫</h3>
-                    <span id="total-words-count" class="text-sm text-gray-500">0 張</span>
-                </div>
-                <div id="word-list-container" class="space-y-8 pb-32"></div>
-                <div id="empty-list-msg" class="hidden text-center text-gray-400 py-32 text-lg font-light">目前沒有卡片</div>
+                <div id="word-list-container" class="space-y-4 pb-20"></div>
+                <div id="empty-list-msg" class="hidden text-center text-gray-400 py-16 text-sm">目前沒有卡片</div>
             </div>
         </main>
     </div>
 
-    <!-- Floating Action Button -->
-    <div class="fixed bottom-10 right-8 z-30">
-        <button id="btn-open-add" class="w-16 h-16 bg-gray-900 text-white rounded-full flex items-center justify-center shadow-xl hover:shadow-2xl hover:bg-black transition-all">
-            <i class="ph ph-plus text-3xl"></i>
+    <!-- 浮動操作按鈕 -->
+    <div class="fixed bottom-6 right-6 z-30">
+        <button id="btn-open-add" class="w-12 h-12 bg-gray-900 text-white rounded-full flex items-center justify-center shadow-md hover:shadow-lg hover:bg-black hover-lift transition-all-smooth">
+            <i class="ph ph-plus text-xl"></i>
         </button>
     </div>
 
-    <!-- Card Modal (Add / Edit) -->
-    <div id="card-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-8 bg-black/5 modal-backdrop">
-        <div class="bg-white w-full max-w-xl p-10 rounded-2xl">
-            <button id="btn-close-modal" class="absolute top-8 right-8 text-gray-400 hover:text-gray-900 transition"><i class="ph ph-x text-2xl"></i></button>
-            <h2 id="modal-title" class="text-2xl font-extralight mb-10 text-gray-900">新增卡片</h2>
-            <div class="space-y-10">
+    <!-- 卡片模態框 (新增/編輯) -->
+    <div id="card-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-backdrop">
+        <div class="bg-white w-full max-w-md p-6 rounded-xl card-shadow">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="modal-title" class="text-lg font-normal text-gray-900">新增卡片</h2>
+                <button id="btn-close-modal" class="text-gray-400 hover:text-gray-900 transition-all-smooth">
+                    <i class="ph ph-x text-lg"></i>
+                </button>
+            </div>
+            <div class="space-y-6">
                 <div>
-                    <label class="block text-sm font-medium text-gray-500 mb-3">所屬記憶包</label>
-                    <select id="card-folder" class="w-full text-lg border-b border-gray-200 py-3 bg-transparent focus:outline-none focus:border-gray-900 transition"></select>
+                    <label class="block text-xs font-medium text-gray-500 mb-2">所屬記憶包</label>
+                    <select id="card-folder" class="w-full text-sm border border-gray-200 rounded-lg py-2 px-3 bg-white focus:outline-none focus:border-gray-900 transition-all-smooth"></select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-500 mb-3">正面（題目）</label>
-                    <input type="text" id="card-front" class="w-full text-2xl font-light border-b border-gray-200 py-3 focus:outline-none focus:border-gray-900 placeholder-gray-300" placeholder="例如：apple">
+                    <label class="block text-xs font-medium text-gray-500 mb-2">正面（題目）</label>
+                    <input type="text" id="card-front" class="w-full text-base font-normal border border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:border-gray-900 placeholder-gray-400" placeholder="例如：apple">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-500 mb-3">背面（答案）</label>
-                    <input type="text" id="card-back" class="w-full text-2xl font-light border-b border-gray-200 py-3 focus:outline-none focus:border-gray-900 placeholder-gray-300" placeholder="例如：蘋果">
+                    <label class="block text-xs font-medium text-gray-500 mb-2">背面（答案）</label>
+                    <input type="text" id="card-back" class="w-full text-base font-normal border border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:border-gray-900 placeholder-gray-400" placeholder="例如：蘋果">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-500 mb-3">例句（可選）</label>
-                    <textarea id="card-sentences" rows="3" class="w-full text-lg font-light border-b border-gray-200 py-3 focus:outline-none focus:border-gray-900 resize-none placeholder-gray-300" placeholder="這是一個 [apple] 例句。"></textarea>
-                    <p class="text-xs text-gray-400 mt-2">方括號內的內容在複習時會被遮蓋</p>
+                    <label class="block text-xs font-medium text-gray-500 mb-2">例句（可選）</label>
+                    <textarea id="card-sentences" rows="2" class="w-full text-sm font-normal border border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:border-gray-900 resize-none placeholder-gray-400" placeholder="這是一個 [apple] 例句。方括號內內容會被遮蓋。"></textarea>
                 </div>
-                <div class="pt-6 flex justify-end">
-                    <button id="btn-save-card" class="px-10 py-4 bg-gray-900 text-white rounded-xl text-base font-medium hover:bg-black transition">儲存</button>
+                <div class="pt-2">
+                    <button id="btn-save-card" class="w-full py-3 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-black transition-all-smooth">儲存卡片</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Filter Modal -->
-    <div id="filter-modal" class="fixed inset-0 z-40 hidden flex items-start justify-center pt-32 px-8 bg-black/5 modal-backdrop">
-        <div class="bg-white w-full max-w-md p-8 rounded-2xl">
-            <div class="flex justify-between items-center mb-8">
-                <h3 class="text-lg font-medium text-gray-900">篩選複習內容</h3>
-                <button onclick="ui.toggleFilterModal()" class="text-gray-400 hover:text-gray-900"><i class="ph ph-x text-xl"></i></button>
+    <!-- 篩選模態框 -->
+    <div id="filter-modal" class="fixed inset-0 z-40 hidden flex items-start justify-center pt-20 px-4 modal-backdrop">
+        <div class="bg-white w-full max-w-sm p-5 rounded-xl card-shadow">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-base font-normal text-gray-900">篩選條件</h3>
+                <button onclick="ui.toggleFilterModal()" class="text-gray-400 hover:text-gray-900">
+                    <i class="ph ph-x text-lg"></i>
+                </button>
             </div>
-            <div class="space-y-8">
+            <div class="space-y-6">
                 <div>
-                    <p class="text-xs font-bold uppercase text-gray-500 mb-4">記憶包</p>
-                    <div id="filter-folders" class="space-y-3"></div>
+                    <p class="text-xs font-medium text-gray-500 mb-3">記憶包</p>
+                    <div id="filter-folders" class="space-y-2 max-h-48 overflow-y-auto pr-2"></div>
                 </div>
                 <div>
-                    <p class="text-xs font-bold uppercase text-gray-500 mb-4">等級</p>
-                    <div id="filter-grades" class="grid grid-cols-3 gap-3"></div>
+                    <p class="text-xs font-medium text-gray-500 mb-3">難度</p>
+                    <div id="filter-grades" class="flex gap-2"></div>
                 </div>
             </div>
-            <div class="flex justify-end gap-4 mt-8">
-                <button onclick="ui.clearAllFilters()" class="text-sm text-gray-500 hover:text-gray-900 px-4 py-2">全部取消</button>
-                <button onclick="ui.selectAllFilters()" class="text-sm text-gray-500 hover:text-gray-900 px-4 py-2">全選</button>
-                <button onclick="ui.applyFilters()" class="px-6 py-3 bg-gray-900 text-white rounded-xl text-sm font-medium">套用</button>
+            <div class="flex justify-between gap-3 mt-8">
+                <button onclick="ui.clearAllFilters()" class="text-sm text-gray-500 hover:text-gray-900 px-3 py-2">清除</button>
+                <button onclick="ui.applyFilters()" class="flex-1 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-black transition-all-smooth">套用篩選</button>
             </div>
         </div>
     </div>
 
     <script>
         /* =====================================================
-           Helper: Grade Calculation
+           優化演算法：簡化SM-2
         ===================================================== */
-        const getScore = (ef = 2.5) => Math.min(100, Math.max(0, Math.round((ef - 1.3) * 83.33)));
-        const getGrade = (ef = 2.5) => {
-            const score = getScore(ef);
-            if (score >= 90) return 'A';
-            if (score >= 80) return 'B';
-            if (score >= 70) return 'C';
-            if (score >= 60) return 'D';
-            if (score >= 50) return 'E';
-            return 'F';
+        const Algorithm = {
+            // 簡化難度計算：只有三個等級
+            calculateNextReview: (card, rating) => {
+                // rating: 0=困難, 1=普通, 2=簡單
+                let { interval, repetition, ef = 2.5 } = card;
+                
+                // 更新EF值
+                if (rating === 0) { // 困難
+                    ef = Math.max(1.3, ef - 0.2);
+                } else if (rating === 1) { // 普通
+                    ef = ef; // 保持不變
+                } else { // 簡單
+                    ef = Math.min(2.5, ef + 0.1);
+                }
+                
+                // 更新間隔
+                if (rating === 0) {
+                    // 回答錯誤或困難：重置間隔
+                    repetition = 0;
+                    interval = 1;
+                } else {
+                    repetition += 1;
+                    if (repetition === 1) {
+                        interval = 1;
+                    } else if (repetition === 2) {
+                        interval = 6;
+                    } else {
+                        // 使用指數遞增，但更平滑
+                        interval = Math.round(interval * ef * (rating === 2 ? 1.2 : 1.0));
+                    }
+                }
+                
+                // 計算下次複習時間（毫秒）
+                const nextReview = Date.now() + (interval * 86400000); // 天轉毫秒
+                
+                return { interval, repetition, ef, nextReview };
+            },
+            
+            // 根據EF值取得難度等級
+            getDifficulty: (ef) => {
+                if (ef >= 2.0) return 'easy';
+                if (ef >= 1.5) return 'medium';
+                return 'hard';
+            },
+            
+            // 難度等級對應的顏色和文字
+            getDifficultyDisplay: (difficulty) => {
+                switch(difficulty) {
+                    case 'easy': return { text: '簡單', color: 'grade-easy', bg: 'bg-green-50' };
+                    case 'medium': return { text: '普通', color: 'grade-medium', bg: 'bg-yellow-50' };
+                    case 'hard': return { text: '困難', color: 'grade-hard', bg: 'bg-red-50' };
+                    default: return { text: '普通', color: 'grade-medium', bg: 'bg-yellow-50' };
+                }
+            }
         };
-        const getGradeColor = (grade) => `grade-${grade}`;
 
         /* =====================================================
-           Local Storage Data Layer
+           本地存儲數據層
         ===================================================== */
-        const LS_KEYS = { folders: "mc_folders", cards: "mc_cards" };
+        const LS_KEYS = { folders: "mc_folders_v2", cards: "mc_cards_v2" };
         
         const db = {
             getFolders: () => JSON.parse(localStorage.getItem(LS_KEYS.folders) || '[]'),
@@ -233,7 +293,7 @@
             saveCards: (data) => localStorage.setItem(LS_KEYS.cards, JSON.stringify(data)),
             init: () => {
                 if (db.getFolders().length === 0) {
-                    db.saveFolders([{ id: 'default', name: 'General', createdAt: Date.now() }]);
+                    db.saveFolders([{ id: 'default', name: '預設記憶包', createdAt: Date.now() }]);
                 }
             }
         };
@@ -244,21 +304,28 @@
             activeTab: "review",
             currentReviewCard: null,
             selectedFolderIds: new Set(),
-            selectedGrades: new Set(),
+            selectedDifficulties: new Set(['easy', 'medium', 'hard']), // 預設全選
             currentEditCard: null
         };
 
         /* =====================================================
-           Data Manager
+           數據管理器
         ===================================================== */
         window.dataManager = {
             refresh: () => {
                 window.state.folders = db.getFolders();
                 window.state.cards = db.getCards().map(card => ({
                     ...card,
-                    ef: card.ef || 2.5  // 確保舊資料有 ef
+                    ef: card.ef || 2.0,
+                    difficulty: Algorithm.getDifficulty(card.ef || 2.0)
                 }));
+                
+                // 更新到期卡片計數
+                const now = Date.now();
+                const dueCount = window.state.cards.filter(c => c.nextReview <= now).length;
+                document.getElementById('review-count').textContent = dueCount;
             },
+            
             addFolder: (optionalName = null) => {
                 const nameInput = document.getElementById('new-folder-name');
                 const name = (optionalName || nameInput?.value)?.trim();
@@ -273,12 +340,14 @@
                 ui.init();
                 return folder;
             },
+            
             updateFolder: (id, name) => {
                 db.saveFolders(db.getFolders().map(f => f.id === id ? {...f, name} : f));
                 ui.init();
             },
+            
             deleteFolder: (id) => {
-                if (!confirm("確定刪除此記憶包？所有相關卡片也會被永久刪除。")) return;
+                if (!confirm("刪除記憶包會同時刪除所有相關卡片，確定繼續？")) return;
                 
                 db.saveFolders(db.getFolders().filter(f => f.id !== id));
                 db.saveCards(db.getCards().filter(c => c.folderId !== id));
@@ -286,31 +355,36 @@
                 window.state.selectedFolderIds.delete(id);
                 ui.init();
             },
+            
             saveCard: () => {
                 const front = document.getElementById('card-front').value.trim();
                 const back = document.getElementById('card-back').value.trim();
                 const sentence = document.getElementById('card-sentences').value.trim();
                 const folderId = document.getElementById('card-folder').value || window.state.folders[0]?.id;
 
-                if (!front || !back) return;
+                if (!front || !back) {
+                    alert('請填寫卡片正面和背面內容');
+                    return;
+                }
 
                 if (window.state.currentEditCard) {
-                    // Edit existing
+                    // 編輯現有卡片
                     const updatedCards = window.state.cards.map(c => 
                         c.id === window.state.currentEditCard.id 
-                            ? {...c, front, back, sentence, folderId}
+                            ? {...c, front, back, sentence, folderId, difficulty: Algorithm.getDifficulty(c.ef)}
                             : c
                     );
                     db.saveCards(updatedCards);
                 } else {
-                    // Add new
+                    // 新增卡片
                     const newCard = {
                         id: crypto.randomUUID(),
                         front, back, sentence,
                         folderId,
                         interval: 0,
                         repetition: 0,
-                        ef: 2.5,
+                        ef: 2.0,
+                        difficulty: 'medium',
                         nextReview: Date.now(),
                         createdAt: Date.now()
                     };
@@ -320,34 +394,30 @@
                 ui.closeCardModal();
                 ui.init();
             },
+            
             deleteWord: (id) => {
                 if (!confirm("確定刪除這張卡片？")) return;
                 db.saveCards(db.getCards().filter(c => c.id !== id));
                 ui.init();
             },
-            gradeWord: (quality) => {  // quality 0=F ~ 5=A
-                const c = window.state.currentReviewCard;
-                if (!c) return;
+            
+            // 評分卡片：0=困難, 1=普通, 2=簡單
+            rateCard: (rating) => {
+                const card = window.state.currentReviewCard;
+                if (!card) return;
 
-                let { interval, repetition, ef = 2.5 } = c;
-
-                if (quality < 3) {
-                    repetition = 0;
-                    interval = 1;
-                } else {
-                    if (repetition === 0) interval = 1;
-                    else if (repetition === 1) interval = 6;
-                    else interval = Math.round(interval * ef);
-
-                    repetition++;
-                }
-
-                ef = ef + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
-                ef = Math.max(1.3, ef);
-
+                const { interval, repetition, ef, nextReview } = Algorithm.calculateNextReview(card, rating);
+                
                 const updatedCards = db.getCards().map(item => 
-                    item.id === c.id 
-                        ? {...item, interval, repetition, ef, nextReview: Date.now() + interval * 86400000}
+                    item.id === card.id 
+                        ? {
+                            ...item, 
+                            interval, 
+                            repetition, 
+                            ef, 
+                            nextReview,
+                            difficulty: Algorithm.getDifficulty(ef)
+                        }
                         : item
                 );
 
@@ -357,7 +427,7 @@
         };
 
         /* =====================================================
-           UI Manager
+           UI管理器
         ===================================================== */
         window.ui = {
             init: () => {
@@ -367,6 +437,7 @@
                 ui.renderWordList();
                 ui.renderReview();
             },
+            
             switchTab: (tabId) => {
                 ['review', 'list', 'folders'].forEach(t => {
                     const btn = document.getElementById(`tab-${t}`);
@@ -379,88 +450,101 @@
                         indicator.classList.add('hidden');
                     }
                 });
+                
                 document.querySelectorAll('.view-section').forEach(el => {
                     el.classList.toggle('hidden-view', el.id !== `view-${tabId}`);
                 });
+                
                 window.state.activeTab = tabId;
             },
+            
             renderFolderSelect: () => {
                 const sel = document.getElementById('card-folder');
                 sel.innerHTML = window.state.folders.length === 0 
                     ? `<option>請先建立記憶包</option>`
                     : window.state.folders.map(f => `<option value="${f.id}">${f.name}</option>`).join('');
             },
+            
             renderFolderList: () => {
                 const container = document.getElementById('folders-list-container');
                 if (window.state.folders.length === 0) {
-                    container.innerHTML = `<p class="text-center py-20 text-gray-400 text-lg font-light">目前沒有記憶包</p>`;
+                    container.innerHTML = `<p class="text-center py-12 text-gray-400 text-sm">目前沒有記憶包</p>`;
                     return;
                 }
-                container.innerHTML = window.state.folders.map(f => `
-                    <div class="flex items-center justify-between group">
-                        <div class="flex items-center gap-4 flex-1">
-                            <i class="ph ph-folder text-2xl text-gray-300"></i>
-                            <input type="text" value="${f.name}" onchange="dataManager.updateFolder('${f.id}', this.value)"
-                                class="bg-transparent focus:bg-white px-3 py-2 border-b border-transparent focus:border-gray-300 focus:outline-none text-lg font-light w-full">
-                        </div>
-                        <div class="flex items-center gap-6 opacity-0 group-hover:opacity-100 transition">
-                            <span class="text-sm text-gray-500">${window.state.cards.filter(c => c.folderId === f.id).length} 張</span>
-                            <button onclick="dataManager.deleteFolder('${f.id}')" class="text-gray-300 hover:text-red-600 p-2">
-                                <i class="ph ph-trash text-xl"></i>
-                            </button>
-                        </div>
-                    </div>`).join('');
-            },
-            renderWordList: () => {
-                const container = document.getElementById('word-list-container');
-                const sorted = [...window.state.cards].sort((a,b) => b.createdAt - a.createdAt);
-                document.getElementById('total-words-count').innerText = `${sorted.length} 張`;
-                document.getElementById('empty-list-msg').classList.toggle('hidden', sorted.length > 0);
                 
-                container.innerHTML = sorted.map(w => {
-                    const folderName = window.state.folders.find(f => f.id === w.folderId)?.name || '未知';
-                    const grade = getGrade(w.ef);
+                container.innerHTML = window.state.folders.map(f => {
+                    const cardCount = window.state.cards.filter(c => c.folderId === f.id).length;
                     return `
-                    <div class="group flex items-center justify-between py-6 border-b border-gray-50">
-                        <div class="flex-1 pr-8">
-                            <div class="flex items-center gap-4 mb-2">
-                                <h3 class="text-xl font-light text-gray-900">${w.front}</h3>
-                                <div class="flex gap-2">
-                                    <span class="text-xs bg-gray-100 text-gray-500 px-3 py-1 rounded-full">${folderName}</span>
-                                    <span class="text-xs font-bold px-3 py-1 rounded-full ${getGradeColor(grade)} bg-gray-50">${grade}</span>
-                                </div>
-                            </div>
-                            <p class="text-base text-gray-500 font-light">${w.back}</p>
+                    <div class="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:bg-gray-50 transition-all-smooth">
+                        <div class="flex items-center gap-3 flex-1">
+                            <i class="ph ph-folder text-gray-400"></i>
+                            <input type="text" value="${f.name}" onchange="dataManager.updateFolder('${f.id}', this.value)"
+                                class="flex-1 bg-transparent focus:outline-none text-sm min-w-0">
                         </div>
-                        <div class="flex items-center gap-4 opacity-0 group-hover:opacity-100 transition">
-                            <button onclick="ui.showEditModal('${w.id}')" class="text-gray-400 hover:text-gray-900 p-2">
-                                <i class="ph ph-pencil-simple text-xl"></i>
-                            </button>
-                            <button onclick="dataManager.deleteWord('${w.id}')" class="text-gray-300 hover:text-red-600 p-2">
-                                <i class="ph ph-trash text-xl"></i>
+                        <div class="flex items-center gap-4">
+                            <span class="text-xs text-gray-500">${cardCount} 張</span>
+                            <button onclick="dataManager.deleteFolder('${f.id}')" class="text-gray-300 hover:text-red-500 p-1 transition-all-smooth">
+                                <i class="ph ph-trash"></i>
                             </button>
                         </div>
                     </div>`;
                 }).join('');
             },
+            
+            renderWordList: () => {
+                const container = document.getElementById('word-list-container');
+                const sorted = [...window.state.cards].sort((a,b) => b.createdAt - a.createdAt);
+                
+                document.getElementById('empty-list-msg').classList.toggle('hidden', sorted.length > 0);
+                
+                container.innerHTML = sorted.map(w => {
+                    const folderName = window.state.folders.find(f => f.id === w.folderId)?.name || '未知';
+                    const diff = Algorithm.getDifficultyDisplay(w.difficulty || Algorithm.getDifficulty(w.ef));
+                    
+                    return `
+                    <div class="group flex items-center justify-between p-4 rounded-lg border border-gray-100 hover:border-gray-300 transition-all-smooth">
+                        <div class="flex-1 pr-4">
+                            <div class="flex items-center gap-3 mb-1">
+                                <h3 class="text-base font-normal text-gray-900">${w.front}</h3>
+                                <span class="text-xs px-2 py-0.5 rounded ${diff.bg} ${diff.color}">${diff.text}</span>
+                            </div>
+                            <p class="text-sm text-gray-600">${w.back}</p>
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="text-xs text-gray-400">${folderName}</span>
+                                <span class="text-xs text-gray-400">•</span>
+                                <span class="text-xs text-gray-400">${new Date(w.nextReview).toLocaleDateString('zh-TW')} 複習</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all-smooth">
+                            <button onclick="ui.showEditModal('${w.id}')" class="p-1.5 text-gray-400 hover:text-gray-900 rounded">
+                                <i class="ph ph-pencil-simple"></i>
+                            </button>
+                            <button onclick="dataManager.deleteWord('${w.id}')" class="p-1.5 text-gray-400 hover:text-red-500 rounded">
+                                <i class="ph ph-trash"></i>
+                            </button>
+                        </div>
+                    </div>`;
+                }).join('');
+            },
+            
             renderReview: () => {
                 const container = document.getElementById('review-container');
                 let pool = window.state.cards;
 
-                // Apply filters
+                // 應用篩選
                 if (window.state.selectedFolderIds.size > 0) {
                     pool = pool.filter(w => window.state.selectedFolderIds.has(w.folderId));
                 }
-                if (window.state.selectedGrades.size > 0) {
-                    pool = pool.filter(w => window.state.selectedGrades.has(getGrade(w.ef)));
+                if (window.state.selectedDifficulties.size > 0 && window.state.selectedDifficulties.size < 3) {
+                    pool = pool.filter(w => window.state.selectedDifficulties.has(w.difficulty || Algorithm.getDifficulty(w.ef)));
                 }
 
                 if (pool.length === 0) {
                     container.innerHTML = `
-                        <div class="flex flex-col items-center justify-center h-full text-center px-8">
-                            <i class="ph ph-smiley text-8xl text-gray-200 mb-10"></i>
-                            <h3 class="text-2xl font-extralight text-gray-900 mb-4">沒有可複習的卡片</h3>
-                            <p class="text-base text-gray-500 font-light max-w-md">請新增卡片或調整篩選條件</p>
+                        <div class="flex flex-col items-center justify-center h-full text-center px-4">
+                            <i class="ph ph-smiley text-6xl text-gray-200 mb-6"></i>
+                            <h3 class="text-base font-normal text-gray-900 mb-2">沒有可複習的卡片</h3>
+                            <p class="text-sm text-gray-500 max-w-xs">請新增卡片或調整篩選條件</p>
                         </div>`;
                     return;
                 }
@@ -473,55 +557,105 @@
                 window.state.currentReviewCard = word;
 
                 const folderName = window.state.folders.find(f => f.id === word.folderId)?.name || '未知';
-                const grade = getGrade(word.ef);
+                const diff = Algorithm.getDifficultyDisplay(word.difficulty || Algorithm.getDifficulty(word.ef));
                 const displaySentence = word.sentence ? word.sentence.replace(/\[.*?\]/g, '______') : '';
 
                 container.innerHTML = `
-                    <div class="w-full max-w-2xl mx-auto flex flex-col items-center fade-in">
-                        <div class="text-center mb-12 mt-20">
-                            <p class="text-base text-gray-600 font-light">${due.length} 張到期${isPractice ? ' — 練習模式' : ''}</p>
-                            <div class="flex items-center gap-4 justify-center mt-6">
-                                <span class="text-sm text-gray-400">${folderName}</span>
-                                <span class="text-lg font-bold px-4 py-1 rounded-full ${getGradeColor(grade)} bg-gray-50">${grade}</span>
+                    <div class="w-full max-w-md mx-auto flex flex-col items-center fade-in">
+                        <div class="text-center mb-8">
+                            <div class="flex items-center gap-2 justify-center mb-4">
+                                <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">${folderName}</span>
+                                <span class="text-xs px-2 py-1 rounded ${diff.bg} ${diff.color}">${diff.text}</span>
                             </div>
+                            <p class="text-xs text-gray-500">${isPractice ? '練習模式' : due.length + ' 張到期'}</p>
                         </div>
 
-                        <h2 class="text-4xl font-extralight text-gray-900 mb-12 leading-tight text-center px-8">${word.back}</h2>
-                        
-                        ${displaySentence ? `<p class="text-xl text-gray-500 font-light mb-16 italic text-center px-8 max-w-3xl">"${displaySentence}"</p>` : ''}
-
-                        <div id="quiz-area" class="w-full max-w-md mx-auto mb-24">
-                            <input type="text" id="answer-input" autocomplete="off" class="quiz-input w-full text-4xl py-5" placeholder="輸入答案…">
+                        <div class="w-full mb-8">
+                            <h2 class="text-2xl font-normal text-gray-900 mb-6 text-center px-4">${word.back}</h2>
+                            
+                            ${displaySentence ? `
+                                <div class="px-4 py-3 bg-gray-50 rounded-lg mb-8">
+                                    <p class="text-sm text-gray-600 italic">"${displaySentence}"</p>
+                                </div>
+                            ` : ''}
                         </div>
 
-                        <div id="result-area" class="hidden w-full max-w-md mx-auto">
-                            <div id="correct-answer-display" class="text-4xl font-extralight text-center mb-16 px-8"></div>
-                            <div class="grid grid-cols-3 gap-4">
-                                <button onclick="dataManager.gradeWord(0)" class="py-5 rounded-2xl bg-red-50 text-red-800 font-medium hover:bg-red-100 transition">F<br><span class="text-xs opacity-70">又忘了</span></button>
-                                <button onclick="dataManager.gradeWord(1)" class="py-5 rounded-2xl bg-red-50 text-red-700 font-medium hover:bg-red-100 transition">E<br><span class="text-xs opacity-70">很難</span></button>
-                                <button onclick="dataManager.gradeWord(2)" class="py-5 rounded-2xl bg-orange-50 text-orange-700 font-medium hover:bg-orange-100 transition">D<br><span class="text-xs opacity-70">困難</span></button>
-                                <button onclick="dataManager.gradeWord(3)" class="py-5 rounded-2xl bg-yellow-50 text-yellow-700 font-medium hover:bg-yellow-100 transition">C<br><span class="text-xs opacity-70">一般</span></button>
-                                <button onclick="dataManager.gradeWord(4)" class="py-5 rounded-2xl bg-lime-50 text-lime-700 font-medium hover:bg-lime-100 transition">B<br><span class="text-xs opacity-70">良好</span></button>
-                                <button onclick="dataManager.gradeWord(5)" class="py-5 rounded-2xl bg-green-50 text-green-700 font-medium hover:bg-green-100 transition">A<br><span class="text-xs opacity-70">容易</span></button>
+                        <div id="quiz-area" class="w-full mb-10">
+                            <input type="text" id="answer-input" autocomplete="off" 
+                                class="w-full text-lg text-center py-3 border-b border-gray-200 focus:outline-none focus:border-gray-900 placeholder-gray-400" 
+                                placeholder="輸入答案…">
+                        </div>
+
+                        <div id="result-area" class="hidden w-full">
+                            <div id="correct-answer-display" class="text-lg font-normal text-center mb-8 px-4"></div>
+                            <div class="flex flex-col gap-3">
+                                <button onclick="dataManager.rateCard(2)" class="w-full py-3.5 bg-green-50 text-green-700 text-sm font-medium rounded-lg hover:bg-green-100 transition-all-smooth">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <i class="ph ph-check-circle"></i>
+                                        <span>簡單</span>
+                                    </div>
+                                    <div class="text-xs mt-1 opacity-70">完美記住，間隔延長</div>
+                                </button>
+                                <button onclick="dataManager.rateCard(1)" class="w-full py-3.5 bg-yellow-50 text-yellow-700 text-sm font-medium rounded-lg hover:bg-yellow-100 transition-all-smooth">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <i class="ph ph-circle"></i>
+                                        <span>普通</span>
+                                    </div>
+                                    <div class="text-xs mt-1 opacity-70">基本正確，正常間隔</div>
+                                </button>
+                                <button onclick="dataManager.rateCard(0)" class="w-full py-3.5 bg-red-50 text-red-700 text-sm font-medium rounded-lg hover:bg-red-100 transition-all-smooth">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <i class="ph ph-x-circle"></i>
+                                        <span>困難</span>
+                                    </div>
+                                    <div class="text-xs mt-1 opacity-70">記憶困難，縮短間隔</div>
+                                </button>
                             </div>
                         </div>
                     </div>`;
-                setTimeout(() => document.getElementById('answer-input')?.focus(), 150);
+                    
+                // 自動聚焦輸入框
+                setTimeout(() => {
+                    const input = document.getElementById('answer-input');
+                    if (input) input.focus();
+                }, 150);
+                
+                // 綁定輸入事件
+                const inputEl = document.getElementById('answer-input');
+                if (inputEl) {
+                    inputEl.onkeydown = (e) => {
+                        if (e.key === 'Enter') {
+                            ui.checkAnswer(inputEl.value);
+                        }
+                    };
+                }
             },
+            
             checkAnswer: (val) => {
                 const card = window.state.currentReviewCard;
+                if (!card) return;
+                
                 const isCorrect = val.trim().toLowerCase() === card.front.trim().toLowerCase();
                 const inputEl = document.getElementById('answer-input');
-                inputEl.disabled = true;
-                inputEl.classList.add(isCorrect ? 'correct' : 'wrong');
+                if (inputEl) {
+                    inputEl.disabled = true;
+                    inputEl.classList.add(isCorrect ? 'border-green-500' : 'border-red-500');
+                }
 
-                document.getElementById('quiz-area').classList.add('opacity-30');
+                document.getElementById('quiz-area').classList.add('opacity-50');
                 document.getElementById('result-area').classList.remove('hidden');
 
-                document.getElementById('correct-answer-display').innerHTML = isCorrect 
-                    ? `<span class="text-green-600">${card.front}</span>`
-                    : `<div class="space-y-4"><span class="text-red-500 line-through opacity-60 text-3xl">${val || '—'}</span><span class="text-4xl">${card.front}</span></div>`;
+                const displayEl = document.getElementById('correct-answer-display');
+                if (displayEl) {
+                    displayEl.innerHTML = isCorrect 
+                        ? `<span class="text-green-600">${card.front}</span>`
+                        : `<div class="space-y-2">
+                            <div class="text-red-500 line-through opacity-60">${val || '—'}</div>
+                            <div class="text-gray-900">${card.front}</div>
+                           </div>`;
+                }
             },
+            
             showAddModal: () => {
                 window.state.currentEditCard = null;
                 document.getElementById('modal-title').innerText = '新增卡片';
@@ -532,6 +666,7 @@
                 document.getElementById('card-sentences').value = '';
                 setTimeout(() => document.getElementById('card-front').focus(), 100);
             },
+            
             showEditModal: (id) => {
                 const card = window.state.cards.find(c => c.id === id);
                 if (!card) return;
@@ -546,10 +681,12 @@
                 document.getElementById('card-sentences').value = card.sentence || '';
                 setTimeout(() => document.getElementById('card-front').focus(), 100);
             },
+            
             closeCardModal: () => {
                 document.getElementById('card-modal').classList.add('hidden');
                 window.state.currentEditCard = null;
             },
+            
             toggleFilterModal: () => {
                 const modal = document.getElementById('filter-modal');
                 modal.classList.toggle('hidden');
@@ -557,124 +694,190 @@
                     const folderContainer = document.getElementById('filter-folders');
                     const gradeContainer = document.getElementById('filter-grades');
 
-                    // Folders
+                    // 記憶包篩選
                     folderContainer.innerHTML = window.state.folders.length === 0
                         ? `<p class="text-sm text-gray-400 text-center py-4">尚無記憶包</p>`
                         : window.state.folders.map(f => {
                             const count = window.state.cards.filter(c => c.folderId === f.id).length;
+                            const isChecked = window.state.selectedFolderIds.has(f.id);
                             return `
-                            <label class="flex items-center gap-4 py-3 px-4 hover:bg-gray-50 rounded-xl cursor-pointer">
-                                <input type="checkbox" value="${f.id}" ${window.state.selectedFolderIds.has(f.id) ? 'checked' : ''} class="folder-checkbox w-5 h-5 rounded border-gray-300">
-                                <span class="text-base text-gray-700 flex-1">${f.name}</span>
-                                <span class="text-sm text-gray-400">${count} 張</span>
+                            <label class="flex items-center gap-3 py-2 px-3 hover:bg-gray-50 rounded-lg cursor-pointer">
+                                <input type="checkbox" value="${f.id}" ${isChecked ? 'checked' : ''} 
+                                    class="folder-checkbox w-4 h-4 rounded border-gray-300 text-gray-900 focus:ring-gray-900">
+                                <span class="text-sm text-gray-700 flex-1">${f.name}</span>
+                                <span class="text-xs text-gray-400">${count}</span>
                             </label>`;
                         }).join('');
 
-                    // Grades
-                    const grades = ['A', 'B', 'C', 'D', 'E', 'F'];
-                    gradeContainer.innerHTML = grades.map(g => {
-                        const count = window.state.cards.filter(c => getGrade(c.ef) === g).length;
+                    // 難度篩選
+                    const difficulties = [
+                        { id: 'easy', label: '簡單', color: 'grade-easy', bg: 'bg-green-50' },
+                        { id: 'medium', label: '普通', color: 'grade-medium', bg: 'bg-yellow-50' },
+                        { id: 'hard', label: '困難', color: 'grade-hard', bg: 'bg-red-50' }
+                    ];
+                    
+                    gradeContainer.innerHTML = difficulties.map(d => {
+                        const count = window.state.cards.filter(c => 
+                            (c.difficulty || Algorithm.getDifficulty(c.ef)) === d.id
+                        ).length;
+                        const isChecked = window.state.selectedDifficulties.has(d.id);
+                        
                         return `
-                        <label class="flex flex-col items-center gap-2 py-4 px-6 hover:bg-gray-50 rounded-xl cursor-pointer border border-gray-100">
-                            <input type="checkbox" value="${g}" ${window.state.selectedGrades.has(g) ? 'checked' : ''} class="grade-checkbox hidden">
-                            <span class="text-2xl font-bold ${getGradeColor(g)}">${g}</span>
-                            <span class="text-xs text-gray-500">${count} 張</span>
+                        <label class="flex-1">
+                            <input type="checkbox" value="${d.id}" ${isChecked ? 'checked' : ''} 
+                                class="difficulty-checkbox hidden">
+                            <div class="flex flex-col items-center gap-1 py-3 px-2 rounded-lg border ${isChecked ? 'border-gray-300' : 'border-gray-100'} ${d.bg} cursor-pointer hover:opacity-90 transition-all-smooth">
+                                <span class="text-sm font-medium ${d.color}">${d.label}</span>
+                                <span class="text-xs text-gray-500">${count} 張</span>
+                            </div>
                         </label>`;
                     }).join('');
 
-                    // Sync checkbox changes
-                    document.querySelectorAll('.folder-checkbox').forEach(cb => cb.onchange = ui.updateTempFilters);
-                    document.querySelectorAll('.grade-checkbox').forEach(cb => cb.onchange = ui.updateTempFilters);
+                    // 綁定變更事件
+                    document.querySelectorAll('.folder-checkbox').forEach(cb => {
+                        cb.onchange = () => {}; // 會在applyFilters中讀取
+                    });
+                    
+                    document.querySelectorAll('.difficulty-checkbox').forEach(cb => {
+                        cb.onchange = () => {}; // 會在applyFilters中讀取
+                    });
                 }
             },
-            updateTempFilters: () => {}, // Placeholder, changes are read on apply
+            
             clearAllFilters: () => {
-                document.querySelectorAll('#filter-folders input, #filter-grades input').forEach(i => i.checked = false);
+                document.querySelectorAll('#filter-folders input, #filter-grades input').forEach(i => {
+                    i.checked = false;
+                });
             },
+            
             selectAllFilters: () => {
-                document.querySelectorAll('#filter-folders input, #filter-grades input').forEach(i => i.checked = true);
+                document.querySelectorAll('#filter-folders input, #filter-grades input').forEach(i => {
+                    i.checked = true;
+                });
             },
+            
             applyFilters: () => {
                 const folderChecked = document.querySelectorAll('#filter-folders input:checked');
-                const gradeChecked = document.querySelectorAll('#filter-grades input:checked');
+                const difficultyChecked = document.querySelectorAll('#filter-grades input:checked');
 
                 window.state.selectedFolderIds = new Set(Array.from(folderChecked).map(i => i.value));
-                window.state.selectedGrades = new Set(Array.from(gradeChecked).map(i => i.value));
+                window.state.selectedDifficulties = new Set(Array.from(difficultyChecked).map(i => i.value));
+                
+                // 如果沒有任何難度被選擇，則選擇所有難度
+                if (window.state.selectedDifficulties.size === 0) {
+                    window.state.selectedDifficulties = new Set(['easy', 'medium', 'hard']);
+                }
 
                 ui.toggleFilterModal();
                 ui.renderReview();
             }
         };
 
+        /* =====================================================
+           匯入/匯出功能
+        ===================================================== */
         window.io = {
             exportData: () => {
-                const data = { folders: db.getFolders(), cards: db.getCards() };
+                const data = { 
+                    folders: db.getFolders(), 
+                    cards: db.getCards(),
+                    exportDate: new Date().toISOString(),
+                    version: '2.0'
+                };
+                
                 const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
                 const a = document.createElement('a');
                 a.href = URL.createObjectURL(blob);
                 a.download = `memocurve_${new Date().toISOString().slice(0,10)}.json`;
+                document.body.appendChild(a);
                 a.click();
+                document.body.removeChild(a);
+                
+                // 簡短提示
+                const originalText = a.textContent;
+                a.textContent = '已匯出';
+                setTimeout(() => {
+                    a.textContent = originalText;
+                }, 1500);
             },
+            
             importData: (input) => {
                 const file = input.files[0];
                 if (!file) return;
+                
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     try {
                         const raw = JSON.parse(e.target.result);
-                        let count = 0;
+                        let importedCount = 0;
+                        
+                        // 處理記憶包
                         const localFolders = db.getFolders();
                         const idMap = {};
-
+                        
                         (raw.folders || []).forEach(f => {
+                            // 檢查是否已存在相同名稱的記憶包
                             let target = localFolders.find(lf => lf.name === f.name);
-                            if (!target) target = dataManager.addFolder(f.name);
-                            idMap[f.id] = target?.id;
+                            if (!target) {
+                                target = dataManager.addFolder(f.name);
+                            }
+                            if (target) {
+                                idMap[f.id] = target.id;
+                            }
                         });
-
+                        
+                        // 處理卡片
                         (raw.cards || []).forEach(c => {
-                            const folderId = idMap[c.folderId] || window.state.folders[0]?.id || dataManager.addFolder("General").id;
-                            const newCard = {
-                                ...c,
-                                folderId,
-                                ef: c.ef || 2.5,
-                                interval: c.interval || 0,
-                                repetition: c.repetition || 0,
-                                nextReview: c.nextReview || Date.now()
-                            };
-                            db.saveCards([...db.getCards(), newCard]);
-                            count++;
+                            const folderId = idMap[c.folderId] || window.state.folders[0]?.id;
+                            if (folderId) {
+                                const newCard = {
+                                    ...c,
+                                    id: crypto.randomUUID(), // 新ID避免衝突
+                                    folderId,
+                                    ef: c.ef || 2.0,
+                                    difficulty: Algorithm.getDifficulty(c.ef || 2.0),
+                                    interval: c.interval || 0,
+                                    repetition: c.repetition || 0,
+                                    nextReview: c.nextReview || Date.now(),
+                                    createdAt: c.createdAt || Date.now()
+                                };
+                                
+                                db.saveCards([...db.getCards(), newCard]);
+                                importedCount++;
+                            }
                         });
-
-                        alert(`成功匯入 ${count} 張卡片`);
+                        
+                        alert(`成功匯入 ${importedCount} 張卡片`);
                         ui.init();
                     } catch (err) {
-                        alert("檔案格式錯誤");
+                        alert("檔案格式錯誤，請確認檔案是否正確");
                         console.error(err);
                     }
                 };
                 reader.readAsText(file);
+                
+                // 重置input，允許再次選擇相同檔案
+                input.value = '';
             }
         };
 
-        // Initialize
+        // 初始化應用
         window.onload = () => {
             db.init();
             ui.init();
             
+            // 綁定事件
             document.getElementById('btn-create-folder').onclick = () => dataManager.addFolder();
             document.getElementById('btn-open-add').onclick = ui.showAddModal;
             document.getElementById('btn-close-modal').onclick = ui.closeCardModal;
             document.getElementById('btn-save-card').onclick = dataManager.saveCard;
-            document.getElementById('card-modal').onclick = (e) => { if (e.target.id === 'card-modal') ui.closeCardModal(); };
-
-            // Enter to check answer
-            document.addEventListener('keydown', (e) => {
-                const input = document.getElementById('answer-input');
-                if (e.key === 'Enter' && input && !input.disabled) {
-                    ui.checkAnswer(input.value);
-                }
-            });
+            
+            // 點擊模態框外部關閉
+            document.getElementById('card-modal').onclick = (e) => { 
+                if (e.target.id === 'card-modal') ui.closeCardModal(); 
+            };
+            
+            // Enter鍵檢查答案（已在renderReview中綁定）
         };
     </script>
 </body>
