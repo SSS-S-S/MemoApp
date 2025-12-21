@@ -428,6 +428,90 @@
 
     <script>
         /* =====================================================
+            統計計算器
+        ===================================================== */
+        const StatsCalculator = {
+            // 計算整體統計
+            calculateOverallStats: () => {
+                const cards = window.state.cards;
+                const now = Date.now();
+                
+                const total = cards.length;
+                const due = cards.filter(c => c.nextReview <= now).length;
+                const newCards = cards.filter(c => Algorithm.isNewCard(c)).length;
+                const easyCards = cards.filter(c => Algorithm.getDifficulty(c) === 'easy').length;
+                const mediumCards = cards.filter(c => Algorithm.getDifficulty(c) === 'medium').length;
+                const hardCards = cards.filter(c => Algorithm.getDifficulty(c) === 'hard').length;
+                
+                // 計算平均 EF 值
+                const avgEF = cards.length > 0 
+                    ? cards.reduce((sum, card) => sum + (card.ef || 2.0), 0) / cards.length 
+                    : 0;
+                
+                return {
+                    total,
+                    due,
+                    new: newCards,
+                    easy: easyCards,
+                    medium: mediumCards,
+                    hard: hardCards,
+                    avgEF
+                };
+            },
+            
+            // 計算記憶包統計
+            calculateFolderStats: () => {
+                const folders = window.state.folders;
+                const cards = window.state.cards;
+                const now = Date.now();
+                
+                return folders.map(folder => {
+                    const folderCards = cards.filter(c => c.folderId === folder.id);
+                    
+                    return {
+                        id: folder.id,
+                        name: folder.name,
+                        total: folderCards.length,
+                        new: folderCards.filter(c => Algorithm.isNewCard(c)).length,
+                        easy: folderCards.filter(c => Algorithm.getDifficulty(c) === 'easy').length,
+                        medium: folderCards.filter(c => Algorithm.getDifficulty(c) === 'medium').length,
+                        hard: folderCards.filter(c => Algorithm.getDifficulty(c) === 'hard').length,
+                        due: folderCards.filter(c => c.nextReview <= now).length
+                    };
+                });
+            },
+            
+            // 計算最近7天複習記錄
+            calculateReviewHistory: () => {
+                const history = db.getReviewHistory();
+                const today = new Date();
+                const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
+                
+                // 創建過去7天的數據結構
+                const last7Days = [];
+                for (let i = 6; i >= 0; i--) {
+                    const date = new Date(today);
+                    date.setDate(date.getDate() - i);
+                    const dateStr = date.toISOString().split('T')[0]; // YYYY-MM-DD
+                    
+                    // 過濾當天的複習記錄
+                    const dayRecords = history.filter(record => record.date === dateStr);
+                    
+                    last7Days.push({
+                        date: dateStr,
+                        day: date.getDate(),
+                        weekday: weekDays[date.getDay()],
+                        total: dayRecords.length,
+                        easy: dayRecords.filter(r => r.rating === 2).length,
+                        medium: dayRecords.filter(r => r.rating === 1).length,
+                        hard: dayRecords.filter(r => r.rating === 0).length
+                    });
+                }
+                
+                return last7Days;
+            }
+        };
+        /* =====================================================
            語音管理器 - 只針對英文優化
         ===================================================== */
         const speechManager = {
