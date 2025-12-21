@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MemoCurve</title>
+    <title>MemoCurve • 記憶曲線</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📈</text></svg>">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -19,8 +22,36 @@
                     fontFamily: {
                         sans: ['Inter', '-apple-system', 'sans-serif'],
                     },
+                    colors: {
+                        'primary': {
+                            50: '#f5f7ff',
+                            100: '#ebf0ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        }
+                    },
                     backdropBlur: {
                         xs: '2px',
+                    },
+                    animation: {
+                        'pulse-subtle': 'pulse-subtle 2s ease-in-out infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                        'slide-up': 'slide-up 0.3s ease-out',
+                    },
+                    keyframes: {
+                        'pulse-subtle': {
+                            '0%, 100%': { opacity: 1 },
+                            '50%': { opacity: 0.8 },
+                        },
+                        'float': {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-5px)' },
+                        },
+                        'slide-up': {
+                            'from': { transform: 'translateY(10px)', opacity: 0 },
+                            'to': { transform: 'translateY(0)', opacity: 1 },
+                        }
                     }
                 }
             }
@@ -28,103 +59,114 @@
     </script>
 
     <style>
+        /* 基礎樣式 */
         body {
             background-color: #fafafa;
             color: #1a1a1a;
             -webkit-font-smoothing: antialiased;
             font-feature-settings: 'ss02' on;
+            overflow-x: hidden;
         }
         
+        /* 動畫 */
         .fade-in { animation: fadeIn 0.3s ease-out; }
+        .slide-up { animation: slide-up 0.3s ease-out; }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
+            from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .hidden-view { display: none !important; }
 
-        /* 改善的滾動條 */
+        /* 滾動條美化 */
         ::-webkit-scrollbar { 
             width: 6px; 
             height: 6px;
         }
         ::-webkit-scrollbar-track { 
-            background: rgba(0, 0, 0, 0.05); 
+            background: rgba(0, 0, 0, 0.04); 
             border-radius: 3px;
         }
         ::-webkit-scrollbar-thumb { 
-            background: rgba(0, 0, 0, 0.15); 
+            background: rgba(0, 0, 0, 0.12); 
             border-radius: 3px;
+            transition: background 0.2s;
         }
         ::-webkit-scrollbar-thumb:hover { 
-            background: rgba(0, 0, 0, 0.25); 
-        }
-        
-        /* 統計頁面專用容器 */
-        #view-stats {
-            padding-right: 4px; /* 給滾動條空間 */
+            background: rgba(0, 0, 0, 0.2); 
         }
 
-        /* 毛玻璃效果 */
+        /* 玻璃擬態效果 */
         .glass-effect {
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.25);
         }
         
         .glass-modal {
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.92);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
         }
         
         .glass-card {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.2s ease;
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
         
         .glass-button {
             background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(4px);
             -webkit-backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.25);
         }
 
+        /* 邊框樣式 */
         .border-custom {
-            border-color: #e5e5e5;
+            border-color: rgba(0, 0, 0, 0.08);
         }
         
+        /* 懸停效果 */
         .hover-lift:hover {
             transform: translateY(-1px);
             transition: transform 0.2s ease;
         }
         
+        /* 輸入框樣式 */
         .input-minimal {
             background: transparent;
             border: none;
-            border-bottom: 1px solid #e5e5e5;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
             transition: all 0.2s;
         }
         
         .input-minimal:focus {
             outline: none;
-            border-bottom-color: #1a1a1a;
+            border-bottom-color: #4f46e5;
             background: rgba(255, 255, 255, 0.3);
         }
         
-        /* 平滑過渡效果 */
+        /* 過渡效果 */
         .transition-all-smooth {
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        /* 統計圖表相關 */
+        /* 進度條 */
         .progress-bar {
             height: 4px;
-            background-color: #f0f0f0;
+            background-color: rgba(0, 0, 0, 0.06);
             border-radius: 2px;
             overflow: hidden;
         }
@@ -132,7 +174,7 @@
         .progress-fill {
             height: 100%;
             border-radius: 2px;
-            transition: width 0.3s ease;
+            transition: width 0.4s ease;
         }
         
         /* 語音按鈕動畫 */
@@ -144,39 +186,39 @@
         
         .speech-playing {
             animation: pulse-speech 1s ease-in-out infinite;
-            color: #1a1a1a !important;
+            color: #4f46e5 !important;
         }
         
-        /* 難度標籤 - 單色調設計 */
+        /* 難度標籤 - 新設計 */
         .grade-new { 
-            background: rgba(245, 245, 245, 0.9);
-            color: #666666;
-            border-color: #e5e5e5;
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            color: #6b7280;
+            border-color: #d1d5db;
         }
         
         .grade-easy { 
-            background: rgba(250, 250, 250, 0.9);
-            color: #808080;
-            border-color: #e5e5e5;
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            color: #16a34a;
+            border-color: #bbf7d0;
         }
         
         .grade-medium { 
-            background: rgba(240, 240, 240, 0.9);
-            color: #595959;
-            border-color: #d9d9d9;
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+            color: #d97706;
+            border-color: #fde68a;
         }
         
         .grade-hard { 
-            background: rgba(230, 230, 230, 0.9);
-            color: #404040;
-            border-color: #cccccc;
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            color: #dc2626;
+            border-color: #fecaca;
         }
         
         /* 篩選選中狀態 */
         .filter-selected {
-            background: rgba(20, 20, 20, 0.9) !important;
+            background: linear-gradient(135deg, #4f46e5, #6366f1) !important;
             color: white !important;
-            border-color: #1a1a1a !important;
+            border-color: #4f46e5 !important;
         }
         
         /* 按鈕懸停效果 */
@@ -189,15 +231,16 @@
         /* 模態框背景 */
         .modal-backdrop {
             background-color: rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
         }
         
         /* 卡片陰影 */
         .card-shadow {
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 
-                        0 1px 3px rgba(0, 0, 0, 0.05),
-                        0 0 1px rgba(0, 0, 0, 0.1);
+            box-shadow: 
+                0 2px 4px rgba(0, 0, 0, 0.02),
+                0 4px 8px rgba(0, 0, 0, 0.03),
+                0 0 1px rgba(0, 0, 0, 0.1);
         }
         
         /* 分割線 */
@@ -206,47 +249,47 @@
             background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.05), transparent);
         }
         
-        /* 統計卡片樣式 */
+        /* 統計卡片專用樣式 */
         .stat-card {
-            padding: 16px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            padding: 18px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             box-shadow: 
-                0 2px 4px rgba(0, 0, 0, 0.04),
-                0 1px 2px rgba(0, 0, 0, 0.08);
-            transition: all 0.2s ease;
+                0 4px 6px rgba(0, 0, 0, 0.02),
+                0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: all 0.25s ease;
         }
         
         .stat-card:hover {
-            transform: translateY(-1px);
+            transform: translateY(-3px);
             box-shadow: 
-                0 4px 8px rgba(0, 0, 0, 0.06),
-                0 2px 4px rgba(0, 0, 0, 0.08);
+                0 8px 16px rgba(0, 0, 0, 0.04),
+                0 4px 8px rgba(0, 0, 0, 0.06);
         }
         
-        /* 改善統計數字與標題間距 */
         .stat-value {
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 300;
-            line-height: 1.2;
+            line-height: 1.1;
             color: #1a1a1a;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+            letter-spacing: -0.02em;
         }
         
         .stat-label {
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 400;
-            color: #666;
+            color: #6b7280;
             letter-spacing: 0.02em;
         }
         
-        /* 改善分佈條樣式 */
+        /* 分佈條 */
         .dist-bar {
             height: 6px;
-            background-color: rgba(0, 0, 0, 0.06);
+            background-color: rgba(0, 0, 0, 0.05);
             border-radius: 3px;
             overflow: hidden;
         }
@@ -254,65 +297,136 @@
         .dist-fill {
             height: 100%;
             border-radius: 3px;
-            transition: width 0.4s ease-out;
+            transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         
-        /* 改善標題間距 */
-        .stat-section-title {
-            font-size: 16px;
-            font-weight: 400;
-            color: #1a1a1a;
-            margin-bottom: 16px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-        }
-        
-        /* 改善難度標籤容器 */
-        .difficulty-label-container {
-            margin-bottom: 12px;
-        }
-        
-        /* 改善進度圖表容器 */
+        /* 進度圖表 */
         .progress-chart {
-            margin-top: 8px;
-            padding-top: 12px;
-            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(0, 0, 0, 0.04);
+        }
+        
+        /* 徽章 */
+        .badge {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 500;
+            letter-spacing: 0.01em;
+        }
+        
+        /* 載入動畫 */
+        .loading-dots {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .loading-dots span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #9ca3af;
+            animation: loading-dots 1.4s ease-in-out infinite;
+        }
+        
+        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes loading-dots {
+            0%, 100% { transform: translateY(0); opacity: 0.4; }
+            50% { transform: translateY(-4px); opacity: 1; }
+        }
+        
+        /* 呼吸動畫 */
+        .breathing {
+            animation: breathing 3s ease-in-out infinite;
+        }
+        
+        @keyframes breathing {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+        
+        /* 標題區隔 */
+        .section-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 18px;
+            padding-bottom: 10px;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 32px;
+            height: 2px;
+            background: linear-gradient(90deg, #6366f1, transparent);
+            border-radius: 1px;
+        }
+        
+        /* 標籤動畫 */
+        .tag-pulse {
+            animation: tag-pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes tag-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
     </style>
 </head>
-<body class="flex flex-col h-screen overflow-hidden bg-gray-50 text-gray-900">
+<body class="flex flex-col h-screen overflow-hidden bg-gradient-to-br from-gray-50 to-white text-gray-900">
 
     <!-- 主應用視圖 -->
     <div id="app-view" class="flex flex-col h-full w-full">
         <!-- 頂部標題區域 -->
         <header class="flex-none pt-8 pb-6 px-6 max-w-2xl mx-auto w-full">
             <div class="flex items-center justify-between">
-                <h1 class="text-2xl font-light tracking-tight text-gray-900">MemoCurve</h1>
-                <div class="flex items-center gap-2 text-sm text-gray-600">
-                    <span id="review-count" class="font-medium">0</span>
-                    <span class="text-gray-500">張到期</span>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-sm">
+                        <i class="ph ph-chart-line-up text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-medium tracking-tight text-gray-900">MemoCurve</h1>
+                        <p class="text-xs text-gray-500 font-light mt-0.5">基於間隔重複的記憶系統</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right">
+                        <div class="text-sm font-medium text-gray-900" id="review-count">0</div>
+                        <div class="text-xs text-gray-500">到期複習</div>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center breathing">
+                        <i class="ph ph-brain text-indigo-600"></i>
+                    </div>
                 </div>
             </div>
         </header>
 
         <!-- 導航標籤 -->
         <nav class="flex-none max-w-2xl mx-auto w-full px-6 mb-2">
-            <div class="flex gap-6 border-b border-gray-200">
-                <button onclick="ui.switchTab('review')" id="tab-review" class="pb-3 text-sm font-light text-gray-900 relative">
+            <div class="flex gap-8 border-b border-gray-100">
+                <button onclick="ui.switchTab('review')" id="tab-review" class="pb-3 text-sm font-medium text-gray-900 relative group">
                     複習
-                    <span class="active-indicator absolute inset-x-0 bottom-0 h-0.5 bg-gray-900"></span>
+                    <span class="active-indicator absolute inset-x-0 bottom-0 h-0.5 bg-indigo-500 rounded-full transition-all duration-300"></span>
                 </button>
-                <button onclick="ui.switchTab('folders')" id="tab-folders" class="pb-3 text-sm font-light text-gray-500 hover:text-gray-900 relative transition-all-smooth">
+                <button onclick="ui.switchTab('folders')" id="tab-folders" class="pb-3 text-sm font-medium text-gray-500 hover:text-gray-900 relative transition-all-smooth group">
                     記憶包
-                    <span class="active-indicator absolute inset-x-0 bottom-0 h-0.5 bg-gray-900 hidden"></span>
+                    <span class="active-indicator absolute inset-x-0 bottom-0 h-0.5 bg-indigo-500 rounded-full transition-all duration-300 scale-x-0 group-hover:scale-x-100"></span>
                 </button>
-                <button onclick="ui.switchTab('list')" id="tab-list" class="pb-3 text-sm font-light text-gray-500 hover:text-gray-900 relative transition-all-smooth">
+                <button onclick="ui.switchTab('list')" id="tab-list" class="pb-3 text-sm font-medium text-gray-500 hover:text-gray-900 relative transition-all-smooth group">
                     卡片庫
-                    <span class="active-indicator absolute inset-x-0 bottom-0 h-0.5 bg-gray-900 hidden"></span>
+                    <span class="active-indicator absolute inset-x-0 bottom-0 h-0.5 bg-indigo-500 rounded-full transition-all duration-300 scale-x-0 group-hover:scale-x-100"></span>
                 </button>
-                <button onclick="ui.switchTab('stats')" id="tab-stats" class="pb-3 text-sm font-light text-gray-500 hover:text-gray-900 relative transition-all-smooth">
+                <button onclick="ui.switchTab('stats')" id="tab-stats" class="pb-3 text-sm font-medium text-gray-500 hover:text-gray-900 relative transition-all-smooth group">
                     統計
-                    <span class="active-indicator absolute inset-x-0 bottom-0 h-0.5 bg-gray-900 hidden"></span>
+                    <span class="active-indicator absolute inset-x-0 bottom-0 h-0.5 bg-indigo-500 rounded-full transition-all duration-300 scale-x-0 group-hover:scale-x-100"></span>
                 </button>
             </div>
         </nav>
@@ -324,18 +438,18 @@
                 <!-- 複習篩選欄 -->
                 <div class="flex-none pt-4 pb-3">
                     <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <button onclick="ui.toggleFilterModal()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs border border-gray-300 rounded-lg glass-button hover:border-gray-900 transition-all-smooth">
-                                <i class="ph ph-funnel-simple text-xs"></i>
+                        <div class="flex items-center gap-3">
+                            <button onclick="ui.toggleFilterModal()" class="flex items-center gap-2 px-4 py-2 text-xs border border-gray-200 rounded-xl glass-button hover:border-indigo-300 hover:bg-indigo-50 transition-all-smooth group">
+                                <i class="ph ph-funnel-simple text-xs text-indigo-500"></i>
                                 <span class="text-gray-700">篩選</span>
-                                <span id="active-filter-count" class="bg-gray-200 text-gray-700 text-xs px-1.5 py-0.5 rounded-full">0</span>
+                                <span id="active-filter-count" class="bg-indigo-100 text-indigo-700 text-xs px-2 py-0.5 rounded-full">0</span>
                             </button>
                             <div id="filter-summary" class="text-xs text-gray-500 hidden">
                                 <span id="selected-folders-text"></span>
                                 <span id="selected-difficulties-text"></span>
                             </div>
                         </div>
-                        <button onclick="ui.showReviewStats()" class="text-xs text-gray-500 hover:text-gray-900 flex items-center gap-1 transition-all-smooth">
+                        <button onclick="ui.showReviewStats()" class="text-xs text-gray-500 hover:text-indigo-600 flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-indigo-50 transition-all-smooth">
                             <i class="ph ph-chart-bar text-xs"></i>
                             <span>統計</span>
                         </button>
@@ -347,59 +461,96 @@
 
             <!-- 視圖：記憶包管理 -->
             <div id="view-folders" class="view-section hidden-view h-full flex flex-col overflow-y-auto pt-6">
-                <div class="mb-6 flex gap-2">
-                    <input type="text" id="new-folder-name" placeholder="輸入記憶包名稱" class="flex-1 input-minimal py-2 text-sm px-0 bg-transparent">
-                    <button id="btn-create-folder" class="px-4 py-2 bg-gray-900 text-white text-sm font-light rounded-lg hover:bg-black transition-all-smooth">建立</button>
+                <div class="mb-8">
+                    <h2 class="text-lg font-medium text-gray-900 mb-4">記憶包管理</h2>
+                    <div class="flex gap-2 mb-6">
+                        <input type="text" id="new-folder-name" placeholder="輸入記憶包名稱..." class="flex-1 input-minimal py-3 text-sm px-0 bg-transparent">
+                        <button id="btn-create-folder" class="px-5 py-3 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white text-sm font-medium rounded-xl hover:shadow-md transition-all-smooth">
+                            <i class="ph ph-plus mr-1.5"></i>建立
+                        </button>
+                    </div>
                 </div>
-                <div id="folders-list-container" class="space-y-2"></div>
+                <div id="folders-list-container" class="space-y-3 pb-20"></div>
+                <div id="empty-folders-msg" class="hidden text-center text-gray-400 py-16 text-sm">
+                    <i class="ph ph-folder-open text-4xl mb-4 opacity-50"></i>
+                    <p class="font-light">還沒有建立任何記憶包</p>
+                    <p class="text-xs text-gray-300 mt-2">建立記憶包來組織你的學習內容</p>
+                </div>
             </div>
 
             <!-- 視圖：卡片清單 -->
             <div id="view-list" class="view-section hidden-view h-full flex flex-col overflow-y-auto pt-6">
-                <div class="mb-8 flex items-center justify-between">
-                    <h3 class="text-sm font-light text-gray-900">所有卡片</h3>
-                    <div class="flex gap-3">
-                        <button onclick="io.exportData()" class="flex items-center gap-1 px-3 py-2 text-xs border border-gray-300 rounded-lg glass-button hover:border-gray-900 transition-all-smooth">
-                            <i class="ph ph-download-simple text-xs"></i> <span class="text-gray-700">匯出</span>
-                        </button>
-                        <label class="flex items-center gap-1 px-3 py-2 text-xs border border-gray-300 rounded-lg glass-button hover:border-gray-900 transition-all-smooth cursor-pointer">
-                            <i class="ph ph-upload-simple text-xs"></i> <span class="text-gray-700">匯入</span>
-                            <input type="file" id="import-file" class="hidden" onchange="io.importData(this)">
-                        </label>
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-lg font-medium text-gray-900">卡片庫</h2>
+                            <p class="text-xs text-gray-500 mt-1 font-light">共 <span id="total-cards-count">0</span> 張卡片</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="io.exportData()" class="flex items-center gap-2 px-4 py-2 text-xs border border-gray-200 rounded-xl glass-button hover:border-indigo-300 hover:bg-indigo-50 transition-all-smooth">
+                                <i class="ph ph-download-simple text-xs text-indigo-500"></i> <span class="text-gray-700">匯出</span>
+                            </button>
+                            <label class="flex items-center gap-2 px-4 py-2 text-xs border border-gray-200 rounded-xl glass-button hover:border-indigo-300 hover:bg-indigo-50 transition-all-smooth cursor-pointer">
+                                <i class="ph ph-upload-simple text-xs text-indigo-500"></i> <span class="text-gray-700">匯入</span>
+                                <input type="file" id="import-file" class="hidden" onchange="io.importData(this)">
+                            </label>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2 mb-6">
+                        <div class="text-center p-3 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
+                            <div class="text-lg font-medium text-blue-600" id="list-new-count">0</div>
+                            <div class="text-xs text-blue-500 mt-1">新卡片</div>
+                        </div>
+                        <div class="text-center p-3 bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl border border-emerald-100">
+                            <div class="text-lg font-medium text-emerald-600" id="list-easy-count">0</div>
+                            <div class="text-xs text-emerald-500 mt-1">簡單</div>
+                        </div>
+                        <div class="text-center p-3 bg-gradient-to-br from-amber-50 to-yellow-50 rounded-xl border border-amber-100">
+                            <div class="text-lg font-medium text-amber-600" id="list-medium-count">0</div>
+                            <div class="text-xs text-amber-500 mt-1">普通</div>
+                        </div>
+                        <div class="text-center p-3 bg-gradient-to-br from-rose-50 to-red-50 rounded-xl border border-rose-100">
+                            <div class="text-lg font-medium text-rose-600" id="list-hard-count">0</div>
+                            <div class="text-xs text-rose-500 mt-1">困難</div>
+                        </div>
                     </div>
                 </div>
-                <div id="word-list-container" class="space-y-3 pb-20"></div>
-                <div id="empty-list-msg" class="hidden text-center text-gray-400 py-16 text-sm">目前沒有卡片</div>
+                <div id="word-list-container" class="space-y-4 pb-24"></div>
+                <div id="empty-list-msg" class="hidden text-center text-gray-400 py-16 text-sm">
+                    <i class="ph ph-note text-4xl mb-4 opacity-50"></i>
+                    <p class="font-light">目前沒有卡片</p>
+                    <p class="text-xs text-gray-300 mt-2">點擊右下角的 + 號開始新增卡片</p>
+                </div>
             </div>
             
             <!-- 視圖：統計資料 -->
             <div id="view-stats" class="view-section hidden-view h-full flex flex-col overflow-y-auto pt-6">
-                <div class="space-y-8 pb-20">
+                <div class="space-y-10 pb-28 px-1">
                     <!-- 整體統計 -->
-                    <div class="space-y-4">
-                        <h3 class="text-base font-light text-gray-900">整體統計</h3>
-                        <div id="overall-stats" class="grid grid-cols-2 gap-3">
+                    <div class="space-y-5">
+                        <h3 class="section-title">整體統計</h3>
+                        <div id="overall-stats" class="grid grid-cols-2 gap-4">
                             <!-- 將由JavaScript動態生成 -->
                         </div>
                     </div>
                     
                     <!-- 難度分佈 -->
-                    <div class="space-y-4">
-                        <h3 class="text-base font-light text-gray-900">難度分佈</h3>
-                        <div id="difficulty-distribution" class="space-y-3">
+                    <div class="space-y-5">
+                        <h3 class="section-title">難度分佈</h3>
+                        <div id="difficulty-distribution" class="space-y-4">
                             <!-- 將由JavaScript動態生成 -->
                         </div>
                     </div>
                     
                     <!-- 記憶包統計 -->
-                    <div class="space-y-4">
+                    <div class="space-y-5">
                         <div class="flex items-center justify-between">
-                            <h3 class="text-base font-light text-gray-900">記憶包統計</h3>
-                            <button onclick="ui.toggleFolderStats()" class="text-xs text-gray-500 hover:text-gray-900 transition-all-smooth">
+                            <h3 class="section-title">記憶包統計</h3>
+                            <button onclick="ui.toggleFolderStats()" class="text-xs text-gray-500 hover:text-indigo-600 transition-all-smooth px-3 py-1.5 rounded-lg hover:bg-indigo-50">
                                 <span id="toggle-folder-stats-text">顯示詳細</span>
                             </button>
                         </div>
-                        <div id="folder-stats-summary" class="space-y-3">
+                        <div id="folder-stats-summary" class="space-y-4">
                             <!-- 摘要將由JavaScript動態生成 -->
                         </div>
                         <div id="folder-stats-detailed" class="hidden space-y-4">
@@ -408,8 +559,8 @@
                     </div>
                     
                     <!-- 複習進度 -->
-                    <div class="space-y-4">
-                        <h3 class="text-base font-light text-gray-900">最近7天複習記錄</h3>
+                    <div class="space-y-5">
+                        <h3 class="section-title">最近7天複習記錄</h3>
                         <div id="review-progress" class="space-y-4">
                             <!-- 將由JavaScript動態生成 -->
                         </div>
@@ -421,49 +572,51 @@
 
     <!-- 浮動操作按鈕 -->
     <div class="fixed bottom-6 right-6 z-30">
-        <button id="btn-open-add" class="w-12 h-12 bg-gray-900 text-white rounded-full flex items-center justify-center shadow-sm hover:bg-black hover-lift transition-all-smooth">
-            <i class="ph ph-plus text-lg"></i>
+        <button id="btn-open-add" class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-2xl flex items-center justify-center shadow-lg hover:shadow-xl hover-lift transition-all-smooth float">
+            <i class="ph ph-plus text-xl"></i>
         </button>
     </div>
 
     <!-- 卡片模態框 (新增/編輯) -->
     <div id="card-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-backdrop">
-        <div class="glass-modal w-full max-w-md p-6 rounded-xl card-shadow">
-            <div class="flex justify-between items-center mb-6">
-                <h2 id="modal-title" class="text-lg font-light text-gray-900">新增卡片</h2>
-                <button id="btn-close-modal" class="text-gray-400 hover:text-gray-900 transition-all-smooth">
+        <div class="glass-modal w-full max-w-md p-7 rounded-2xl card-shadow slide-up">
+            <div class="flex justify-between items-center mb-7">
+                <h2 id="modal-title" class="text-xl font-medium text-gray-900">新增卡片</h2>
+                <button id="btn-close-modal" class="text-gray-400 hover:text-gray-900 transition-all-smooth p-1.5 hover:bg-gray-100 rounded-lg">
                     <i class="ph ph-x text-lg"></i>
                 </button>
             </div>
             <div class="space-y-6">
                 <div>
-                    <label class="block text-xs font-light text-gray-500 mb-2">所屬記憶包</label>
-                    <select id="card-folder" class="w-full text-sm border border-gray-300 rounded-lg py-2 px-3 glass-button focus:outline-none focus:border-gray-900 transition-all-smooth"></select>
+                    <label class="block text-xs font-medium text-gray-500 mb-2">所屬記憶包</label>
+                    <select id="card-folder" class="w-full text-sm border border-gray-200 rounded-xl py-3 px-4 glass-button focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all-smooth"></select>
                 </div>
                 <div>
                     <div class="flex items-center justify-between mb-2">
-                        <label class="block text-xs font-light text-gray-500">正面（題目）</label>
-                        <button type="button" onclick="speechManager.speakEnglish(document.getElementById('card-front').value)" class="text-gray-400 hover:text-gray-900 transition-all-smooth p-1">
+                        <label class="block text-xs font-medium text-gray-500">正面（題目）</label>
+                        <button type="button" onclick="speechManager.speakEnglish(document.getElementById('card-front').value)" class="text-gray-400 hover:text-indigo-600 transition-all-smooth p-1.5 hover:bg-indigo-50 rounded-lg">
                             <i class="ph ph-speaker-high text-sm"></i>
                         </button>
                     </div>
-                    <input type="text" id="card-front" class="w-full text-base font-light border border-gray-300 rounded-lg py-2 px-3 glass-button focus:outline-none focus:border-gray-900 placeholder-gray-400" placeholder="例如：apple">
+                    <input type="text" id="card-front" class="w-full text-base font-medium border border-gray-200 rounded-xl py-3 px-4 glass-button focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 placeholder-gray-400" placeholder="例如：apple">
                 </div>
                 <div>
                     <div class="flex items-center justify-between mb-2">
-                        <label class="block text-xs font-light text-gray-500">背面（答案）</label>
-                        <button type="button" onclick="speechManager.speakEnglish(document.getElementById('card-back').value)" class="text-gray-400 hover:text-gray-900 transition-all-smooth p-1">
+                        <label class="block text-xs font-medium text-gray-500">背面（答案）</label>
+                        <button type="button" onclick="speechManager.speakEnglish(document.getElementById('card-back').value)" class="text-gray-400 hover:text-indigo-600 transition-all-smooth p-1.5 hover:bg-indigo-50 rounded-lg">
                             <i class="ph ph-speaker-high text-sm"></i>
                         </button>
                     </div>
-                    <input type="text" id="card-back" class="w-full text-base font-light border border-gray-300 rounded-lg py-2 px-3 glass-button focus:outline-none focus:border-gray-900 placeholder-gray-400" placeholder="例如：蘋果">
+                    <input type="text" id="card-back" class="w-full text-base font-medium border border-gray-200 rounded-xl py-3 px-4 glass-button focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 placeholder-gray-400" placeholder="例如：蘋果">
                 </div>
                 <div>
-                    <label class="block text-xs font-light text-gray-500 mb-2">例句（可選）</label>
-                    <textarea id="card-sentences" rows="2" class="w-full text-sm font-light border border-gray-300 rounded-lg py-2 px-3 glass-button focus:outline-none focus:border-gray-900 resize-none placeholder-gray-400" placeholder="這是一個 [apple] 例句。方括號內內容會被遮蓋。"></textarea>
+                    <label class="block text-xs font-medium text-gray-500 mb-2">例句（可選）</label>
+                    <textarea id="card-sentences" rows="3" class="w-full text-sm font-medium border border-gray-200 rounded-xl py-3 px-4 glass-button focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none placeholder-gray-400" placeholder="這是一個 [apple] 例句。方括號內內容會被遮蓋。"></textarea>
                 </div>
-                <div class="pt-2">
-                    <button id="btn-save-card" class="w-full py-3 bg-gray-900 text-white text-sm font-light rounded-lg hover:bg-black transition-all-smooth">儲存卡片</button>
+                <div class="pt-4">
+                    <button id="btn-save-card" class="w-full py-4 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white text-sm font-medium rounded-xl hover:shadow-md transition-all-smooth">
+                        儲存卡片
+                    </button>
                 </div>
             </div>
         </div>
@@ -471,135 +624,53 @@
 
     <!-- 篩選模態框 -->
     <div id="filter-modal" class="fixed inset-0 z-40 hidden flex items-start justify-center pt-20 px-4 modal-backdrop">
-        <div class="glass-modal w-full max-w-sm p-5 rounded-xl card-shadow">
-            <div class="flex justify-between items-center mb-5">
-                <h3 class="text-base font-light text-gray-900">篩選條件</h3>
-                <button onclick="ui.toggleFilterModal()" class="text-gray-400 hover:text-gray-900 transition-all-smooth">
+        <div class="glass-modal w-full max-w-sm p-6 rounded-2xl card-shadow slide-up">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-base font-medium text-gray-900">篩選條件</h3>
+                <button onclick="ui.toggleFilterModal()" class="text-gray-400 hover:text-gray-900 transition-all-smooth p-1.5 hover:bg-gray-100 rounded-lg">
                     <i class="ph ph-x text-lg"></i>
                 </button>
             </div>
             <div class="space-y-6">
                 <div>
-                    <p class="text-xs font-light text-gray-500 mb-3">記憶包</p>
+                    <p class="text-xs font-medium text-gray-500 mb-3">記憶包</p>
                     <div id="filter-folders" class="space-y-2 max-h-48 overflow-y-auto pr-2">
                         <!-- 動態生成 -->
                     </div>
                 </div>
                 <div>
-                    <p class="text-xs font-light text-gray-500 mb-3">難度</p>
-                    <div id="filter-grades" class="flex gap-2">
+                    <p class="text-xs font-medium text-gray-500 mb-3">難度</p>
+                    <div id="filter-grades" class="grid grid-cols-2 gap-3">
                         <!-- 動態生成 -->
                     </div>
                 </div>
             </div>
             <div class="flex justify-between gap-3 mt-8">
-                <button onclick="ui.clearAllFilters()" class="text-sm text-gray-500 hover:text-gray-900 px-3 py-2 transition-all-smooth">清除</button>
-                <button onclick="ui.selectAllFilters()" class="text-sm text-gray-500 hover:text-gray-900 px-3 py-2 transition-all-smooth">全選</button>
-                <button onclick="ui.applyFilters()" class="flex-1 py-2.5 bg-gray-900 text-white text-sm font-light rounded-lg hover:bg-black transition-all-smooth">套用篩選</button>
+                <button onclick="ui.clearAllFilters()" class="text-sm text-gray-500 hover:text-gray-900 px-4 py-2.5 transition-all-smooth rounded-lg hover:bg-gray-100">清除</button>
+                <button onclick="ui.selectAllFilters()" class="text-sm text-gray-500 hover:text-gray-900 px-4 py-2.5 transition-all-smooth rounded-lg hover:bg-gray-100">全選</button>
+                <button onclick="ui.applyFilters()" class="flex-1 py-3 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white text-sm font-medium rounded-xl hover:shadow-md transition-all-smooth">
+                    套用篩選
+                </button>
             </div>
         </div>
     </div>
 
     <!-- 複習統計模態框 -->
     <div id="review-stats-modal" class="fixed inset-0 z-40 hidden flex items-start justify-center pt-20 px-4 modal-backdrop">
-        <div class="glass-modal w-full max-w-sm p-5 rounded-xl card-shadow">
-            <div class="flex justify-between items-center mb-5">
-                <h3 class="text-base font-light text-gray-900">本次複習統計</h3>
-                <button onclick="ui.closeReviewStats()" class="text-gray-400 hover:text-gray-900 transition-all-smooth">
+        <div class="glass-modal w-full max-w-sm p-6 rounded-2xl card-shadow slide-up">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-base font-medium text-gray-900">本次複習統計</h3>
+                <button onclick="ui.closeReviewStats()" class="text-gray-400 hover:text-gray-900 transition-all-smooth p-1.5 hover:bg-gray-100 rounded-lg">
                     <i class="ph ph-x text-lg"></i>
                 </button>
             </div>
-            <div id="review-stats-content" class="space-y-4">
+            <div id="review-stats-content" class="space-y-5">
                 <!-- 動態生成統計內容 -->
             </div>
         </div>
     </div>
 
     <script>
-        /* =====================================================
-            統計計算器
-        ===================================================== */
-        const StatsCalculator = {
-            // 計算整體統計
-            calculateOverallStats: () => {
-                const cards = window.state.cards;
-                const now = Date.now();
-                
-                const total = cards.length;
-                const due = cards.filter(c => c.nextReview <= now).length;
-                const newCards = cards.filter(c => Algorithm.isNewCard(c)).length;
-                const easyCards = cards.filter(c => Algorithm.getDifficulty(c) === 'easy').length;
-                const mediumCards = cards.filter(c => Algorithm.getDifficulty(c) === 'medium').length;
-                const hardCards = cards.filter(c => Algorithm.getDifficulty(c) === 'hard').length;
-                
-                // 計算平均 EF 值
-                const avgEF = cards.length > 0 
-                    ? cards.reduce((sum, card) => sum + (card.ef || 2.0), 0) / cards.length 
-                    : 0;
-                
-                return {
-                    total,
-                    due,
-                    new: newCards,
-                    easy: easyCards,
-                    medium: mediumCards,
-                    hard: hardCards,
-                    avgEF
-                };
-            },
-            
-            // 計算記憶包統計
-            calculateFolderStats: () => {
-                const folders = window.state.folders;
-                const cards = window.state.cards;
-                const now = Date.now();
-                
-                return folders.map(folder => {
-                    const folderCards = cards.filter(c => c.folderId === folder.id);
-                    
-                    return {
-                        id: folder.id,
-                        name: folder.name,
-                        total: folderCards.length,
-                        new: folderCards.filter(c => Algorithm.isNewCard(c)).length,
-                        easy: folderCards.filter(c => Algorithm.getDifficulty(c) === 'easy').length,
-                        medium: folderCards.filter(c => Algorithm.getDifficulty(c) === 'medium').length,
-                        hard: folderCards.filter(c => Algorithm.getDifficulty(c) === 'hard').length,
-                        due: folderCards.filter(c => c.nextReview <= now).length
-                    };
-                });
-            },
-            
-            // 計算最近7天複習記錄
-            calculateReviewHistory: () => {
-                const history = db.getReviewHistory();
-                const today = new Date();
-                const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
-                
-                // 創建過去7天的數據結構
-                const last7Days = [];
-                for (let i = 6; i >= 0; i--) {
-                    const date = new Date(today);
-                    date.setDate(date.getDate() - i);
-                    const dateStr = date.toISOString().split('T')[0]; // YYYY-MM-DD
-                    
-                    // 過濾當天的複習記錄
-                    const dayRecords = history.filter(record => record.date === dateStr);
-                    
-                    last7Days.push({
-                        date: dateStr,
-                        day: date.getDate(),
-                        weekday: weekDays[date.getDay()],
-                        total: dayRecords.length,
-                        easy: dayRecords.filter(r => r.rating === 2).length,
-                        medium: dayRecords.filter(r => r.rating === 1).length,
-                        hard: dayRecords.filter(r => r.rating === 0).length
-                    });
-                }
-                
-                return last7Days;
-            }
-        };
         /* =====================================================
            語音管理器 - 只針對英文優化
         ===================================================== */
@@ -608,19 +679,16 @@
             isSpeaking: false,
             currentSpeech: null,
             
-            // 檢查瀏覽器是否支援語音合成
             isSupported: () => {
                 return 'speechSynthesis' in window;
             },
             
-            // 朗讀英文（標準美式發音）
             speakEnglish: (text) => {
                 if (!speechManager.isSupported()) {
                     alert('您的瀏覽器不支援語音合成功能');
                     return;
                 }
                 
-                // 停止當前的語音
                 if (speechManager.isSpeaking) {
                     speechManager.stopSpeaking();
                     return;
@@ -630,26 +698,22 @@
                     return;
                 }
                 
-                // 只取英文部分（去除中文字符）
                 const englishText = text.replace(/[\u4e00-\u9fff]/g, '').trim();
                 if (!englishText) {
                     return;
                 }
                 
-                // 清除事件監聽器
                 if (speechManager.currentSpeech) {
                     speechManager.currentSpeech.onend = null;
                     speechManager.currentSpeech.onerror = null;
                 }
                 
-                // 創建新的語音實例 - 使用美式英文
                 const utterance = new SpeechSynthesisUtterance(englishText);
                 utterance.lang = 'en-US';
-                utterance.rate = 0.9; // 標準語速
-                utterance.pitch = 1.0; // 標準音高
-                utterance.volume = 1.0; // 最大音量
+                utterance.rate = 0.9;
+                utterance.pitch = 1.0;
+                utterance.volume = 1.0;
                 
-                // 嘗試使用女性聲音（通常更清晰）
                 const voices = speechManager.speechSynthesis.getVoices();
                 const englishVoice = voices.find(voice => 
                     voice.lang === 'en-US' && 
@@ -662,7 +726,6 @@
                     utterance.voice = englishVoice;
                 }
                 
-                // 添加動畫效果
                 const speechButton = event?.target?.closest('button') || event?.target;
                 if (speechButton) {
                     speechButton.classList.add('speech-playing');
@@ -691,20 +754,17 @@
                 speechManager.currentSpeech = utterance;
             },
             
-            // 停止朗讀
             stopSpeaking: () => {
                 if (speechManager.isSpeaking) {
                     speechManager.speechSynthesis.cancel();
                     speechManager.isSpeaking = false;
                     
-                    // 移除所有語音按鈕的動畫
                     document.querySelectorAll('.speech-playing').forEach(btn => {
                         btn.classList.remove('speech-playing');
                     });
                 }
             },
             
-            // 初始化語音（載入語音列表）
             initVoices: () => {
                 return new Promise((resolve) => {
                     if (speechManager.speechSynthesis.getVoices().length > 0) {
@@ -722,23 +782,18 @@
            優化演算法：簡化SM-2
         ===================================================== */
         const Algorithm = {
-            // 簡化難度計算：有四個等級（新、困難、普通、簡單）
             calculateNextReview: (card, rating) => {
-                // rating: 0=困難, 1=普通, 2=簡單
                 let { interval, repetition, ef = 2.5 } = card;
                 
-                // 更新EF值
-                if (rating === 0) { // 困難
+                if (rating === 0) {
                     ef = Math.max(1.3, ef - 0.2);
-                } else if (rating === 1) { // 普通
-                    ef = ef; // 保持不變
-                } else { // 簡單
+                } else if (rating === 1) {
+                    ef = ef;
+                } else {
                     ef = Math.min(2.5, ef + 0.1);
                 }
                 
-                // 更新間隔
                 if (rating === 0) {
-                    // 回答錯誤或困難：重置間隔
                     repetition = 0;
                     interval = 1;
                 } else {
@@ -748,20 +803,16 @@
                     } else if (repetition === 2) {
                         interval = 6;
                     } else {
-                        // 使用指數遞增，但更平滑
                         interval = Math.round(interval * ef * (rating === 2 ? 1.2 : 1.0));
                     }
                 }
                 
-                // 計算下次複習時間（毫秒）
-                const nextReview = Date.now() + (interval * 86400000); // 天轉毫秒
+                const nextReview = Date.now() + (interval * 86400000);
                 
                 return { interval, repetition, ef, nextReview };
             },
             
-            // 根據EF值取得難度等級（新增"new"類別）
             getDifficulty: (card) => {
-                // 新卡片（repetition為0且interval為0）標記為"new"
                 if ((card.repetition === 0 && card.interval === 0) || card.difficulty === 'new') {
                     return 'new';
                 }
@@ -772,43 +823,41 @@
                 return 'hard';
             },
             
-            // 難度等級對應的顏色和文字（單色調設計）
             getDifficultyDisplay: (difficulty) => {
                 switch(difficulty) {
                     case 'new': return { 
                         text: '新', 
                         className: 'grade-new',
-                        bgClass: 'bg-gray-50',
-                        borderClass: 'border-gray-200'
+                        icon: 'ph ph-sparkle',
+                        color: 'text-blue-500'
                     };
                     case 'easy': return { 
                         text: '簡單', 
                         className: 'grade-easy',
-                        bgClass: 'bg-gray-100',
-                        borderClass: 'border-gray-300'
+                        icon: 'ph ph-smiley',
+                        color: 'text-emerald-500'
                     };
                     case 'medium': return { 
                         text: '普通', 
                         className: 'grade-medium',
-                        bgClass: 'bg-gray-200',
-                        borderClass: 'border-gray-400'
+                        icon: 'ph ph-meh',
+                        color: 'text-amber-500'
                     };
                     case 'hard': return { 
                         text: '困難', 
                         className: 'grade-hard',
-                        bgClass: 'bg-gray-300',
-                        borderClass: 'border-gray-500'
+                        icon: 'ph ph-frown',
+                        color: 'text-rose-500'
                     };
                     default: return { 
                         text: '新', 
                         className: 'grade-new',
-                        bgClass: 'bg-gray-50',
-                        borderClass: 'border-gray-200'
+                        icon: 'ph ph-sparkle',
+                        color: 'text-blue-500'
                     };
                 }
             },
             
-            // 判斷是否為新卡片
             isNewCard: (card) => {
                 return Algorithm.getDifficulty(card) === 'new';
             }
@@ -818,9 +867,10 @@
            本地存儲數據層
         ===================================================== */
         const LS_KEYS = { 
-            folders: "mc_folders_v2", 
-            cards: "mc_cards_v2",
-            reviewHistory: "mc_review_history_v1" 
+            folders: "mc_folders_v3", 
+            cards: "mc_cards_v3",
+            reviewHistory: "mc_review_history_v2",
+            settings: "mc_settings_v1"
         };
         
         const db = {
@@ -830,6 +880,8 @@
             saveCards: (data) => localStorage.setItem(LS_KEYS.cards, JSON.stringify(data)),
             getReviewHistory: () => JSON.parse(localStorage.getItem(LS_KEYS.reviewHistory) || '[]'),
             saveReviewHistory: (data) => localStorage.setItem(LS_KEYS.reviewHistory, JSON.stringify(data)),
+            getSettings: () => JSON.parse(localStorage.getItem(LS_KEYS.settings) || '{"theme": "light", "autoSpeech": false}'),
+            saveSettings: (data) => localStorage.setItem(LS_KEYS.settings, JSON.stringify(data)),
             
             addReviewRecord: (cardId, rating) => {
                 const history = db.getReviewHistory();
@@ -838,7 +890,7 @@
                     cardId,
                     rating,
                     timestamp: Date.now(),
-                    date: new Date().toISOString().split('T')[0] // YYYY-MM-DD
+                    date: new Date().toISOString().split('T')[0]
                 };
                 history.push(record);
                 db.saveReviewHistory(history);
@@ -847,7 +899,47 @@
             
             init: () => {
                 if (db.getFolders().length === 0) {
-                    db.saveFolders([{ id: 'default', name: '預設記憶包', createdAt: Date.now() }]);
+                    db.saveFolders([
+                        { 
+                            id: 'default', 
+                            name: '預設記憶包', 
+                            createdAt: Date.now(),
+                            color: 'bg-gradient-to-br from-blue-50 to-indigo-50'
+                        }
+                    ]);
+                }
+                
+                // 初始化範例數據（第一次使用時）
+                if (db.getCards().length === 0) {
+                    const exampleCards = [
+                        {
+                            id: crypto.randomUUID(),
+                            front: "apple",
+                            back: "蘋果",
+                            sentence: "I eat an [apple] every day for breakfast.",
+                            folderId: 'default',
+                            interval: 1,
+                            repetition: 1,
+                            ef: 2.5,
+                            difficulty: 'easy',
+                            nextReview: Date.now() + 86400000,
+                            createdAt: Date.now() - 86400000
+                        },
+                        {
+                            id: crypto.randomUUID(),
+                            front: "perseverance",
+                            back: "毅力",
+                            sentence: "Success requires [perseverance] and hard work.",
+                            folderId: 'default',
+                            interval: 0,
+                            repetition: 0,
+                            ef: 2.0,
+                            difficulty: 'new',
+                            nextReview: Date.now(),
+                            createdAt: Date.now()
+                        }
+                    ];
+                    db.saveCards(exampleCards);
                 }
             }
         };
@@ -858,7 +950,7 @@
             activeTab: "review",
             currentReviewCard: null,
             selectedFolderIds: new Set(),
-            selectedDifficulties: new Set(['new', 'hard', 'medium', 'easy']), // 預設全選（包含"新"類別）
+            selectedDifficulties: new Set(['new', 'hard', 'medium', 'easy']),
             currentEditCard: null,
             reviewStats: {
                 total: 0,
@@ -869,6 +961,92 @@
                 hard: 0,
                 filteredTotal: 0,
                 filteredDue: 0
+            },
+            settings: db.getSettings()
+        };
+
+        /* =====================================================
+           統計計算器
+        ===================================================== */
+        const StatsCalculator = {
+            calculateOverallStats: () => {
+                const cards = window.state.cards;
+                const now = Date.now();
+                
+                const total = cards.length;
+                const due = cards.filter(c => c.nextReview <= now).length;
+                const newCards = cards.filter(c => Algorithm.isNewCard(c)).length;
+                const easyCards = cards.filter(c => Algorithm.getDifficulty(c) === 'easy').length;
+                const mediumCards = cards.filter(c => Algorithm.getDifficulty(c) === 'medium').length;
+                const hardCards = cards.filter(c => Algorithm.getDifficulty(c) === 'hard').length;
+                
+                const avgEF = cards.length > 0 
+                    ? cards.reduce((sum, card) => sum + (card.ef || 2.0), 0) / cards.length 
+                    : 0;
+                
+                const retentionRate = cards.length > 0 
+                    ? ((easyCards + mediumCards) / cards.length * 100).toFixed(1)
+                    : 0;
+                
+                return {
+                    total,
+                    due,
+                    new: newCards,
+                    easy: easyCards,
+                    medium: mediumCards,
+                    hard: hardCards,
+                    avgEF,
+                    retentionRate
+                };
+            },
+            
+            calculateFolderStats: () => {
+                const folders = window.state.folders;
+                const cards = window.state.cards;
+                const now = Date.now();
+                
+                return folders.map(folder => {
+                    const folderCards = cards.filter(c => c.folderId === folder.id);
+                    
+                    return {
+                        id: folder.id,
+                        name: folder.name,
+                        total: folderCards.length,
+                        new: folderCards.filter(c => Algorithm.isNewCard(c)).length,
+                        easy: folderCards.filter(c => Algorithm.getDifficulty(c) === 'easy').length,
+                        medium: folderCards.filter(c => Algorithm.getDifficulty(c) === 'medium').length,
+                        hard: folderCards.filter(c => Algorithm.getDifficulty(c) === 'hard').length,
+                        due: folderCards.filter(c => c.nextReview <= now).length,
+                        color: folder.color || 'bg-gradient-to-br from-gray-50 to-gray-100'
+                    };
+                });
+            },
+            
+            calculateReviewHistory: () => {
+                const history = db.getReviewHistory();
+                const today = new Date();
+                const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
+                
+                const last7Days = [];
+                for (let i = 6; i >= 0; i--) {
+                    const date = new Date(today);
+                    date.setDate(date.getDate() - i);
+                    const dateStr = date.toISOString().split('T')[0];
+                    
+                    const dayRecords = history.filter(record => record.date === dateStr);
+                    
+                    last7Days.push({
+                        date: dateStr,
+                        day: date.getDate(),
+                        weekday: weekDays[date.getDay()],
+                        total: dayRecords.length,
+                        easy: dayRecords.filter(r => r.rating === 2).length,
+                        medium: dayRecords.filter(r => r.rating === 1).length,
+                        hard: dayRecords.filter(r => r.rating === 0).length
+                    });
+                }
+                
+                return last7Days;
             }
         };
 
@@ -891,6 +1069,13 @@
                 const easyCards = window.state.cards.filter(c => Algorithm.getDifficulty(c) === 'easy');
                 const mediumCards = window.state.cards.filter(c => Algorithm.getDifficulty(c) === 'medium');
                 const hardCards = window.state.cards.filter(c => Algorithm.getDifficulty(c) === 'hard');
+                
+                // 更新卡片庫計數
+                document.getElementById('total-cards-count').textContent = window.state.cards.length;
+                document.getElementById('list-new-count').textContent = newCards.length;
+                document.getElementById('list-easy-count').textContent = easyCards.length;
+                document.getElementById('list-medium-count').textContent = mediumCards.length;
+                document.getElementById('list-hard-count').textContent = hardCards.length;
                 
                 // 計算篩選後的統計
                 let filteredCards = window.state.cards;
@@ -955,14 +1140,35 @@
             addFolder: (optionalName = null) => {
                 const nameInput = document.getElementById('new-folder-name');
                 const name = (optionalName || nameInput?.value)?.trim();
-                if (!name) return null;
+                if (!name) {
+                    if (nameInput) nameInput.focus();
+                    return null;
+                }
 
                 const existing = db.getFolders().find(f => f.name.toLowerCase() === name.toLowerCase());
                 if (existing) return existing;
 
-                const folder = { id: crypto.randomUUID(), name, createdAt: Date.now() };
+                const colors = [
+                    'bg-gradient-to-br from-blue-50 to-indigo-50',
+                    'bg-gradient-to-br from-emerald-50 to-teal-50',
+                    'bg-gradient-to-br from-amber-50 to-orange-50',
+                    'bg-gradient-to-br from-rose-50 to-pink-50',
+                    'bg-gradient-to-br from-purple-50 to-violet-50',
+                    'bg-gradient-to-br from-cyan-50 to-sky-50'
+                ];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                const folder = { 
+                    id: crypto.randomUUID(), 
+                    name, 
+                    createdAt: Date.now(),
+                    color: randomColor
+                };
                 db.saveFolders([...db.getFolders(), folder]);
-                if (nameInput) nameInput.value = '';
+                if (nameInput) {
+                    nameInput.value = '';
+                    nameInput.blur();
+                }
                 ui.init();
                 return folder;
             },
@@ -994,7 +1200,6 @@
                 }
 
                 if (window.state.currentEditCard) {
-                    // 編輯現有卡片
                     const updatedCards = window.state.cards.map(c => 
                         c.id === window.state.currentEditCard.id 
                             ? {
@@ -1009,7 +1214,6 @@
                     );
                     db.saveCards(updatedCards);
                 } else {
-                    // 新增卡片 - 一律標記為"新"
                     const newCard = {
                         id: crypto.randomUUID(),
                         front, 
@@ -1036,7 +1240,6 @@
                 ui.init();
             },
             
-            // 評分卡片：0=困難, 1=普通, 2=簡單
             rateCard: (rating) => {
                 const card = window.state.currentReviewCard;
                 if (!card) return;
@@ -1058,7 +1261,14 @@
 
                 db.saveCards(updatedCards);
                 db.addReviewRecord(card.id, rating);
-                ui.renderReview();
+                
+                // 顯示簡短回饋
+                const feedback = ['需要多練習', '還可以', '很棒！'][rating];
+                ui.showToast(feedback, rating === 2 ? 'success' : rating === 1 ? 'info' : 'warning');
+                
+                setTimeout(() => {
+                    ui.renderReview();
+                }, 300);
             }
         };
 
@@ -1073,6 +1283,10 @@
                 ui.renderWordList();
                 ui.renderReview();
                 ui.renderStats();
+                
+                // 顯示空狀態訊息
+                document.getElementById('empty-folders-msg').classList.toggle('hidden', window.state.folders.length > 0);
+                document.getElementById('empty-list-msg').classList.toggle('hidden', window.state.cards.length > 0);
             },
             
             switchTab: (tabId) => {
@@ -1081,10 +1295,12 @@
                     const indicator = btn.querySelector('.active-indicator');
                     if (t === tabId) {
                         btn.classList.replace('text-gray-500', 'text-gray-900');
-                        indicator.classList.remove('hidden');
+                        indicator.classList.remove('hidden', 'scale-x-0');
+                        indicator.classList.add('scale-x-100');
                     } else {
                         btn.classList.replace('text-gray-900', 'text-gray-500');
-                        indicator.classList.add('hidden');
+                        indicator.classList.add('hidden', 'scale-x-0');
+                        indicator.classList.remove('scale-x-100');
                     }
                 });
                 
@@ -1093,21 +1309,23 @@
                 });
                 
                 window.state.activeTab = tabId;
+                
+                // 如果切換到統計頁面，重新計算統計
+                if (tabId === 'stats') {
+                    setTimeout(() => ui.renderStats(), 50);
+                }
             },
             
             renderFolderSelect: () => {
                 const sel = document.getElementById('card-folder');
                 sel.innerHTML = window.state.folders.length === 0 
-                    ? `<option>請先建立記憶包</option>`
+                    ? `<option value="">請先建立記憶包</option>`
                     : window.state.folders.map(f => `<option value="${f.id}">${f.name}</option>`).join('');
             },
             
             renderFolderList: () => {
                 const container = document.getElementById('folders-list-container');
-                if (window.state.folders.length === 0) {
-                    container.innerHTML = `<p class="text-center py-12 text-gray-400 text-sm">目前沒有記憶包</p>`;
-                    return;
-                }
+                if (window.state.folders.length === 0) return;
                 
                 container.innerHTML = window.state.folders.map(f => {
                     const cardCount = window.state.cards.filter(c => c.folderId === f.id).length;
@@ -1115,21 +1333,23 @@
                     const newCount = window.state.cards.filter(c => c.folderId === f.id && Algorithm.isNewCard(c)).length;
                     
                     return `
-                    <div class="glass-card flex items-center justify-between p-3 rounded-lg transition-all-smooth">
-                        <div class="flex items-center gap-3 flex-1">
-                            <i class="ph ph-folder text-gray-400"></i>
-                            <div class="flex-1">
-                                <input type="text" value="${f.name}" onchange="dataManager.updateFolder('${f.id}', this.value)"
-                                    class="w-full bg-transparent focus:outline-none text-sm min-w-0 mb-1 font-light">
-                                <div class="flex items-center gap-3 text-xs text-gray-500">
-                                    <span>${cardCount} 張</span>
-                                    ${newCount > 0 ? `<span class="text-gray-600">${newCount} 張新</span>` : ''}
-                                    ${dueCount > 0 ? `<span class="text-gray-700 font-medium">${dueCount} 張到期</span>` : ''}
+                    <div class="glass-card p-4 rounded-xl ${f.color} border-opacity-30">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3 flex-1">
+                                <div class="w-12 h-12 rounded-xl ${f.color.replace('50', '100').replace('from-', 'from-').replace('to-', 'to-')} flex items-center justify-center border border-white">
+                                    <i class="ph ph-folder text-gray-600"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <input type="text" value="${f.name}" onchange="dataManager.updateFolder('${f.id}', this.value)"
+                                        class="w-full bg-transparent focus:outline-none text-sm font-medium min-w-0 mb-1 focus:bg-white px-2 py-1 rounded">
+                                    <div class="flex items-center gap-3 text-xs text-gray-600">
+                                        <span>${cardCount} 張</span>
+                                        ${newCount > 0 ? `<span class="text-blue-600 font-medium">${newCount} 新</span>` : ''}
+                                        ${dueCount > 0 ? `<span class="text-amber-600 font-medium">${dueCount} 到期</span>` : ''}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <button onclick="dataManager.deleteFolder('${f.id}')" class="text-gray-300 hover:text-gray-700 p-1 transition-all-smooth">
+                            <button onclick="dataManager.deleteFolder('${f.id}')" class="text-gray-400 hover:text-rose-500 p-2 hover:bg-rose-50 rounded-lg transition-all-smooth">
                                 <i class="ph ph-trash"></i>
                             </button>
                         </div>
@@ -1141,8 +1361,6 @@
                 const container = document.getElementById('word-list-container');
                 const sorted = [...window.state.cards].sort((a,b) => b.createdAt - a.createdAt);
                 
-                document.getElementById('empty-list-msg').classList.toggle('hidden', sorted.length > 0);
-                
                 container.innerHTML = sorted.map(w => {
                     const folderName = window.state.folders.find(f => f.id === w.folderId)?.name || '未知';
                     const diff = Algorithm.getDifficultyDisplay(w.difficulty || Algorithm.getDifficulty(w));
@@ -1150,34 +1368,45 @@
                     const isNew = Algorithm.isNewCard(w);
                     
                     return `
-                    <div class="glass-card group flex items-center justify-between p-4 rounded-lg hover:border-gray-400 transition-all-smooth">
-                        <div class="flex-1 pr-4">
-                            <div class="flex items-center gap-3 mb-1">
-                                <h3 class="text-base font-light text-gray-900">${w.front}</h3>
-                                <span class="text-xs px-2 py-0.5 rounded border ${diff.className}">${diff.text}</span>
-                                ${due ? '<span class="text-xs px-2 py-0.5 rounded bg-gray-200 text-gray-700 border border-gray-300">到期</span>' : ''}
-                                ${isNew ? '<span class="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-600 border border-gray-200">新</span>' : ''}
+                    <div class="glass-card group p-4 rounded-xl hover:border-gray-300 transition-all-smooth">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1 pr-4">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <h3 class="text-base font-medium text-gray-900">${w.front}</h3>
+                                    <span class="text-xs px-2.5 py-1 rounded-full ${diff.className} ${diff.color} flex items-center gap-1">
+                                        <i class="${diff.icon}"></i> ${diff.text}
+                                    </span>
+                                    ${due ? '<span class="text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-700 border border-amber-200">到期</span>' : ''}
+                                    ${isNew ? '<span class="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700 border border-blue-200">新</span>' : ''}
+                                </div>
+                                <div class="flex items-center justify-between mb-3">
+                                    <p class="text-sm text-gray-600 font-medium">${w.back}</p>
+                                    <button onclick="speechManager.speakEnglish('${w.front.replace(/'/g, "\\'")}')" 
+                                        class="text-gray-400 hover:text-indigo-600 p-1.5 hover:bg-indigo-50 rounded-lg transition-all-smooth opacity-0 group-hover:opacity-100">
+                                        <i class="ph ph-speaker-high"></i>
+                                    </button>
+                                </div>
+                                <div class="flex items-center gap-2 text-xs text-gray-500">
+                                    <span class="bg-gray-100 px-2 py-1 rounded">${folderName}</span>
+                                    <span>•</span>
+                                    <span>${new Date(w.nextReview).toLocaleDateString('zh-TW')} 複習</span>
+                                    <span>•</span>
+                                    <span>EF: ${(w.ef || 2.0).toFixed(1)}</span>
+                                </div>
+                                ${w.sentence ? `
+                                    <div class="mt-3 pt-3 border-t border-gray-100">
+                                        <p class="text-sm text-gray-500 italic">${w.sentence.replace(/\[.*?\]/g, '<span class="bg-gray-100 px-1.5 py-0.5 rounded font-medium">______</span>')}</p>
+                                    </div>
+                                ` : ''}
                             </div>
-                            <div class="flex items-center justify-between">
-                                <p class="text-sm text-gray-600 font-light">${w.back}</p>
-                                <button onclick="speechManager.speakEnglish('${w.front.replace(/'/g, "\\'")}')" 
-                                    class="text-gray-400 hover:text-gray-900 p-1 transition-all-smooth opacity-0 group-hover:opacity-100">
-                                    <i class="ph ph-speaker-high"></i>
+                            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all-smooth">
+                                <button onclick="ui.showEditModal('${w.id}')" class="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all-smooth">
+                                    <i class="ph ph-pencil-simple"></i>
+                                </button>
+                                <button onclick="dataManager.deleteWord('${w.id}')" class="p-2 text-gray-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all-smooth">
+                                    <i class="ph ph-trash"></i>
                                 </button>
                             </div>
-                            <div class="flex items-center gap-2 mt-2 text-xs text-gray-400">
-                                <span>${folderName}</span>
-                                <span>•</span>
-                                <span>${new Date(w.nextReview).toLocaleDateString('zh-TW')} 複習</span>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all-smooth">
-                            <button onclick="ui.showEditModal('${w.id}')" class="p-1.5 text-gray-400 hover:text-gray-900 rounded transition-all-smooth">
-                                <i class="ph ph-pencil-simple"></i>
-                            </button>
-                            <button onclick="dataManager.deleteWord('${w.id}')" class="p-1.5 text-gray-400 hover:text-gray-700 rounded transition-all-smooth">
-                                <i class="ph ph-trash"></i>
-                            </button>
                         </div>
                     </div>`;
                 }).join('');
@@ -1197,11 +1426,13 @@
 
                 if (pool.length === 0) {
                     container.innerHTML = `
-                        <div class="flex flex-col items-center justify-center h-full text-center px-4">
-                            <i class="ph ph-smiley text-6xl text-gray-300 mb-6"></i>
-                            <h3 class="text-base font-light text-gray-900 mb-2">沒有可複習的卡片</h3>
-                            <p class="text-sm text-gray-500 max-w-xs">請新增卡片或調整篩選條件</p>
-                            <button onclick="ui.clearAllFilters()" class="mt-4 px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg glass-button hover:border-gray-900 transition-all-smooth">
+                        <div class="flex flex-col items-center justify-center h-full text-center px-4 fade-in">
+                            <div class="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center mb-6">
+                                <i class="ph ph-check-circle text-3xl text-indigo-500"></i>
+                            </div>
+                            <h3 class="text-lg font-medium text-gray-900 mb-3">沒有可複習的卡片</h3>
+                            <p class="text-sm text-gray-500 max-w-xs mb-6">請新增卡片或調整篩選條件</p>
+                            <button onclick="ui.clearAllFilters()" class="px-5 py-2.5 text-sm text-gray-700 border border-gray-200 rounded-xl glass-button hover:border-indigo-300 hover:bg-indigo-50 transition-all-smooth">
                                 清除篩選條件
                             </button>
                         </div>`;
@@ -1223,57 +1454,61 @@
                     <div class="w-full max-w-md mx-auto flex flex-col items-center fade-in">
                         <div class="text-center mb-8">
                             <div class="flex items-center gap-2 justify-center mb-4">
-                                <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded border border-gray-200">${folderName}</span>
-                                <span class="text-xs px-2 py-1 rounded border ${diff.className}">${diff.text}</span>
+                                <span class="text-xs text-gray-600 bg-gray-100 px-3 py-1.5 rounded-full border border-gray-200 flex items-center gap-1">
+                                    <i class="ph ph-folder-simple text-xs"></i> ${folderName}
+                                </span>
+                                <span class="text-xs px-3 py-1.5 rounded-full ${diff.className} ${diff.color} flex items-center gap-1">
+                                    <i class="${diff.icon}"></i> ${diff.text}
+                                </span>
                             </div>
-                            <p class="text-xs text-gray-500">${isPractice ? '練習模式' : due.length + ' 張到期'}</p>
+                            <p class="text-xs text-gray-500">${isPractice ? '練習模式 • 所有卡片' : due.length + ' 張到期 • 複習模式'}</p>
                         </div>
 
-                        <div class="w-full mb-8">
+                        <div class="w-full mb-10">
                             <div class="flex items-center justify-center gap-2 mb-6">
-                                <h2 class="text-2xl font-light text-gray-900 text-center px-4">${word.back}</h2>
+                                <h2 class="text-3xl font-medium text-gray-900 text-center px-4">${word.back}</h2>
                                 <button onclick="speechManager.speakEnglish('${word.back.replace(/'/g, "\\'")}')" 
-                                    class="text-gray-400 hover:text-gray-900 p-1 transition-all-smooth">
-                                    <i class="ph ph-speaker-high text-lg"></i>
+                                    class="text-gray-400 hover:text-indigo-600 p-2 hover:bg-indigo-50 rounded-xl transition-all-smooth">
+                                    <i class="ph ph-speaker-high text-xl"></i>
                                 </button>
                             </div>
                             
                             ${displaySentence ? `
-                                <div class="px-4 py-3 bg-gray-50 rounded-lg mb-8 border border-gray-200">
-                                    <p class="text-sm text-gray-600 italic font-light">"${displaySentence}"</p>
+                                <div class="px-5 py-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl mb-8 border border-gray-200">
+                                    <p class="text-sm text-gray-600 italic font-medium">"${displaySentence}"</p>
                                 </div>
                             ` : ''}
                         </div>
 
-                        <div id="quiz-area" class="w-full mb-10">
+                        <div id="quiz-area" class="w-full mb-12">
                             <input type="text" id="answer-input" autocomplete="off" 
-                                class="w-full text-lg text-center py-3 border-b border-gray-300 focus:outline-none focus:border-gray-900 placeholder-gray-400 font-light bg-transparent" 
+                                class="w-full text-lg text-center py-4 border-b-2 border-gray-300 focus:outline-none focus:border-indigo-500 placeholder-gray-400 font-medium bg-transparent rounded-t-lg" 
                                 placeholder="輸入答案…">
                         </div>
 
                         <div id="result-area" class="hidden w-full">
-                            <div id="correct-answer-display" class="text-lg font-light text-center mb-8 px-4"></div>
+                            <div id="correct-answer-display" class="text-xl font-medium text-center mb-10 px-4"></div>
                             <div class="flex flex-col gap-3">
-                                <button onclick="dataManager.rateCard(2)" class="w-full py-3.5 bg-gray-50 text-gray-700 text-sm font-light rounded-lg border border-gray-300 hover:border-gray-900 transition-all-smooth">
+                                <button onclick="dataManager.rateCard(2)" class="w-full py-4 bg-gradient-to-br from-emerald-50 to-green-50 text-emerald-700 text-sm font-medium rounded-xl border border-emerald-200 hover:border-emerald-400 transition-all-smooth hover:shadow-sm">
                                     <div class="flex items-center justify-center gap-2">
-                                        <i class="ph ph-check-circle"></i>
+                                        <i class="ph ph-check-circle text-emerald-500"></i>
                                         <span>簡單</span>
                                     </div>
-                                    <div class="text-xs mt-1 opacity-70">完美記住，間隔延長</div>
+                                    <div class="text-xs mt-1 opacity-70">完美記住</div>
                                 </button>
-                                <button onclick="dataManager.rateCard(1)" class="w-full py-3.5 bg-gray-100 text-gray-700 text-sm font-light rounded-lg border border-gray-300 hover:border-gray-900 transition-all-smooth">
+                                <button onclick="dataManager.rateCard(1)" class="w-full py-4 bg-gradient-to-br from-amber-50 to-yellow-50 text-amber-700 text-sm font-medium rounded-xl border border-amber-200 hover:border-amber-400 transition-all-smooth hover:shadow-sm">
                                     <div class="flex items-center justify-center gap-2">
-                                        <i class="ph ph-circle"></i>
+                                        <i class="ph ph-circle text-amber-500"></i>
                                         <span>普通</span>
                                     </div>
-                                    <div class="text-xs mt-1 opacity-70">基本正確，正常間隔</div>
+                                    <div class="text-xs mt-1 opacity-70">基本正確</div>
                                 </button>
-                                <button onclick="dataManager.rateCard(0)" class="w-full py-3.5 bg-gray-200 text-gray-700 text-sm font-light rounded-lg border border-gray-300 hover:border-gray-900 transition-all-smooth">
+                                <button onclick="dataManager.rateCard(0)" class="w-full py-4 bg-gradient-to-br from-rose-50 to-red-50 text-rose-700 text-sm font-medium rounded-xl border border-rose-200 hover:border-rose-400 transition-all-smooth hover:shadow-sm">
                                     <div class="flex items-center justify-center gap-2">
-                                        <i class="ph ph-x-circle"></i>
+                                        <i class="ph ph-x-circle text-rose-500"></i>
                                         <span>困難</span>
                                     </div>
-                                    <div class="text-xs mt-1 opacity-70">記憶困難，縮短間隔</div>
+                                    <div class="text-xs mt-1 opacity-70">需要複習</div>
                                 </button>
                             </div>
                         </div>
@@ -1282,7 +1517,10 @@
                 // 自動聚焦輸入框
                 setTimeout(() => {
                     const input = document.getElementById('answer-input');
-                    if (input) input.focus();
+                    if (input) {
+                        input.focus();
+                        input.select();
+                    }
                 }, 150);
                 
                 // 綁定輸入事件
@@ -1304,7 +1542,7 @@
                 const inputEl = document.getElementById('answer-input');
                 if (inputEl) {
                     inputEl.disabled = true;
-                    inputEl.classList.add(isCorrect ? 'border-gray-900' : 'border-gray-500');
+                    inputEl.classList.add(isCorrect ? 'border-emerald-500' : 'border-rose-500');
                 }
 
                 document.getElementById('quiz-area').classList.add('opacity-50');
@@ -1313,16 +1551,16 @@
                 const displayEl = document.getElementById('correct-answer-display');
                 if (displayEl) {
                     displayEl.innerHTML = `
-                        <div class="space-y-3">
-                            <div class="flex items-center justify-center gap-2">
-                                <span class="text-gray-900 ${isCorrect ? 'text-gray-900' : 'text-gray-700'} font-light">${card.front}</span>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-center gap-3">
+                                <span class="text-gray-900 ${isCorrect ? 'text-emerald-600' : 'text-rose-600'} font-medium">${card.front}</span>
                                 <button onclick="speechManager.speakEnglish('${card.front.replace(/'/g, "\\'")}')" 
-                                    class="text-gray-400 hover:text-gray-900 p-1 transition-all-smooth">
+                                    class="text-gray-400 hover:text-indigo-600 p-2 hover:bg-indigo-50 rounded-lg transition-all-smooth">
                                     <i class="ph ph-speaker-high"></i>
                                 </button>
                             </div>
                             ${!isCorrect && val ? 
-                                `<div class="text-sm text-gray-500 opacity-70 font-light">你的答案: ${val}</div>` 
+                                `<div class="text-sm text-gray-500 opacity-70 font-medium">你的答案: <span class="text-rose-500">${val}</span></div>` 
                                 : ''}
                         </div>`;
                 }
@@ -1333,7 +1571,7 @@
                 const folderStats = StatsCalculator.calculateFolderStats();
                 const reviewHistory = StatsCalculator.calculateReviewHistory();
                 
-                // 整體統計 - 改善佈局
+                // 整體統計
                 const overallContainer = document.getElementById('overall-stats');
                 overallContainer.innerHTML = `
                     <div class="stat-card">
@@ -1341,11 +1579,11 @@
                         <div class="stat-label">卡片總數</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value ${overall.due > 0 ? 'text-gray-800' : 'text-gray-900'}">${overall.due}</div>
+                        <div class="stat-value ${overall.due > 0 ? 'text-amber-600' : 'text-gray-900'}">${overall.due}</div>
                         <div class="stat-label">到期卡片</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value text-gray-700">${overall.new}</div>
+                        <div class="stat-value text-blue-600">${overall.new}</div>
                         <div class="stat-label">新卡片</div>
                     </div>
                     <div class="stat-card">
@@ -1354,25 +1592,31 @@
                     </div>
                 `;
                 
-                // 難度分佈 - 改善間距
+                // 難度分佈
                 const diffContainer = document.getElementById('difficulty-distribution');
                 const difficulties = [
-                    { id: 'new', label: '新', color: 'bg-gray-200', textColor: 'text-gray-700' },
-                    { id: 'easy', label: '簡單', color: 'bg-gray-300', textColor: 'text-gray-700' },
-                    { id: 'medium', label: '普通', color: 'bg-gray-400', textColor: 'text-gray-800' },
-                    { id: 'hard', label: '困難', color: 'bg-gray-500', textColor: 'text-gray-900' }
+                    { id: 'new', label: '新', color: 'bg-blue-200', textColor: 'text-blue-700' },
+                    { id: 'easy', label: '簡單', color: 'bg-emerald-200', textColor: 'text-emerald-700' },
+                    { id: 'medium', label: '普通', color: 'bg-amber-200', textColor: 'text-amber-700' },
+                    { id: 'hard', label: '困難', color: 'bg-rose-200', textColor: 'text-rose-700' }
                 ];
                 
                 diffContainer.innerHTML = difficulties.map(d => {
                     const percentage = overall.total > 0 ? (overall[d.id] / overall.total * 100).toFixed(1) : 0;
                     return `
-                    <div class="difficulty-label-container space-y-2">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                <div class="w-3 h-3 rounded-full ${d.color}"></div>
-                                <span class="text-sm font-light ${d.textColor}">${d.label}</span>
+                    <div class="stat-card">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg ${d.color} flex items-center justify-center">
+                                    <i class="${Algorithm.getDifficultyDisplay(d.id).icon} ${d.textColor}"></i>
+                                </div>
+                                <span class="text-sm font-medium ${d.textColor}">${d.label}</span>
                             </div>
-                            <div class="text-sm font-light text-gray-900">${overall[d.id]} 張 (${percentage}%)</div>
+                            <div class="text-lg font-medium text-gray-900">${overall[d.id]} 張</div>
+                        </div>
+                        <div class="flex items-center justify-between text-xs text-gray-500 mb-2">
+                            <span>分佈比例</span>
+                            <span class="font-medium">${percentage}%</span>
                         </div>
                         <div class="dist-bar">
                             <div class="dist-fill ${d.color}" style="width: ${percentage}%"></div>
@@ -1380,7 +1624,7 @@
                     </div>`;
                 }).join('');
                 
-                // 記憶包統計摘要 - 改善間距
+                // 記憶包統計摘要
                 const folderSummary = document.getElementById('folder-stats-summary');
                 folderSummary.innerHTML = folderStats.map(f => {
                     const newPct = f.total > 0 ? (f.new / f.total * 100).toFixed(0) : 0;
@@ -1389,140 +1633,150 @@
                     const hardPct = f.total > 0 ? (f.hard / f.total * 100).toFixed(0) : 0;
                     
                     return `
-                    <div class="stat-card">
+                    <div class="stat-card ${f.color}">
                         <div class="flex items-center justify-between mb-4">
-                            <span class="text-sm font-light text-gray-900">${f.name}</span>
-                            <span class="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded">${f.total} 張</span>
-                        </div>
-                        
-                        <div class="grid grid-cols-4 gap-2 mb-4 text-center">
-                            <div class="p-2 bg-gray-50 rounded-lg">
-                                <div class="text-sm font-light text-gray-700">${f.new}</div>
-                                <div class="text-xs text-gray-500 mt-1">新</div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg ${f.color.replace('50', '100')} flex items-center justify-center border border-white">
+                                    <i class="ph ph-folder text-gray-600"></i>
+                                </div>
+                                <div>
+                                    <span class="text-sm font-medium text-gray-900">${f.name}</span>
+                                    <div class="text-xs text-gray-500 mt-0.5">${f.total} 張卡片</div>
+                                </div>
                             </div>
-                            <div class="p-2 bg-gray-100 rounded-lg">
-                                <div class="text-sm font-light text-gray-700">${f.easy}</div>
-                                <div class="text-xs text-gray-500 mt-1">簡單</div>
-                            </div>
-                            <div class="p-2 bg-gray-200 rounded-lg">
-                                <div class="text-sm font-light text-gray-700">${f.medium}</div>
-                                <div class="text-xs text-gray-500 mt-1">普通</div>
-                            </div>
-                            <div class="p-2 bg-gray-300 rounded-lg">
-                                <div class="text-sm font-light text-gray-700">${f.hard}</div>
-                                <div class="text-xs text-gray-500 mt-1">困難</div>
+                            <div class="text-right">
+                                <div class="text-lg font-medium ${f.due > 0 ? 'text-amber-600' : 'text-gray-900'}">${f.due}</div>
+                                <div class="text-xs text-gray-500">到期</div>
                             </div>
                         </div>
                         
-                        <div class="text-xs text-gray-500 flex justify-between mb-2">
-                            <span>${f.new > 0 ? `新 ${newPct}%` : ''}</span>
-                            <span>簡單 ${easyPct}%</span>
-                            <span>普通 ${mediumPct}%</span>
-                            <span>困難 ${hardPct}%</span>
+                        <div class="grid grid-cols-4 gap-2 text-center mb-4">
+                            <div class="p-2 bg-white/50 rounded-lg">
+                                <div class="text-sm font-medium text-blue-600">${f.new}</div>
+                                <div class="text-xs text-blue-500 mt-1">新</div>
+                            </div>
+                            <div class="p-2 bg-white/50 rounded-lg">
+                                <div class="text-sm font-medium text-emerald-600">${f.easy}</div>
+                                <div class="text-xs text-emerald-500 mt-1">簡單</div>
+                            </div>
+                            <div class="p-2 bg-white/50 rounded-lg">
+                                <div class="text-sm font-medium text-amber-600">${f.medium}</div>
+                                <div class="text-xs text-amber-500 mt-1">普通</div>
+                            </div>
+                            <div class="p-2 bg-white/50 rounded-lg">
+                                <div class="text-sm font-medium text-rose-600">${f.hard}</div>
+                                <div class="text-xs text-rose-500 mt-1">困難</div>
+                            </div>
                         </div>
                         
                         <div class="dist-bar">
-                            <div class="dist-fill bg-gray-200" style="width: ${newPct}%"></div>
-                            <div class="dist-fill bg-gray-300" style="width: ${easyPct}%"></div>
-                            <div class="dist-fill bg-gray-400" style="width: ${mediumPct}%"></div>
-                            <div class="dist-fill bg-gray-500" style="width: ${hardPct}%"></div>
+                            <div class="dist-fill bg-blue-200" style="width: ${newPct}%"></div>
+                            <div class="dist-fill bg-emerald-200" style="width: ${easyPct}%"></div>
+                            <div class="dist-fill bg-amber-200" style="width: ${mediumPct}%"></div>
+                            <div class="dist-fill bg-rose-200" style="width: ${hardPct}%"></div>
                         </div>
                     </div>`;
                 }).join('');
                 
-                // 記憶包統計詳細 - 改善佈局
+                // 記憶包統計詳細
                 const folderDetailed = document.getElementById('folder-stats-detailed');
                 folderDetailed.innerHTML = folderStats.map(f => {
+                    const retention = f.total > 0 ? Math.round((f.easy + f.medium) / f.total * 100) : 0;
+                    
                     return `
                     <div class="stat-card space-y-4">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
-                                <i class="ph ph-folder text-gray-400 text-lg"></i>
+                                <div class="w-12 h-12 rounded-xl ${f.color} flex items-center justify-center">
+                                    <i class="ph ph-folder text-gray-600 text-lg"></i>
+                                </div>
                                 <div>
-                                    <h4 class="text-sm font-light text-gray-900">${f.name}</h4>
+                                    <h4 class="text-sm font-medium text-gray-900">${f.name}</h4>
                                     <div class="flex items-center gap-2 mt-1">
                                         ${f.new > 0 ? 
-                                            `<span class="text-xs px-2 py-1 rounded bg-gray-100 text-gray-600 border border-gray-200">
+                                            `<span class="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700 border border-blue-200">
                                                 ${f.new} 張新
                                             </span>` : ''}
-                                        <span class="text-xs px-2 py-1 rounded ${f.due > 0 ? 'bg-gray-200 text-gray-700 border border-gray-300' : 'bg-gray-100 text-gray-600 border border-gray-200'}">
+                                        <span class="text-xs px-2 py-1 rounded-full ${f.due > 0 ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-gray-100 text-gray-600 border border-gray-200'}">
                                             ${f.due} 張到期
                                         </span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="text-lg font-light text-gray-900">${f.total}</div>
+                            <div class="text-2xl font-medium text-gray-900">${f.total}</div>
                         </div>
                         
                         <div class="progress-chart">
                             <div class="grid grid-cols-2 gap-3">
-                                <div class="text-center p-3 bg-gray-50 rounded-lg">
-                                    <div class="text-lg font-light text-gray-900">${f.easy + f.medium + f.hard}</div>
+                                <div class="text-center p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl">
+                                    <div class="text-xl font-medium text-gray-900">${f.easy + f.medium + f.hard}</div>
                                     <div class="text-xs text-gray-500 mt-1">已複習</div>
                                 </div>
-                                <div class="text-center p-3 bg-gray-50 rounded-lg">
-                                    <div class="text-lg font-light text-gray-900">${Math.round((f.easy + f.medium + f.hard) / Math.max(f.total, 1) * 100)}%</div>
-                                    <div class="text-xs text-gray-500 mt-1">掌握率</div>
+                                <div class="text-center p-4 bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl">
+                                    <div class="text-xl font-medium text-emerald-600">${retention}%</div>
+                                    <div class="text-xs text-emerald-500 mt-1">掌握率</div>
                                 </div>
                             </div>
                         </div>
                     </div>`;
                 }).join('');
                 
-                // 複習進度 - 改善間距和視覺
+                // 複習進度
                 const progressContainer = document.getElementById('review-progress');
                 if (reviewHistory.some(day => day.total > 0)) {
                     const maxReviews = Math.max(...reviewHistory.map(day => day.total));
                     
                     progressContainer.innerHTML = reviewHistory.map(day => {
-                        const easyHeight = day.total > 0 ? (day.easy / maxReviews * 80) : 0;
-                        const mediumHeight = day.total > 0 ? (day.medium / maxReviews * 80) : 0;
-                        const hardHeight = day.total > 0 ? (day.hard / maxReviews * 80) : 0;
+                        const easyHeight = day.total > 0 ? (day.easy / maxReviews * 100) : 0;
+                        const mediumHeight = day.total > 0 ? (day.medium / maxReviews * 100) : 0;
+                        const hardHeight = day.total > 0 ? (day.hard / maxReviews * 100) : 0;
                         
                         return `
                         <div class="stat-card">
                             <div class="flex items-center justify-between mb-4">
                                 <div>
-                                    <div class="text-sm font-light text-gray-900">${day.weekday}</div>
+                                    <div class="text-sm font-medium text-gray-900">${day.weekday}</div>
                                     <div class="text-xs text-gray-500">${day.day}日</div>
                                 </div>
-                                <div class="text-sm font-light text-gray-900">${day.total} 張</div>
+                                <div class="text-lg font-medium text-gray-900">${day.total} 張</div>
                             </div>
                             
-                            <div class="flex items-end h-20 gap-1.5 px-4 mb-3">
-                                <div class="flex-1 bg-gray-200 rounded-t transition-all duration-500 ease-out" 
+                            <div class="flex items-end h-24 gap-1.5 px-2 mb-4">
+                                <div class="flex-1 bg-emerald-200 rounded-t transition-all duration-700 ease-out" 
                                      style="height: ${easyHeight}%"></div>
-                                <div class="flex-1 bg-gray-300 rounded-t transition-all duration-500 ease-out" 
+                                <div class="flex-1 bg-amber-200 rounded-t transition-all duration-700 ease-out delay-100" 
                                      style="height: ${mediumHeight}%"></div>
-                                <div class="flex-1 bg-gray-400 rounded-t transition-all duration-500 ease-out" 
+                                <div class="flex-1 bg-rose-200 rounded-t transition-all duration-700 ease-out delay-200" 
                                      style="height: ${hardHeight}%"></div>
                             </div>
                             
                             <div class="flex justify-between text-xs text-gray-500">
-                                <div class="flex items-center gap-1">
-                                    <div class="w-2 h-2 rounded-full bg-gray-200"></div>
-                                    <span>${day.easy}</span>
+                                <div class="flex items-center gap-1.5">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-emerald-200"></div>
+                                    <span class="font-medium">${day.easy}</span>
                                 </div>
-                                <div class="flex items-center gap-1">
-                                    <div class="w-2 h-2 rounded-full bg-gray-300"></div>
-                                    <span>${day.medium}</span>
+                                <div class="flex items-center gap-1.5">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-amber-200"></div>
+                                    <span class="font-medium">${day.medium}</span>
                                 </div>
-                                <div class="flex items-center gap-1">
-                                    <div class="w-2 h-2 rounded-full bg-gray-400"></div>
-                                    <span>${day.hard}</span>
+                                <div class="flex items-center gap-1.5">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-rose-200"></div>
+                                    <span class="font-medium">${day.hard}</span>
                                 </div>
                             </div>
                         </div>`;
                     }).join('');
                 } else {
                     progressContainer.innerHTML = `
-                        <div class="stat-card text-center py-10">
-                            <i class="ph ph-chart-line text-4xl text-gray-300 mb-3"></i>
-                            <p class="text-sm font-light text-gray-400 mb-1">還沒有複習記錄</p>
+                        <div class="stat-card text-center py-12">
+                            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center mx-auto mb-4">
+                                <i class="ph ph-chart-line text-2xl text-indigo-500"></i>
+                            </div>
+                            <p class="text-sm font-medium text-gray-400 mb-2">還沒有複習記錄</p>
                             <p class="text-xs text-gray-300">開始複習卡片後，這裡會顯示進度圖表</p>
                         </div>`;
                 }
-            }
+            },
             
             toggleFolderStats: () => {
                 const detailed = document.getElementById('folder-stats-detailed');
@@ -1577,24 +1831,25 @@
 
                     // 記憶包篩選
                     folderContainer.innerHTML = window.state.folders.length === 0
-                        ? `<p class="text-sm text-gray-400 text-center py-4 font-light">尚無記憶包</p>`
+                        ? `<p class="text-sm text-gray-400 text-center py-8 font-medium">尚無記憶包</p>`
                         : window.state.folders.map(f => {
                             const count = window.state.cards.filter(c => c.folderId === f.id).length;
                             const isChecked = window.state.selectedFolderIds.has(f.id);
                             return `
-                            <label class="flex items-center gap-3 py-2 px-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-all-smooth ${isChecked ? 'bg-gray-100' : ''}">
+                            <label class="flex items-center gap-3 py-3 px-4 hover:bg-gray-50 rounded-xl cursor-pointer transition-all-smooth ${isChecked ? 'bg-indigo-50 border border-indigo-200' : 'border border-transparent'}">
                                 <input type="checkbox" value="${f.id}" ${isChecked ? 'checked' : ''} 
-                                    class="folder-checkbox w-4 h-4 rounded border-gray-300 text-gray-900 focus:ring-gray-900">
-                                <span class="text-sm text-gray-700 flex-1 font-light">${f.name}</span>
-                                <span class="text-xs text-gray-400">${count}</span>
+                                    class="folder-checkbox w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                <span class="text-sm text-gray-700 flex-1 font-medium">${f.name}</span>
+                                <span class="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">${count}</span>
                             </label>`;
                         }).join('');
 
+                    // 難度篩選 - 修復版本
                     const difficulties = [
-                        { id: 'new', label: '新', defaultBg: 'bg-gray-100', selectedBg: 'bg-gray-900' },
-                        { id: 'easy', label: '簡單', defaultBg: 'bg-gray-100', selectedBg: 'bg-gray-900' },
-                        { id: 'medium', label: '普通', defaultBg: 'bg-gray-200', selectedBg: 'bg-gray-900' },
-                        { id: 'hard', label: '困難', defaultBg: 'bg-gray-300', selectedBg: 'bg-gray-900' }
+                        { id: 'new', label: '新', bgClass: 'bg-gradient-to-br from-blue-100 to-indigo-100', icon: 'ph ph-sparkle' },
+                        { id: 'easy', label: '簡單', bgClass: 'bg-gradient-to-br from-emerald-100 to-green-100', icon: 'ph ph-smiley' },
+                        { id: 'medium', label: '普通', bgClass: 'bg-gradient-to-br from-amber-100 to-yellow-100', icon: 'ph ph-meh' },
+                        { id: 'hard', label: '困難', bgClass: 'bg-gradient-to-br from-rose-100 to-red-100', icon: 'ph ph-frown' }
                     ];
                     
                     gradeContainer.innerHTML = difficulties.map(d => {
@@ -1604,47 +1859,26 @@
                         const isChecked = window.state.selectedDifficulties.has(d.id);
                         
                         return `
-                        <label class="flex-1 cursor-pointer difficulty-label" data-difficulty="${d.id}">
+                        <label class="cursor-pointer">
                             <input type="checkbox" value="${d.id}" ${isChecked ? 'checked' : ''} 
-                                class="difficulty-checkbox hidden">
-                            <div class="difficulty-option flex flex-col items-center gap-1 py-3 px-2 rounded-lg border transition-all-smooth
-                                ${isChecked ? 'filter-selected border-gray-900 bg-gray-900' : 'border-gray-300 bg-gray-100'}">
-                                <span class="text-sm font-light ${isChecked ? 'text-white' : 'text-gray-700'}">${d.label}</span>
-                                <span class="text-xs ${isChecked ? 'text-gray-300' : 'text-gray-500'}">${count} 張</span>
+                                class="difficulty-checkbox hidden" onchange="this.closest('label').querySelector('.difficulty-option').classList.toggle('filter-selected', this.checked)">
+                            <div class="difficulty-option flex flex-col items-center gap-1.5 py-4 px-3 rounded-xl border-2 transition-all-smooth ${isChecked ? 'filter-selected border-indigo-500' : 'border-gray-200'} ${isChecked ? 'bg-gradient-to-br from-indigo-500 to-indigo-600' : d.bgClass}">
+                                <i class="${d.icon} text-lg ${isChecked ? 'text-white' : 'text-gray-600'}"></i>
+                                <span class="text-sm font-medium ${isChecked ? 'text-white' : 'text-gray-700'}">${d.label}</span>
+                                <span class="text-xs ${isChecked ? 'text-indigo-100' : 'text-gray-500'}">${count} 張</span>
                             </div>
                         </label>`;
                     }).join('');
-                    
-                    // 綁定點擊事件 - 確保更新所有視覺元素
-                    document.querySelectorAll('.difficulty-label').forEach(label => {
-                        const option = label.querySelector('.difficulty-option');
-                        const checkbox = label.querySelector('.difficulty-checkbox');
-                        const mainText = option.querySelector('span.text-sm');
-                        const countText = option.querySelector('span.text-xs');
-                        
+
+                    // 綁定點擊事件 - 確保更新視覺狀態
+                    document.querySelectorAll('.difficulty-option').forEach(option => {
                         option.onclick = (e) => {
                             e.preventDefault();
-                            
-                            // 切換 checkbox 狀態
+                            const checkbox = option.parentElement.querySelector('.difficulty-checkbox');
                             checkbox.checked = !checkbox.checked;
                             
-                            if (checkbox.checked) {
-                                // 選中狀態：深色背景，白色文字
-                                option.classList.add('filter-selected', 'border-gray-900', 'bg-gray-900');
-                                option.classList.remove('border-gray-300', 'bg-gray-100');
-                                mainText.classList.remove('text-gray-700');
-                                mainText.classList.add('text-white');
-                                countText.classList.remove('text-gray-500');
-                                countText.classList.add('text-gray-300');
-                            } else {
-                                // 未選中狀態：淺色背景，灰色文字
-                                option.classList.remove('filter-selected', 'border-gray-900', 'bg-gray-900');
-                                option.classList.add('border-gray-300', 'bg-gray-100');
-                                mainText.classList.add('text-gray-700');
-                                mainText.classList.remove('text-white');
-                                countText.classList.add('text-gray-500');
-                                countText.classList.remove('text-gray-300');
-                            }
+                            // 觸發 change 事件來更新視覺
+                            checkbox.dispatchEvent(new Event('change'));
                         };
                     });
                 }
@@ -1661,21 +1895,13 @@
                 // 記憶包全選
                 document.querySelectorAll('#filter-folders input').forEach(i => {
                     i.checked = true;
-                    i.closest('label').classList.add('bg-gray-100');
+                    i.closest('label').classList.add('bg-indigo-50', 'border-indigo-200');
                 });
                 
-                // 難度全選
-                document.querySelectorAll('#filter-grades .difficulty-option').forEach(option => {
-                    option.classList.add('filter-selected');
-                    option.classList.remove('border-gray-300');
-                    option.classList.add('border-gray-900');
-                    option.querySelector('span').classList.remove('text-gray-700');
-                    option.querySelector('span').classList.add('text-white');
-                    option.querySelector('span.text-xs').classList.remove('text-gray-500');
-                    option.querySelector('span.text-xs').classList.add('text-gray-300');
-                    
-                    const checkbox = option.querySelector('.difficulty-checkbox');
+                // 難度全選 - 直接操作 checkbox 並觸發 change 事件
+                document.querySelectorAll('#filter-grades .difficulty-checkbox').forEach(checkbox => {
                     checkbox.checked = true;
+                    checkbox.dispatchEvent(new Event('change'));
                 });
             },
             
@@ -1684,8 +1910,8 @@
                 const folderChecked = document.querySelectorAll('#filter-folders input:checked');
                 window.state.selectedFolderIds = new Set(Array.from(folderChecked).map(i => i.value));
                 
-                // 獲取難度選擇
-                const difficultyChecked = document.querySelectorAll('#filter-grades input:checked');
+                // 獲取難度選擇 - 直接從 checkbox 讀取
+                const difficultyChecked = document.querySelectorAll('#filter-grades .difficulty-checkbox:checked');
                 window.state.selectedDifficulties = new Set(Array.from(difficultyChecked).map(i => i.value));
                 
                 // 如果沒有任何難度被選擇，則選擇所有難度
@@ -1705,53 +1931,53 @@
                 const totalDue = window.state.cards.filter(c => c.nextReview <= Date.now()).length;
                 
                 content.innerHTML = `
-                    <div class="space-y-4">
+                    <div class="space-y-5">
                         <div>
-                            <div class="text-xs text-gray-500 mb-1 font-light">篩選範圍統計</div>
+                            <div class="text-xs font-medium text-gray-500 mb-2">篩選範圍統計</div>
                             <div class="grid grid-cols-2 gap-3">
-                                <div class="glass-card p-3 rounded-lg text-center">
-                                    <div class="text-lg font-light text-gray-900">${stats.filteredTotal}</div>
-                                    <div class="text-xs text-gray-500">可複習卡片</div>
+                                <div class="stat-card text-center">
+                                    <div class="text-xl font-medium text-gray-900">${stats.filteredTotal}</div>
+                                    <div class="text-xs text-gray-500 mt-1">可複習卡片</div>
                                 </div>
-                                <div class="glass-card p-3 rounded-lg text-center">
-                                    <div class="text-lg font-light ${stats.filteredDue > 0 ? 'text-gray-800' : 'text-gray-900'}">${stats.filteredDue}</div>
-                                    <div class="text-xs text-gray-500">到期卡片</div>
+                                <div class="stat-card text-center">
+                                    <div class="text-xl font-medium ${stats.filteredDue > 0 ? 'text-amber-600' : 'text-gray-900'}">${stats.filteredDue}</div>
+                                    <div class="text-xs text-gray-500 mt-1">到期卡片</div>
                                 </div>
                             </div>
                         </div>
                         
                         <div>
-                            <div class="text-xs text-gray-500 mb-1 font-light">整體統計</div>
+                            <div class="text-xs font-medium text-gray-500 mb-2">整體統計</div>
                             <div class="grid grid-cols-2 gap-3">
-                                <div class="glass-card p-3 rounded-lg text-center">
-                                    <div class="text-lg font-light text-gray-900">${stats.total}</div>
-                                    <div class="text-xs text-gray-500">卡片總數</div>
+                                <div class="stat-card text-center">
+                                    <div class="text-xl font-medium text-gray-900">${stats.total}</div>
+                                    <div class="text-xs text-gray-500 mt-1">卡片總數</div>
                                 </div>
-                                <div class="glass-card p-3 rounded-lg text-center">
-                                    <div class="text-lg font-light ${totalDue > 0 ? 'text-gray-800' : 'text-gray-900'}">${totalDue}</div>
-                                    <div class="text-xs text-gray-500">總到期數</div>
+                                <div class="stat-card text-center">
+                                    <div class="text-xl font-medium ${totalDue > 0 ? 'text-amber-600' : 'text-gray-900'}">${totalDue}</div>
+                                    <div class="text-xs text-gray-500 mt-1">總到期數</div>
                                 </div>
                             </div>
                         </div>
                         
                         <div>
-                            <div class="text-xs text-gray-500 mb-1 font-light">難度分佈</div>
+                            <div class="text-xs font-medium text-gray-500 mb-2">難度分佈</div>
                             <div class="grid grid-cols-4 gap-2">
-                                <div class="glass-card p-2 rounded text-center border border-gray-200">
-                                    <div class="text-sm font-light text-gray-700">${stats.new}</div>
-                                    <div class="text-xs text-gray-500">新</div>
+                                <div class="text-center p-3 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100">
+                                    <div class="text-sm font-medium text-blue-600">${stats.new}</div>
+                                    <div class="text-xs text-blue-500 mt-1">新</div>
                                 </div>
-                                <div class="glass-card p-2 rounded text-center border border-gray-200">
-                                    <div class="text-sm font-light text-gray-700">${stats.easy}</div>
-                                    <div class="text-xs text-gray-500">簡單</div>
+                                <div class="text-center p-3 rounded-xl bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-100">
+                                    <div class="text-sm font-medium text-emerald-600">${stats.easy}</div>
+                                    <div class="text-xs text-emerald-500 mt-1">簡單</div>
                                 </div>
-                                <div class="glass-card p-2 rounded text-center border border-gray-200">
-                                    <div class="text-sm font-light text-gray-700">${stats.medium}</div>
-                                    <div class="text-xs text-gray-500">普通</div>
+                                <div class="text-center p-3 rounded-xl bg-gradient-to-br from-amber-50 to-yellow-50 border border-amber-100">
+                                    <div class="text-sm font-medium text-amber-600">${stats.medium}</div>
+                                    <div class="text-xs text-amber-500 mt-1">普通</div>
                                 </div>
-                                <div class="glass-card p-2 rounded text-center border border-gray-200">
-                                    <div class="text-sm font-light text-gray-700">${stats.hard}</div>
-                                    <div class="text-xs text-gray-500">困難</div>
+                                <div class="text-center p-3 rounded-xl bg-gradient-to-br from-rose-50 to-red-50 border border-rose-100">
+                                    <div class="text-sm font-medium text-rose-600">${stats.hard}</div>
+                                    <div class="text-xs text-rose-500 mt-1">困難</div>
                                 </div>
                             </div>
                         </div>
@@ -1762,6 +1988,24 @@
             
             closeReviewStats: () => {
                 document.getElementById('review-stats-modal').classList.add('hidden');
+            },
+            
+            showToast: (message, type = 'info') => {
+                const colors = {
+                    success: 'bg-emerald-500',
+                    warning: 'bg-amber-500',
+                    error: 'bg-rose-500',
+                    info: 'bg-indigo-500'
+                };
+                
+                const toast = document.createElement('div');
+                toast.className = `fixed bottom-20 right-6 px-4 py-2.5 rounded-xl text-white text-sm font-medium shadow-lg slide-up z-50 ${colors[type]}`;
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.remove();
+                }, 2000);
             }
         };
 
@@ -1774,7 +2018,7 @@
                     folders: db.getFolders(), 
                     cards: db.getCards(),
                     exportDate: new Date().toISOString(),
-                    version: '2.0'
+                    version: '3.0'
                 };
                 
                 const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
@@ -1785,12 +2029,7 @@
                 a.click();
                 document.body.removeChild(a);
                 
-                // 簡短提示
-                const originalText = a.textContent;
-                a.textContent = '已匯出';
-                setTimeout(() => {
-                    a.textContent = originalText;
-                }, 1500);
+                ui.showToast('資料已匯出', 'success');
             },
             
             importData: (input) => {
@@ -1808,7 +2047,6 @@
                         const idMap = {};
                         
                         (raw.folders || []).forEach(f => {
-                            // 檢查是否已存在相同名稱的記憶包
                             let target = localFolders.find(lf => lf.name === f.name);
                             if (!target) {
                                 target = dataManager.addFolder(f.name);
@@ -1818,19 +2056,19 @@
                             }
                         });
                         
-                        // 處理卡片 - 匯入的卡片一律標記為"新"
+                        // 處理卡片
                         (raw.cards || []).forEach(c => {
                             const folderId = idMap[c.folderId] || window.state.folders[0]?.id;
                             if (folderId) {
                                 const newCard = {
                                     ...c,
-                                    id: crypto.randomUUID(), // 新ID避免衝突
+                                    id: crypto.randomUUID(),
                                     folderId,
                                     ef: c.ef || 2.0,
-                                    difficulty: 'new', // 匯入的卡片標記為"新"
-                                    interval: 0, // 重置間隔
-                                    repetition: 0, // 重置重複次數
-                                    nextReview: Date.now(), // 立即需要複習
+                                    difficulty: 'new',
+                                    interval: 0,
+                                    repetition: 0,
+                                    nextReview: Date.now(),
                                     createdAt: c.createdAt || Date.now()
                                 };
                                 
@@ -1839,16 +2077,15 @@
                             }
                         });
                         
-                        alert(`成功匯入 ${importedCount} 張卡片（已標記為"新"）`);
+                        ui.showToast(`成功匯入 ${importedCount} 張卡片`, 'success');
                         ui.init();
                     } catch (err) {
-                        alert("檔案格式錯誤，請確認檔案是否正確");
+                        ui.showToast('檔案格式錯誤', 'error');
                         console.error(err);
                     }
                 };
                 reader.readAsText(file);
                 
-                // 重置input，允許再次選擇相同檔案
                 input.value = '';
             }
         };
@@ -1889,6 +2126,13 @@
             if (!speechManager.isSupported()) {
                 console.warn('此瀏覽器不支援Web Speech API，語音功能將無法使用');
             }
+            
+            // 添加初始歡迎訊息
+            setTimeout(() => {
+                if (window.state.cards.length === 2) { // 只有範例卡片
+                    ui.showToast('歡迎使用 MemoCurve！已為您建立範例卡片', 'info');
+                }
+            }, 1000);
         };
     </script>
 </body>
