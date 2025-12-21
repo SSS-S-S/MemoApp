@@ -43,11 +43,27 @@
 
         .hidden-view { display: none !important; }
 
-        /* 極細滾動條 */
-        ::-webkit-scrollbar { width: 2px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #d4d4d4; border-radius: 1px; }
-        ::-webkit-scrollbar-thumb:hover { background: #a3a3a3; }
+        /* 改善的滾動條 */
+        ::-webkit-scrollbar { 
+            width: 6px; 
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track { 
+            background: rgba(0, 0, 0, 0.05); 
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb { 
+            background: rgba(0, 0, 0, 0.15); 
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover { 
+            background: rgba(0, 0, 0, 0.25); 
+        }
+        
+        /* 統計頁面專用容器 */
+        #view-stats {
+            padding-right: 4px; /* 給滾動條空間 */
+        }
 
         /* 毛玻璃效果 */
         .glass-effect {
@@ -188,6 +204,79 @@
         .divider {
             height: 1px;
             background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.05), transparent);
+        }
+        
+        /* 統計卡片樣式 */
+        .stat-card {
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            box-shadow: 
+                0 2px 4px rgba(0, 0, 0, 0.04),
+                0 1px 2px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 
+                0 4px 8px rgba(0, 0, 0, 0.06),
+                0 2px 4px rgba(0, 0, 0, 0.08);
+        }
+        
+        /* 改善統計數字與標題間距 */
+        .stat-value {
+            font-size: 28px;
+            font-weight: 300;
+            line-height: 1.2;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            font-weight: 400;
+            color: #666;
+            letter-spacing: 0.02em;
+        }
+        
+        /* 改善分佈條樣式 */
+        .dist-bar {
+            height: 6px;
+            background-color: rgba(0, 0, 0, 0.06);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .dist-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.4s ease-out;
+        }
+        
+        /* 改善標題間距 */
+        .stat-section-title {
+            font-size: 16px;
+            font-weight: 400;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        
+        /* 改善難度標籤容器 */
+        .difficulty-label-container {
+            margin-bottom: 12px;
+        }
+        
+        /* 改善進度圖表容器 */
+        .progress-chart {
+            margin-top: 8px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
         }
     </style>
 </head>
@@ -1244,54 +1333,54 @@
                 const folderStats = StatsCalculator.calculateFolderStats();
                 const reviewHistory = StatsCalculator.calculateReviewHistory();
                 
-                // 整體統計
+                // 整體統計 - 改善佈局
                 const overallContainer = document.getElementById('overall-stats');
                 overallContainer.innerHTML = `
-                    <div class="glass-card">
-                        <div class="text-xs text-gray-500 mb-2 font-light">卡片總數</div>
-                        <div class="text-2xl font-light text-gray-900">${overall.total}</div>
+                    <div class="stat-card">
+                        <div class="stat-value">${overall.total}</div>
+                        <div class="stat-label">卡片總數</div>
                     </div>
-                    <div class="glass-card">
-                        <div class="text-xs text-gray-500 mb-2 font-light">到期卡片</div>
-                        <div class="text-2xl font-light ${overall.due > 0 ? 'text-gray-800' : 'text-gray-900'}">${overall.due}</div>
+                    <div class="stat-card">
+                        <div class="stat-value ${overall.due > 0 ? 'text-gray-800' : 'text-gray-900'}">${overall.due}</div>
+                        <div class="stat-label">到期卡片</div>
                     </div>
-                    <div class="glass-card">
-                        <div class="text-xs text-gray-500 mb-2 font-light">新卡片</div>
-                        <div class="text-2xl font-light text-gray-700">${overall.new}</div>
+                    <div class="stat-card">
+                        <div class="stat-value text-gray-700">${overall.new}</div>
+                        <div class="stat-label">新卡片</div>
                     </div>
-                    <div class="glass-card">
-                        <div class="text-xs text-gray-500 mb-2 font-light">平均EF值</div>
-                        <div class="text-2xl font-light text-gray-900">${overall.avgEF.toFixed(1)}</div>
+                    <div class="stat-card">
+                        <div class="stat-value">${overall.avgEF.toFixed(1)}</div>
+                        <div class="stat-label">平均EF值</div>
                     </div>
                 `;
                 
-                // 難度分佈
+                // 難度分佈 - 改善間距
                 const diffContainer = document.getElementById('difficulty-distribution');
                 const difficulties = [
-                    { id: 'new', label: '新', bg: 'bg-gray-100', count: overall.new },
-                    { id: 'easy', label: '簡單', bg: 'bg-gray-200', count: overall.easy },
-                    { id: 'medium', label: '普通', bg: 'bg-gray-300', count: overall.medium },
-                    { id: 'hard', label: '困難', bg: 'bg-gray-400', count: overall.hard }
+                    { id: 'new', label: '新', color: 'bg-gray-200', textColor: 'text-gray-700' },
+                    { id: 'easy', label: '簡單', color: 'bg-gray-300', textColor: 'text-gray-700' },
+                    { id: 'medium', label: '普通', color: 'bg-gray-400', textColor: 'text-gray-800' },
+                    { id: 'hard', label: '困難', color: 'bg-gray-500', textColor: 'text-gray-900' }
                 ];
                 
                 diffContainer.innerHTML = difficulties.map(d => {
-                    const percentage = overall.total > 0 ? (d.count / overall.total * 100).toFixed(1) : 0;
+                    const percentage = overall.total > 0 ? (overall[d.id] / overall.total * 100).toFixed(1) : 0;
                     return `
-                    <div class="space-y-1.5">
+                    <div class="difficulty-label-container space-y-2">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-2">
-                                <div class="w-2 h-2 rounded-full ${d.bg}"></div>
-                                <span class="text-sm text-gray-700 font-light">${d.label}</span>
+                                <div class="w-3 h-3 rounded-full ${d.color}"></div>
+                                <span class="text-sm font-light ${d.textColor}">${d.label}</span>
                             </div>
-                            <div class="text-sm font-light text-gray-900">${d.count} 張 (${percentage}%)</div>
+                            <div class="text-sm font-light text-gray-900">${overall[d.id]} 張 (${percentage}%)</div>
                         </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill ${d.bg}" style="width: ${percentage}%"></div>
+                        <div class="dist-bar">
+                            <div class="dist-fill ${d.color}" style="width: ${percentage}%"></div>
                         </div>
                     </div>`;
                 }).join('');
                 
-                // 記憶包統計摘要
+                // 記憶包統計摘要 - 改善間距
                 const folderSummary = document.getElementById('folder-stats-summary');
                 folderSummary.innerHTML = folderStats.map(f => {
                     const newPct = f.total > 0 ? (f.new / f.total * 100).toFixed(0) : 0;
@@ -1300,91 +1389,116 @@
                     const hardPct = f.total > 0 ? (f.hard / f.total * 100).toFixed(0) : 0;
                     
                     return `
-                    <div class="glass-card p-3 rounded-lg">
-                        <div class="flex items-center justify-between mb-2">
+                    <div class="stat-card">
+                        <div class="flex items-center justify-between mb-4">
                             <span class="text-sm font-light text-gray-900">${f.name}</span>
-                            <span class="text-xs text-gray-500">${f.total} 張</span>
+                            <span class="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded">${f.total} 張</span>
                         </div>
-                        <div class="flex items-center gap-1 text-xs text-gray-500 mb-3">
-                            ${f.new > 0 ? `<span class="text-gray-600">新 ${newPct}%</span><span>•</span>` : ''}
-                            <span>簡單 ${easyPct}%</span>
-                            <span>•</span>
-                            <span>普通 ${mediumPct}%</span>
-                            <span>•</span>
-                            <span>困難 ${hardPct}%</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill bg-gray-100" style="width: ${newPct}%"></div>
-                            <div class="progress-fill bg-gray-200" style="width: ${easyPct}%"></div>
-                            <div class="progress-fill bg-gray-300" style="width: ${mediumPct}%"></div>
-                            <div class="progress-fill bg-gray-400" style="width: ${hardPct}%"></div>
-                        </div>
-                    </div>`;
-                }).join('');
-                
-                // 記憶包統計詳細
-                const folderDetailed = document.getElementById('folder-stats-detailed');
-                folderDetailed.innerHTML = folderStats.map(f => {
-                    return `
-                    <div class="glass-card p-4 rounded-lg space-y-3">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                <i class="ph ph-folder text-gray-400"></i>
-                                <h4 class="text-sm font-light text-gray-900">${f.name}</h4>
+                        
+                        <div class="grid grid-cols-4 gap-2 mb-4 text-center">
+                            <div class="p-2 bg-gray-50 rounded-lg">
+                                <div class="text-sm font-light text-gray-700">${f.new}</div>
+                                <div class="text-xs text-gray-500 mt-1">新</div>
                             </div>
-                            <div class="flex gap-2">
-                                ${f.new > 0 ? `<span class="text-xs px-2 py-1 rounded bg-gray-100 text-gray-600 border border-gray-200">${f.new} 張新</span>` : ''}
-                                <span class="text-xs px-2 py-1 rounded ${f.due > 0 ? 'bg-gray-200 text-gray-700 border border-gray-300' : 'bg-gray-100 text-gray-600 border border-gray-200'}">
-                                    ${f.due} 張到期
-                                </span>
+                            <div class="p-2 bg-gray-100 rounded-lg">
+                                <div class="text-sm font-light text-gray-700">${f.easy}</div>
+                                <div class="text-xs text-gray-500 mt-1">簡單</div>
+                            </div>
+                            <div class="p-2 bg-gray-200 rounded-lg">
+                                <div class="text-sm font-light text-gray-700">${f.medium}</div>
+                                <div class="text-xs text-gray-500 mt-1">普通</div>
+                            </div>
+                            <div class="p-2 bg-gray-300 rounded-lg">
+                                <div class="text-sm font-light text-gray-700">${f.hard}</div>
+                                <div class="text-xs text-gray-500 mt-1">困難</div>
                             </div>
                         </div>
                         
-                        <div class="grid grid-cols-4 gap-2 text-sm">
-                            <div class="text-center p-2 bg-gray-50 rounded border border-gray-200">
-                                <div class="text-gray-600 font-light">${f.new}</div>
-                                <div class="text-xs text-gray-500">新</div>
+                        <div class="text-xs text-gray-500 flex justify-between mb-2">
+                            <span>${f.new > 0 ? `新 ${newPct}%` : ''}</span>
+                            <span>簡單 ${easyPct}%</span>
+                            <span>普通 ${mediumPct}%</span>
+                            <span>困難 ${hardPct}%</span>
+                        </div>
+                        
+                        <div class="dist-bar">
+                            <div class="dist-fill bg-gray-200" style="width: ${newPct}%"></div>
+                            <div class="dist-fill bg-gray-300" style="width: ${easyPct}%"></div>
+                            <div class="dist-fill bg-gray-400" style="width: ${mediumPct}%"></div>
+                            <div class="dist-fill bg-gray-500" style="width: ${hardPct}%"></div>
+                        </div>
+                    </div>`;
+                }).join('');
+                
+                // 記憶包統計詳細 - 改善佈局
+                const folderDetailed = document.getElementById('folder-stats-detailed');
+                folderDetailed.innerHTML = folderStats.map(f => {
+                    return `
+                    <div class="stat-card space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <i class="ph ph-folder text-gray-400 text-lg"></i>
+                                <div>
+                                    <h4 class="text-sm font-light text-gray-900">${f.name}</h4>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        ${f.new > 0 ? 
+                                            `<span class="text-xs px-2 py-1 rounded bg-gray-100 text-gray-600 border border-gray-200">
+                                                ${f.new} 張新
+                                            </span>` : ''}
+                                        <span class="text-xs px-2 py-1 rounded ${f.due > 0 ? 'bg-gray-200 text-gray-700 border border-gray-300' : 'bg-gray-100 text-gray-600 border border-gray-200'}">
+                                            ${f.due} 張到期
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="text-center p-2 bg-gray-100 rounded border border-gray-200">
-                                <div class="text-gray-600 font-light">${f.easy}</div>
-                                <div class="text-xs text-gray-500">簡單</div>
-                            </div>
-                            <div class="text-center p-2 bg-gray-200 rounded border border-gray-200">
-                                <div class="text-gray-600 font-light">${f.medium}</div>
-                                <div class="text-xs text-gray-500">普通</div>
-                            </div>
-                            <div class="text-center p-2 bg-gray-300 rounded border border-gray-200">
-                                <div class="text-gray-600 font-light">${f.hard}</div>
-                                <div class="text-xs text-gray-500">困難</div>
+                            <div class="text-lg font-light text-gray-900">${f.total}</div>
+                        </div>
+                        
+                        <div class="progress-chart">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                    <div class="text-lg font-light text-gray-900">${f.easy + f.medium + f.hard}</div>
+                                    <div class="text-xs text-gray-500 mt-1">已複習</div>
+                                </div>
+                                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                                    <div class="text-lg font-light text-gray-900">${Math.round((f.easy + f.medium + f.hard) / Math.max(f.total, 1) * 100)}%</div>
+                                    <div class="text-xs text-gray-500 mt-1">掌握率</div>
+                                </div>
                             </div>
                         </div>
                     </div>`;
                 }).join('');
                 
-                // 複習進度
+                // 複習進度 - 改善間距和視覺
                 const progressContainer = document.getElementById('review-progress');
                 if (reviewHistory.some(day => day.total > 0)) {
                     const maxReviews = Math.max(...reviewHistory.map(day => day.total));
                     
                     progressContainer.innerHTML = reviewHistory.map(day => {
-                        const easyPercentage = day.total > 0 ? (day.easy / day.total * 100) : 0;
-                        const mediumPercentage = day.total > 0 ? (day.medium / day.total * 100) : 0;
-                        const hardPercentage = day.total > 0 ? (day.hard / day.total * 100) : 0;
+                        const easyHeight = day.total > 0 ? (day.easy / maxReviews * 80) : 0;
+                        const mediumHeight = day.total > 0 ? (day.medium / maxReviews * 80) : 0;
+                        const hardHeight = day.total > 0 ? (day.hard / maxReviews * 80) : 0;
                         
                         return `
-                        <div class="space-y-2">
-                            <div class="flex items-center justify-between">
-                                <div class="text-sm text-gray-700 font-light">
-                                    ${day.weekday} ${day.day}日
+                        <div class="stat-card">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <div class="text-sm font-light text-gray-900">${day.weekday}</div>
+                                    <div class="text-xs text-gray-500">${day.day}日</div>
                                 </div>
-                                <div class="text-xs text-gray-500">${day.total} 張</div>
+                                <div class="text-sm font-light text-gray-900">${day.total} 張</div>
                             </div>
-                            <div class="flex items-end h-6 gap-0.5">
-                                <div class="flex-1 bg-gray-100 rounded-t" style="height: ${day.easy > 0 ? (day.easy / maxReviews * 100) : 0}%"></div>
-                                <div class="flex-1 bg-gray-200 rounded-t" style="height: ${day.medium > 0 ? (day.medium / maxReviews * 100) : 0}%"></div>
-                                <div class="flex-1 bg-gray-300 rounded-t" style="height: ${day.hard > 0 ? (day.hard / maxReviews * 100) : 0}%"></div>
+                            
+                            <div class="flex items-end h-20 gap-1.5 px-4 mb-3">
+                                <div class="flex-1 bg-gray-200 rounded-t transition-all duration-500 ease-out" 
+                                     style="height: ${easyHeight}%"></div>
+                                <div class="flex-1 bg-gray-300 rounded-t transition-all duration-500 ease-out" 
+                                     style="height: ${mediumHeight}%"></div>
+                                <div class="flex-1 bg-gray-400 rounded-t transition-all duration-500 ease-out" 
+                                     style="height: ${hardHeight}%"></div>
                             </div>
-                            <div class="flex gap-2 text-xs text-gray-500 justify-center">
+                            
+                            <div class="flex justify-between text-xs text-gray-500">
                                 <div class="flex items-center gap-1">
                                     <div class="w-2 h-2 rounded-full bg-gray-200"></div>
                                     <span>${day.easy}</span>
@@ -1402,12 +1516,13 @@
                     }).join('');
                 } else {
                     progressContainer.innerHTML = `
-                        <div class="text-center py-8 text-gray-400 text-sm">
-                            <i class="ph ph-chart-line text-3xl mb-2"></i>
-                            <p class="font-light">還沒有複習記錄</p>
+                        <div class="stat-card text-center py-10">
+                            <i class="ph ph-chart-line text-4xl text-gray-300 mb-3"></i>
+                            <p class="text-sm font-light text-gray-400 mb-1">還沒有複習記錄</p>
+                            <p class="text-xs text-gray-300">開始複習卡片後，這裡會顯示進度圖表</p>
                         </div>`;
                 }
-            },
+            }
             
             toggleFolderStats: () => {
                 const detailed = document.getElementById('folder-stats-detailed');
