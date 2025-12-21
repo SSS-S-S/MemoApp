@@ -1477,7 +1477,7 @@
                 if (!modal.classList.contains('hidden')) {
                     const folderContainer = document.getElementById('filter-folders');
                     const gradeContainer = document.getElementById('filter-grades');
-
+            
                     // 記憶包篩選
                     folderContainer.innerHTML = window.state.folders.length === 0
                         ? `<p class="text-sm text-gray-400 text-center py-4 font-light">尚無記憶包</p>`
@@ -1492,8 +1492,8 @@
                                 <span class="text-xs ${isChecked ? 'text-gray-300' : 'text-gray-500'}">${count}</span>
                             </label>`;
                         }).join('');
-
-                    // 難度篩選 - 極簡版本
+            
+                    // 難度篩選 - 修正版本
                     const difficulties = [
                         { id: 'new', label: '新' },
                         { id: 'easy', label: '簡單' },
@@ -1517,26 +1517,33 @@
                             </div>
                         </label>`;
                     }).join('');
-
-                    // 綁定點擊事件
-                    document.querySelectorAll('.difficulty-option').forEach(option => {
+            
+                    // **重要修正：重新綁定點擊事件**
+                    // 綁定難度選項點擊事件
+                    document.querySelectorAll('#filter-grades label').forEach(label => {
+                        const option = label.querySelector('.difficulty-option');
+                        const checkbox = label.querySelector('.difficulty-checkbox');
+                        
                         option.onclick = (e) => {
                             e.preventDefault();
-                            const checkbox = option.parentElement.querySelector('.difficulty-checkbox');
+                            e.stopPropagation();
+                            
+                            // 切換 checkbox 狀態
                             checkbox.checked = !checkbox.checked;
                             
+                            // 更新視覺狀態
                             if (checkbox.checked) {
                                 option.classList.add('selected', 'border-black');
                                 option.classList.remove('border-gray-300');
-                                option.querySelector('span').classList.remove('text-gray-700');
-                                option.querySelector('span').classList.add('text-white');
+                                option.querySelector('span.text-sm').classList.remove('text-gray-700');
+                                option.querySelector('span.text-sm').classList.add('text-white');
                                 option.querySelector('span.text-xs').classList.remove('text-gray-500');
                                 option.querySelector('span.text-xs').classList.add('text-gray-300');
                             } else {
                                 option.classList.remove('selected', 'border-black');
                                 option.classList.add('border-gray-300');
-                                option.querySelector('span').classList.add('text-gray-700');
-                                option.querySelector('span').classList.remove('text-white');
+                                option.querySelector('span.text-sm').classList.add('text-gray-700');
+                                option.querySelector('span.text-sm').classList.remove('text-white');
                                 option.querySelector('span.text-xs').classList.add('text-gray-500');
                                 option.querySelector('span.text-xs').classList.remove('text-gray-300');
                             }
@@ -1547,19 +1554,21 @@
                     document.querySelectorAll('#filter-folders label').forEach(label => {
                         label.onclick = (e) => {
                             e.preventDefault();
+                            e.stopPropagation();
+                            
                             const checkbox = label.querySelector('.folder-checkbox');
                             checkbox.checked = !checkbox.checked;
                             
                             if (checkbox.checked) {
                                 label.classList.add('selected');
-                                label.querySelector('span').classList.remove('text-gray-700');
-                                label.querySelector('span').classList.add('text-white');
+                                label.querySelector('span.text-sm').classList.remove('text-gray-700');
+                                label.querySelector('span.text-sm').classList.add('text-white');
                                 label.querySelector('span.text-xs').classList.remove('text-gray-500');
                                 label.querySelector('span.text-xs').classList.add('text-gray-300');
                             } else {
                                 label.classList.remove('selected');
-                                label.querySelector('span').classList.add('text-gray-700');
-                                label.querySelector('span').classList.remove('text-white');
+                                label.querySelector('span.text-sm').classList.add('text-gray-700');
+                                label.querySelector('span.text-sm').classList.remove('text-white');
                                 label.querySelector('span.text-xs').classList.add('text-gray-500');
                                 label.querySelector('span.text-xs').classList.remove('text-gray-300');
                             }
@@ -1581,42 +1590,59 @@
                     const checkbox = label.querySelector('.folder-checkbox');
                     checkbox.checked = true;
                     label.classList.add('selected');
-                    label.querySelector('span').classList.remove('text-gray-700');
-                    label.querySelector('span').classList.add('text-white');
+                    label.querySelector('span.text-sm').classList.remove('text-gray-700');
+                    label.querySelector('span.text-sm').classList.add('text-white');
                     label.querySelector('span.text-xs').classList.remove('text-gray-500');
                     label.querySelector('span.text-xs').classList.add('text-gray-300');
                 });
                 
-                // 難度全選
-                document.querySelectorAll('#filter-grades .difficulty-option').forEach(option => {
-                    const checkbox = option.parentElement.querySelector('.difficulty-checkbox');
+                // 難度全選 - 確保視覺狀態更新
+                document.querySelectorAll('#filter-grades label').forEach(label => {
+                    const checkbox = label.querySelector('.difficulty-checkbox');
+                    const option = label.querySelector('.difficulty-option');
+                    
                     checkbox.checked = true;
                     option.classList.add('selected', 'border-black');
                     option.classList.remove('border-gray-300');
-                    option.querySelector('span').classList.remove('text-gray-700');
-                    option.querySelector('span').classList.add('text-white');
+                    option.querySelector('span.text-sm').classList.remove('text-gray-700');
+                    option.querySelector('span.text-sm').classList.add('text-white');
                     option.querySelector('span.text-xs').classList.remove('text-gray-500');
                     option.querySelector('span.text-xs').classList.add('text-gray-300');
                 });
             },
             
             applyFilters: () => {
-                // 獲取記憶包選擇
-                const folderChecked = document.querySelectorAll('#filter-folders input:checked');
-                window.state.selectedFolderIds = new Set(Array.from(folderChecked).map(i => i.value));
+                // 獲取記憶包選擇 - 直接從隱藏的 checkbox 讀取
+                const folderCheckboxes = document.querySelectorAll('#filter-folders .folder-checkbox');
+                const selectedFolderIds = new Set();
                 
-                // 獲取難度選擇
-                const difficultyChecked = document.querySelectorAll('#filter-grades input:checked');
-                window.state.selectedDifficulties = new Set(Array.from(difficultyChecked).map(i => i.value));
+                folderCheckboxes.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        selectedFolderIds.add(checkbox.value);
+                    }
+                });
+                window.state.selectedFolderIds = selectedFolderIds;
+                
+                // 獲取難度選擇 - 直接從隱藏的 checkbox 讀取
+                const difficultyCheckboxes = document.querySelectorAll('#filter-grades .difficulty-checkbox');
+                const selectedDifficulties = new Set();
+                
+                difficultyCheckboxes.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        selectedDifficulties.add(checkbox.value);
+                    }
+                });
                 
                 // 如果沒有任何難度被選擇，則選擇所有難度
-                if (window.state.selectedDifficulties.size === 0) {
+                if (selectedDifficulties.size === 0) {
                     window.state.selectedDifficulties = new Set(['new', 'easy', 'medium', 'hard']);
+                } else {
+                    window.state.selectedDifficulties = selectedDifficulties;
                 }
-
+            
                 ui.toggleFilterModal();
                 ui.init();
-            },
+            }
             
             showReviewStats: () => {
                 const modal = document.getElementById('review-stats-modal');
