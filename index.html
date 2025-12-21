@@ -90,109 +90,6 @@
             background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.05), transparent);
         }
         
-        /* 難度標籤 */
-        .grade-new { 
-            background: rgba(0, 0, 0, 0.04);
-            color: rgba(0, 0, 0, 0.6);
-            border-color: rgba(0, 0, 0, 0.1);
-        }
-        
-        .grade-easy { 
-            background: rgba(0, 0, 0, 0.06);
-            color: rgba(0, 0, 0, 0.7);
-            border-color: rgba(0, 0, 0, 0.12);
-        }
-        
-        .grade-medium { 
-            background: rgba(0, 0, 0, 0.08);
-            color: rgba(0, 0, 0, 0.8);
-            border-color: rgba(0, 0, 0, 0.14);
-        }
-        
-        .grade-hard { 
-            background: rgba(0, 0, 0, 0.10);
-            color: rgba(0, 0, 0, 0.9);
-            border-color: rgba(0, 0, 0, 0.16);
-        }
-        
-        .progress-bar {
-            height: 2px;
-            background-color: rgba(0, 0, 0, 0.04);
-            border-radius: 1px;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            border-radius: 1px;
-            background: #000000;
-            transition: width 0.3s ease;
-        }
-        
-        .modal-backdrop {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-        
-        .selected {
-            background: #000000 !important;
-            color: #ffffff !important;
-            border-color: #000000 !important;
-        }
-        
-        .stat-card {
-            border: 1px solid rgba(0, 0, 0, 0.06);
-            background: #ffffff;
-            border-radius: 8px;
-            padding: 16px;
-        }
-        
-        .stat-value {
-            font-size: 24px;
-            font-weight: 300;
-            line-height: 1;
-            color: #000000;
-            margin-bottom: 4px;
-        }
-        
-        .stat-label {
-            font-size: 12px;
-            font-weight: 300;
-            color: rgba(0, 0, 0, 0.5);
-        }
-        
-        .dist-bar {
-            height: 3px;
-            background-color: rgba(0, 0, 0, 0.04);
-            border-radius: 1.5px;
-            overflow: hidden;
-        }
-        
-        .dist-fill {
-            height: 100%;
-            border-radius: 1.5px;
-            background: #000000;
-            transition: width 0.4s ease;
-        }
-        
-        .section-title {
-            font-size: 14px;
-            font-weight: 300;
-            color: #000000;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            position: relative;
-        }
-        
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 20px;
-            height: 1px;
-            background: #000000;
-        }
-        
         .tab-indicator {
             position: absolute;
             bottom: 0;
@@ -227,10 +124,6 @@
         <header class="flex-none pt-6 pb-4 px-6 max-w-2xl mx-auto w-full">
             <div class="flex items-center justify-between">
                 <h1 class="text-xl font-light tracking-tight">MemoCurve</h1>
-                <div class="text-right">
-                    <div class="text-sm font-light" id="review-count">0</div>
-                    <div class="text-xs text-gray-500 font-light">到期</div>
-                </div>
             </div>
         </header>
 
@@ -249,10 +142,6 @@
                     卡片庫
                     <div class="tab-indicator"></div>
                 </button>
-                <button onclick="ui.switchTab('stats')" id="tab-stats" class="pb-2 text-sm font-light text-gray-500 hover:text-black relative transition-all-smooth">
-                    統計
-                    <div class="tab-indicator"></div>
-                </button>
             </div>
             <div class="divider mt-2"></div>
         </nav>
@@ -261,26 +150,6 @@
         <main class="flex-1 overflow-hidden max-w-2xl mx-auto w-full px-6">
             <!-- 視圖：複習 -->
             <div id="view-review" class="view-section h-full flex flex-col">
-                <div class="flex-none pt-3 pb-2">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <button onclick="ui.toggleFilterModal()" class="flex items-center gap-1 px-3 py-1 text-xs btn-minimal rounded">
-                                <i class="ph ph-funnel-simple text-xs"></i>
-                                <span>篩選</span>
-                                <span id="active-filter-count" class="bg-black text-white text-xs px-1.5 py-0.5 rounded">0</span>
-                            </button>
-                            <div id="filter-summary" class="text-xs text-gray-500 hidden">
-                                <span id="selected-folders-text"></span>
-                                <span id="selected-difficulties-text"></span>
-                            </div>
-                        </div>
-                        <button onclick="ui.showReviewStats()" class="text-xs text-gray-500 hover:text-black flex items-center gap-1 transition-all-smooth">
-                            <i class="ph ph-chart-bar text-xs"></i>
-                            <span>統計</span>
-                        </button>
-                    </div>
-                </div>
-                
                 <div id="review-container" class="flex-1 flex flex-col justify-center items-center text-center overflow-y-auto py-4"></div>
             </div>
 
@@ -317,37 +186,6 @@
                     <p>沒有卡片</p>
                 </div>
             </div>
-            
-            <!-- 視圖：統計資料 -->
-            <div id="view-stats" class="view-section hidden-view h-full flex flex-col overflow-y-auto pt-4">
-                <div class="space-y-8 pb-20">
-                    <div class="space-y-3">
-                        <h3 class="section-title">整體統計</h3>
-                        <div id="overall-stats" class="grid grid-cols-2 gap-3"></div>
-                    </div>
-                    
-                    <div class="space-y-3">
-                        <h3 class="section-title">難度分佈</h3>
-                        <div id="difficulty-distribution" class="space-y-3"></div>
-                    </div>
-                    
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between">
-                            <h3 class="section-title">記憶包統計</h3>
-                            <button onclick="ui.toggleFolderStats()" class="text-xs text-gray-500 hover:text-black transition-all-smooth">
-                                <span id="toggle-folder-stats-text">顯示詳細</span>
-                            </button>
-                        </div>
-                        <div id="folder-stats-summary" class="space-y-3"></div>
-                        <div id="folder-stats-detailed" class="hidden space-y-3"></div>
-                    </div>
-                    
-                    <div class="space-y-3">
-                        <h3 class="section-title">最近7天複習記錄</h3>
-                        <div id="review-progress" class="space-y-3"></div>
-                    </div>
-                </div>
-            </div>
         </main>
     </div>
 
@@ -359,7 +197,7 @@
     </div>
 
     <!-- 卡片模態框 -->
-    <div id="card-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-backdrop">
+    <div id="card-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
         <div class="bg-white w-full max-w-md p-6 rounded-lg border border-gray-200 fade-in">
             <div class="flex justify-between items-center mb-6">
                 <h2 id="modal-title" class="text-lg font-light">新增卡片</h2>
@@ -398,46 +236,6 @@
                     <button id="btn-save-card" class="w-full py-3 btn-solid text-sm rounded">儲存卡片</button>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- 篩選模態框 -->
-    <div id="filter-modal" class="fixed inset-0 z-40 hidden flex items-start justify-center pt-20 px-4 modal-backdrop">
-        <div class="bg-white w-full max-w-sm p-5 rounded-lg border border-gray-200 fade-in">
-            <div class="flex justify-between items-center mb-5">
-                <h3 class="text-base font-light">篩選條件</h3>
-                <button onclick="ui.toggleFilterModal()" class="text-gray-400 hover:text-black transition-all-smooth">
-                    <i class="ph ph-x text-lg"></i>
-                </button>
-            </div>
-            <div class="space-y-6">
-                <div>
-                    <p class="text-xs font-light text-gray-500 mb-3">記憶包</p>
-                    <div id="filter-folders" class="space-y-1 max-h-48 overflow-y-auto pr-2"></div>
-                </div>
-                <div>
-                    <p class="text-xs font-light text-gray-500 mb-3">難度</p>
-                    <div id="filter-grades" class="grid grid-cols-2 gap-2"></div>
-                </div>
-            </div>
-            <div class="flex justify-between gap-3 mt-8">
-                <button onclick="ui.clearAllFilters()" class="text-sm text-gray-500 hover:text-black px-3 py-2 transition-all-smooth">清除</button>
-                <button onclick="ui.selectAllFilters()" class="text-sm text-gray-500 hover:text-black px-3 py-2 transition-all-smooth">全選</button>
-                <button onclick="ui.applyFilters()" class="flex-1 py-2.5 btn-solid text-sm rounded">套用篩選</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 複習統計模態框 -->
-    <div id="review-stats-modal" class="fixed inset-0 z-40 hidden flex items-start justify-center pt-20 px-4 modal-backdrop">
-        <div class="bg-white w-full max-w-sm p-5 rounded-lg border border-gray-200 fade-in">
-            <div class="flex justify-between items-center mb-5">
-                <h3 class="text-base font-light">本次複習統計</h3>
-                <button onclick="ui.closeReviewStats()" class="text-gray-400 hover:text-black transition-all-smooth">
-                    <i class="ph ph-x text-lg"></i>
-                </button>
-            </div>
-            <div id="review-stats-content" class="space-y-4"></div>
         </div>
     </div>
 
@@ -524,62 +322,22 @@
         };
 
         /* =====================================================
-           演算法
+           演算法（簡化版，只保留基本間隔重複）
         ===================================================== */
         const Algorithm = {
-            calculateNextReview: (card, rating) => {
-                let { interval, repetition, ef = 2.5 } = card;
+            calculateNextReview: (card, remembered) => {
+                // 簡化版本：記住則延長間隔，忘記則縮短間隔
+                let { interval = 1 } = card;
                 
-                if (rating === 0) {
-                    ef = Math.max(1.3, ef - 0.2);
-                } else if (rating === 1) {
-                    ef = ef;
+                if (remembered) {
+                    interval = Math.min(interval * 2, 365); // 最大一年
                 } else {
-                    ef = Math.min(2.5, ef + 0.1);
-                }
-                
-                if (rating === 0) {
-                    repetition = 0;
-                    interval = 1;
-                } else {
-                    repetition += 1;
-                    if (repetition === 1) {
-                        interval = 1;
-                    } else if (repetition === 2) {
-                        interval = 6;
-                    } else {
-                        interval = Math.round(interval * ef * (rating === 2 ? 1.2 : 1.0));
-                    }
+                    interval = Math.max(1, Math.floor(interval / 2));
                 }
                 
                 const nextReview = Date.now() + (interval * 86400000);
                 
-                return { interval, repetition, ef, nextReview };
-            },
-            
-            getDifficulty: (card) => {
-                if ((card.repetition === 0 && card.interval === 0) || card.difficulty === 'new') {
-                    return 'new';
-                }
-                
-                const ef = card.ef || 2.0;
-                if (ef >= 2.0) return 'easy';
-                if (ef >= 1.5) return 'medium';
-                return 'hard';
-            },
-            
-            getDifficultyDisplay: (difficulty) => {
-                switch(difficulty) {
-                    case 'new': return { text: '新', className: 'grade-new' };
-                    case 'easy': return { text: '簡單', className: 'grade-easy' };
-                    case 'medium': return { text: '普通', className: 'grade-medium' };
-                    case 'hard': return { text: '困難', className: 'grade-hard' };
-                    default: return { text: '新', className: 'grade-new' };
-                }
-            },
-            
-            isNewCard: (card) => {
-                return Algorithm.getDifficulty(card) === 'new';
+                return { interval, nextReview };
             }
         };
 
@@ -588,8 +346,7 @@
         ===================================================== */
         const LS_KEYS = { 
             folders: "mc_folders", 
-            cards: "mc_cards",
-            reviewHistory: "mc_review_history" 
+            cards: "mc_cards"
         };
         
         const db = {
@@ -597,22 +354,6 @@
             saveFolders: (data) => localStorage.setItem(LS_KEYS.folders, JSON.stringify(data)),
             getCards: () => JSON.parse(localStorage.getItem(LS_KEYS.cards) || '[]'),
             saveCards: (data) => localStorage.setItem(LS_KEYS.cards, JSON.stringify(data)),
-            getReviewHistory: () => JSON.parse(localStorage.getItem(LS_KEYS.reviewHistory) || '[]'),
-            saveReviewHistory: (data) => localStorage.setItem(LS_KEYS.reviewHistory, JSON.stringify(data)),
-            
-            addReviewRecord: (cardId, rating) => {
-                const history = db.getReviewHistory();
-                const record = {
-                    id: crypto.randomUUID(),
-                    cardId,
-                    rating,
-                    timestamp: Date.now(),
-                    date: new Date().toISOString().split('T')[0]
-                };
-                history.push(record);
-                db.saveReviewHistory(history);
-                return record;
-            },
             
             init: () => {
                 if (db.getFolders().length === 0) {
@@ -626,98 +367,7 @@
             cards: [],
             activeTab: "review",
             currentReviewCard: null,
-            selectedFolderIds: new Set(),
-            selectedDifficulties: new Set(['new', 'easy', 'medium', 'hard']),
-            currentEditCard: null,
-            reviewStats: {
-                total: 0,
-                due: 0,
-                new: 0,
-                easy: 0,
-                medium: 0,
-                hard: 0,
-                filteredTotal: 0,
-                filteredDue: 0
-            }
-        };
-
-        /* =====================================================
-           統計計算器
-        ===================================================== */
-        const StatsCalculator = {
-            calculateOverallStats: () => {
-                const cards = window.state.cards;
-                const now = Date.now();
-                
-                const total = cards.length;
-                const due = cards.filter(c => c.nextReview <= now).length;
-                const newCards = cards.filter(c => Algorithm.isNewCard(c)).length;
-                const easyCards = cards.filter(c => Algorithm.getDifficulty(c) === 'easy').length;
-                const mediumCards = cards.filter(c => Algorithm.getDifficulty(c) === 'medium').length;
-                const hardCards = cards.filter(c => Algorithm.getDifficulty(c) === 'hard').length;
-                
-                const avgEF = cards.length > 0 
-                    ? cards.reduce((sum, card) => sum + (card.ef || 2.0), 0) / cards.length 
-                    : 0;
-                
-                return {
-                    total,
-                    due,
-                    new: newCards,
-                    easy: easyCards,
-                    medium: mediumCards,
-                    hard: hardCards,
-                    avgEF
-                };
-            },
-            
-            calculateFolderStats: () => {
-                const folders = window.state.folders;
-                const cards = window.state.cards;
-                const now = Date.now();
-                
-                return folders.map(folder => {
-                    const folderCards = cards.filter(c => c.folderId === folder.id);
-                    
-                    return {
-                        id: folder.id,
-                        name: folder.name,
-                        total: folderCards.length,
-                        new: folderCards.filter(c => Algorithm.isNewCard(c)).length,
-                        easy: folderCards.filter(c => Algorithm.getDifficulty(c) === 'easy').length,
-                        medium: folderCards.filter(c => Algorithm.getDifficulty(c) === 'medium').length,
-                        hard: folderCards.filter(c => Algorithm.getDifficulty(c) === 'hard').length,
-                        due: folderCards.filter(c => c.nextReview <= now).length
-                    };
-                });
-            },
-            
-            calculateReviewHistory: () => {
-                const history = db.getReviewHistory();
-                const today = new Date();
-                const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
-                
-                const last7Days = [];
-                for (let i = 6; i >= 0; i--) {
-                    const date = new Date(today);
-                    date.setDate(date.getDate() - i);
-                    const dateStr = date.toISOString().split('T')[0];
-                    
-                    const dayRecords = history.filter(record => record.date === dateStr);
-                    
-                    last7Days.push({
-                        date: dateStr,
-                        day: date.getDate(),
-                        weekday: weekDays[date.getDay()],
-                        total: dayRecords.length,
-                        easy: dayRecords.filter(r => r.rating === 2).length,
-                        medium: dayRecords.filter(r => r.rating === 1).length,
-                        hard: dayRecords.filter(r => r.rating === 0).length
-                    });
-                }
-                
-                return last7Days;
-            }
+            currentEditCard: null
         };
 
         /* =====================================================
@@ -726,77 +376,7 @@
         window.dataManager = {
             refresh: () => {
                 window.state.folders = db.getFolders();
-                window.state.cards = db.getCards().map(card => ({
-                    ...card,
-                    ef: card.ef || 2.0,
-                    difficulty: Algorithm.getDifficulty(card)
-                }));
-                
-                // 計算統計資料
-                const now = Date.now();
-                const dueCards = window.state.cards.filter(c => c.nextReview <= now);
-                const newCards = window.state.cards.filter(c => Algorithm.isNewCard(c)).length;
-                const easyCards = window.state.cards.filter(c => Algorithm.getDifficulty(c) === 'easy').length;
-                const mediumCards = window.state.cards.filter(c => Algorithm.getDifficulty(c) === 'medium').length;
-                const hardCards = window.state.cards.filter(c => Algorithm.getDifficulty(c) === 'hard').length;
-                
-                // 計算篩選後的統計
-                let filteredCards = window.state.cards;
-                if (window.state.selectedFolderIds.size > 0) {
-                    filteredCards = filteredCards.filter(w => window.state.selectedFolderIds.has(w.folderId));
-                }
-                if (window.state.selectedDifficulties.size > 0 && window.state.selectedDifficulties.size < 4) {
-                    filteredCards = filteredCards.filter(w => window.state.selectedDifficulties.has(w.difficulty || Algorithm.getDifficulty(w)));
-                }
-                const filteredDueCards = filteredCards.filter(c => c.nextReview <= now);
-                
-                window.state.reviewStats = {
-                    total: window.state.cards.length,
-                    due: dueCards.length,
-                    new: newCards,
-                    easy: easyCards,
-                    medium: mediumCards,
-                    hard: hardCards,
-                    filteredTotal: filteredCards.length,
-                    filteredDue: filteredDueCards.length
-                };
-                
-                document.getElementById('review-count').textContent = dueCards.length;
-                
-                // 更新篩選計數顯示
-                const activeFilterCount = 
-                    (window.state.selectedFolderIds.size > 0 ? 1 : 0) + 
-                    (window.state.selectedDifficulties.size < 4 ? 1 : 0);
-                document.getElementById('active-filter-count').textContent = activeFilterCount;
-                
-                // 更新篩選摘要顯示
-                const filterSummary = document.getElementById('filter-summary');
-                if (activeFilterCount > 0) {
-                    filterSummary.classList.remove('hidden');
-                    
-                    let foldersText = '';
-                    if (window.state.selectedFolderIds.size > 0) {
-                        const selectedFolders = window.state.folders.filter(f => 
-                            window.state.selectedFolderIds.has(f.id)
-                        );
-                        foldersText = `記憶包: ${selectedFolders.map(f => f.name).join(', ')}`;
-                    }
-                    
-                    let difficultiesText = '';
-                    if (window.state.selectedDifficulties.size < 4) {
-                        const difficulties = [];
-                        if (window.state.selectedDifficulties.has('new')) difficulties.push('新');
-                        if (window.state.selectedDifficulties.has('easy')) difficulties.push('簡單');
-                        if (window.state.selectedDifficulties.has('medium')) difficulties.push('普通');
-                        if (window.state.selectedDifficulties.has('hard')) difficulties.push('困難');
-                        difficultiesText = `難度: ${difficulties.join(', ')}`;
-                    }
-                    
-                    document.getElementById('selected-folders-text').textContent = foldersText;
-                    document.getElementById('selected-difficulties-text').textContent = difficultiesText;
-                } else {
-                    filterSummary.classList.add('hidden');
-                }
+                window.state.cards = db.getCards();
                 
                 document.getElementById('empty-folders-msg').classList.toggle('hidden', window.state.folders.length > 0);
                 document.getElementById('empty-list-msg').classList.toggle('hidden', window.state.cards.length > 0);
@@ -828,7 +408,6 @@
                 db.saveFolders(db.getFolders().filter(f => f.id !== id));
                 db.saveCards(db.getCards().filter(c => c.folderId !== id));
                 
-                window.state.selectedFolderIds.delete(id);
                 ui.init();
             },
             
@@ -851,8 +430,7 @@
                                 front, 
                                 back, 
                                 sentence, 
-                                folderId, 
-                                difficulty: Algorithm.getDifficulty(c)
+                                folderId
                             }
                             : c
                     );
@@ -864,10 +442,7 @@
                         back, 
                         sentence,
                         folderId,
-                        interval: 0,
-                        repetition: 0,
-                        ef: 2.0,
-                        difficulty: 'new',
+                        interval: 1,
                         nextReview: Date.now(),
                         createdAt: Date.now()
                     };
@@ -884,27 +459,23 @@
                 ui.init();
             },
             
-            rateCard: (rating) => {
+            rateCard: (remembered) => {
                 const card = window.state.currentReviewCard;
                 if (!card) return;
 
-                const { interval, repetition, ef, nextReview } = Algorithm.calculateNextReview(card, rating);
+                const { interval, nextReview } = Algorithm.calculateNextReview(card, remembered);
                 
                 const updatedCards = db.getCards().map(item => 
                     item.id === card.id 
                         ? {
                             ...item, 
                             interval, 
-                            repetition, 
-                            ef, 
-                            nextReview,
-                            difficulty: Algorithm.getDifficulty({...item, interval, repetition, ef})
+                            nextReview
                         }
                         : item
                 );
 
                 db.saveCards(updatedCards);
-                db.addReviewRecord(card.id, rating);
                 ui.renderReview();
             }
         };
@@ -919,11 +490,10 @@
                 ui.renderFolderList();
                 ui.renderWordList();
                 ui.renderReview();
-                ui.renderStats();
             },
             
             switchTab: (tabId) => {
-                ['review', 'list', 'folders', 'stats'].forEach(t => {
+                ['review', 'list', 'folders'].forEach(t => {
                     const btn = document.getElementById(`tab-${t}`);
                     const indicator = btn.querySelector('.tab-indicator');
                     if (t === tabId) {
@@ -958,7 +528,6 @@
                 container.innerHTML = window.state.folders.map(f => {
                     const cardCount = window.state.cards.filter(c => c.folderId === f.id).length;
                     const dueCount = window.state.cards.filter(c => c.folderId === f.id && c.nextReview <= Date.now()).length;
-                    const newCount = window.state.cards.filter(c => c.folderId === f.id && Algorithm.isNewCard(c)).length;
                     
                     return `
                     <div class="minimal-card flex items-center justify-between p-3">
@@ -969,7 +538,6 @@
                                     class="w-full bg-transparent focus:outline-none text-sm font-light min-w-0 mb-1">
                                 <div class="flex items-center gap-3 text-xs text-gray-500 font-light">
                                     <span>${cardCount} 張</span>
-                                    ${newCount > 0 ? `<span class="text-black">${newCount} 新</span>` : ''}
                                     ${dueCount > 0 ? `<span class="font-light">${dueCount} 到期</span>` : ''}
                                 </div>
                             </div>
@@ -987,18 +555,14 @@
                 
                 container.innerHTML = sorted.map(w => {
                     const folderName = window.state.folders.find(f => f.id === w.folderId)?.name || '未知';
-                    const diff = Algorithm.getDifficultyDisplay(w.difficulty || Algorithm.getDifficulty(w));
                     const due = w.nextReview <= Date.now();
-                    const isNew = Algorithm.isNewCard(w);
                     
                     return `
                     <div class="minimal-card group flex items-start justify-between p-3">
                         <div class="flex-1 pr-4">
                             <div class="flex items-center gap-2 mb-1">
                                 <h3 class="text-sm font-light">${w.front}</h3>
-                                <span class="text-xs px-2 py-0.5 rounded ${diff.className} font-light">${diff.text}</span>
                                 ${due ? '<span class="text-xs px-2 py-0.5 rounded bg-black text-white font-light">到期</span>' : ''}
-                                ${isNew ? '<span class="text-xs px-2 py-0.5 rounded grade-new font-light">新</span>' : ''}
                             </div>
                             <div class="flex items-center justify-between">
                                 <p class="text-sm text-gray-600 font-light">${w.back}</p>
@@ -1029,22 +593,12 @@
                 const container = document.getElementById('review-container');
                 let pool = window.state.cards;
 
-                if (window.state.selectedFolderIds.size > 0) {
-                    pool = pool.filter(w => window.state.selectedFolderIds.has(w.folderId));
-                }
-                if (window.state.selectedDifficulties.size > 0 && window.state.selectedDifficulties.size < 4) {
-                    pool = pool.filter(w => window.state.selectedDifficulties.has(w.difficulty || Algorithm.getDifficulty(w)));
-                }
-
                 if (pool.length === 0) {
                     container.innerHTML = `
                         <div class="flex flex-col items-center justify-center h-full text-center px-4 fade-in">
                             <i class="ph ph-check-circle text-2xl text-gray-300 mb-4"></i>
                             <h3 class="text-sm font-light mb-2">沒有可複習的卡片</h3>
-                            <p class="text-xs text-gray-500 max-w-xs mb-4 font-light">請新增卡片或調整篩選條件</p>
-                            <button onclick="ui.clearAllFilters()" class="px-4 py-2 text-xs btn-minimal rounded font-light">
-                                清除篩選條件
-                            </button>
+                            <p class="text-xs text-gray-500 max-w-xs mb-4 font-light">請新增卡片開始複習</p>
                         </div>`;
                     return;
                 }
@@ -1057,7 +611,6 @@
                 window.state.currentReviewCard = word;
 
                 const folderName = window.state.folders.find(f => f.id === word.folderId)?.name || '未知';
-                const diff = Algorithm.getDifficultyDisplay(word.difficulty || Algorithm.getDifficulty(word));
                 const displaySentence = word.sentence ? word.sentence.replace(/\[.*?\]/g, '______') : '';
 
                 container.innerHTML = `
@@ -1065,7 +618,6 @@
                         <div class="text-center mb-6">
                             <div class="flex items-center gap-2 justify-center mb-3">
                                 <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded font-light">${folderName}</span>
-                                <span class="text-xs px-2 py-1 rounded ${diff.className} font-light">${diff.text}</span>
                             </div>
                             <p class="text-xs text-gray-500 font-light">${isPractice ? '練習模式' : due.length + ' 張到期'}</p>
                         </div>
@@ -1095,22 +647,16 @@
                         <div id="result-area" class="hidden w-full">
                             <div id="correct-answer-display" class="text-base font-light text-center mb-6 px-4"></div>
                             <div class="flex flex-col gap-2">
-                                <button onclick="dataManager.rateCard(2)" class="w-full py-3 bg-gray-50 text-gray-700 text-sm font-light rounded border border-gray-200 hover:border-black transition-all-smooth">
+                                <button onclick="dataManager.rateCard(true)" class="w-full py-3 bg-gray-50 text-gray-700 text-sm font-light rounded border border-gray-200 hover:border-black transition-all-smooth">
                                     <div class="flex items-center justify-center gap-2">
                                         <i class="ph ph-check-circle"></i>
-                                        <span>簡單</span>
+                                        <span>記住了</span>
                                     </div>
                                 </button>
-                                <button onclick="dataManager.rateCard(1)" class="w-full py-3 bg-gray-100 text-gray-700 text-sm font-light rounded border border-gray-200 hover:border-black transition-all-smooth">
-                                    <div class="flex items-center justify-center gap-2">
-                                        <i class="ph ph-circle"></i>
-                                        <span>普通</span>
-                                    </div>
-                                </button>
-                                <button onclick="dataManager.rateCard(0)" class="w-full py-3 bg-gray-200 text-gray-700 text-sm font-light rounded border border-gray-200 hover:border-black transition-all-smooth">
+                                <button onclick="dataManager.rateCard(false)" class="w-full py-3 bg-gray-200 text-gray-700 text-sm font-light rounded border border-gray-200 hover:border-black transition-all-smooth">
                                     <div class="flex items-center justify-center gap-2">
                                         <i class="ph ph-x-circle"></i>
-                                        <span>困難</span>
+                                        <span>忘記了</span>
                                     </div>
                                 </button>
                             </div>
@@ -1164,184 +710,6 @@
                 }
             },
             
-            renderStats: () => {
-                const overall = StatsCalculator.calculateOverallStats();
-                const folderStats = StatsCalculator.calculateFolderStats();
-                const reviewHistory = StatsCalculator.calculateReviewHistory();
-                
-                const overallContainer = document.getElementById('overall-stats');
-                overallContainer.innerHTML = `
-                    <div class="stat-card">
-                        <div class="stat-value">${overall.total}</div>
-                        <div class="stat-label">卡片總數</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">${overall.due}</div>
-                        <div class="stat-label">到期卡片</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">${overall.new}</div>
-                        <div class="stat-label">新卡片</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">${overall.avgEF.toFixed(1)}</div>
-                        <div class="stat-label">平均EF值</div>
-                    </div>
-                `;
-                
-                const diffContainer = document.getElementById('difficulty-distribution');
-                const difficulties = [
-                    { id: 'new', label: '新', bg: 'bg-gray-200' },
-                    { id: 'easy', label: '簡單', bg: 'bg-gray-300' },
-                    { id: 'medium', label: '普通', bg: 'bg-gray-400' },
-                    { id: 'hard', label: '困難', bg: 'bg-gray-500' }
-                ];
-                
-                diffContainer.innerHTML = difficulties.map(d => {
-                    const percentage = overall.total > 0 ? (overall[d.id] / overall.total * 100).toFixed(1) : 0;
-                    return `
-                    <div class="space-y-2">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                <div class="w-2 h-2 rounded-full ${d.bg}"></div>
-                                <span class="text-sm font-light">${d.label}</span>
-                            </div>
-                            <div class="text-sm font-light">${overall[d.id]} 張 (${percentage}%)</div>
-                        </div>
-                        <div class="dist-bar">
-                            <div class="dist-fill ${d.bg}" style="width: ${percentage}%"></div>
-                        </div>
-                    </div>`;
-                }).join('');
-                
-                const folderSummary = document.getElementById('folder-stats-summary');
-                folderSummary.innerHTML = folderStats.map(f => {
-                    const newPct = f.total > 0 ? (f.new / f.total * 100).toFixed(0) : 0;
-                    const easyPct = f.total > 0 ? (f.easy / f.total * 100).toFixed(0) : 0;
-                    const mediumPct = f.total > 0 ? (f.medium / f.total * 100).toFixed(0) : 0;
-                    const hardPct = f.total > 0 ? (f.hard / f.total * 100).toFixed(0) : 0;
-                    
-                    return `
-                    <div class="stat-card">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-sm font-light">${f.name}</span>
-                            <span class="text-xs text-gray-500">${f.total} 張</span>
-                        </div>
-                        <div class="flex items-center gap-1 text-xs text-gray-500 mb-3 font-light">
-                            ${f.new > 0 ? `<span>新 ${newPct}%</span><span>•</span>` : ''}
-                            <span>簡單 ${easyPct}%</span>
-                            <span>•</span>
-                            <span>普通 ${mediumPct}%</span>
-                            <span>•</span>
-                            <span>困難 ${hardPct}%</span>
-                        </div>
-                        <div class="dist-bar">
-                            <div class="dist-fill bg-gray-200" style="width: ${newPct}%"></div>
-                            <div class="dist-fill bg-gray-300" style="width: ${easyPct}%"></div>
-                            <div class="dist-fill bg-gray-400" style="width: ${mediumPct}%"></div>
-                            <div class="dist-fill bg-gray-500" style="width: ${hardPct}%"></div>
-                        </div>
-                    </div>`;
-                }).join('');
-                
-                const folderDetailed = document.getElementById('folder-stats-detailed');
-                folderDetailed.innerHTML = folderStats.map(f => {
-                    return `
-                    <div class="stat-card space-y-3">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                <i class="ph ph-folder text-gray-400"></i>
-                                <h4 class="text-sm font-light">${f.name}</h4>
-                            </div>
-                            <div class="flex gap-2">
-                                ${f.new > 0 ? `<span class="text-xs px-2 py-1 rounded grade-new font-light">${f.new} 新</span>` : ''}
-                                <span class="text-xs px-2 py-1 rounded ${f.due > 0 ? 'bg-black text-white' : 'grade-new'} font-light">
-                                    ${f.due} 到期
-                                </span>
-                            </div>
-                        </div>
-                        
-                        <div class="grid grid-cols-4 gap-2 text-sm">
-                            <div class="text-center p-2 bg-gray-50 rounded border border-gray-200">
-                                <div class="font-light">${f.new}</div>
-                                <div class="text-xs text-gray-500">新</div>
-                            </div>
-                            <div class="text-center p-2 bg-gray-100 rounded border border-gray-200">
-                                <div class="font-light">${f.easy}</div>
-                                <div class="text-xs text-gray-500">簡單</div>
-                            </div>
-                            <div class="text-center p-2 bg-gray-200 rounded border border-gray-200">
-                                <div class="font-light">${f.medium}</div>
-                                <div class="text-xs text-gray-500">普通</div>
-                            </div>
-                            <div class="text-center p-2 bg-gray-300 rounded border border-gray-200">
-                                <div class="font-light">${f.hard}</div>
-                                <div class="text-xs text-gray-500">困難</div>
-                            </div>
-                        </div>
-                    </div>`;
-                }).join('');
-                
-                const progressContainer = document.getElementById('review-progress');
-                if (reviewHistory.some(day => day.total > 0)) {
-                    const maxReviews = Math.max(...reviewHistory.map(day => day.total));
-                    
-                    progressContainer.innerHTML = reviewHistory.map(day => {
-                        const easyHeight = day.total > 0 ? (day.easy / maxReviews * 60) : 0;
-                        const mediumHeight = day.total > 0 ? (day.medium / maxReviews * 60) : 0;
-                        const hardHeight = day.total > 0 ? (day.hard / maxReviews * 60) : 0;
-                        
-                        return `
-                        <div class="space-y-2">
-                            <div class="flex items-center justify-between">
-                                <div class="text-sm font-light">
-                                    ${day.weekday} ${day.day}日
-                                </div>
-                                <div class="text-xs text-gray-500">${day.total} 張</div>
-                            </div>
-                            <div class="flex items-end h-4 gap-0.5">
-                                <div class="flex-1 bg-gray-200 rounded-t" style="height: ${easyHeight}%"></div>
-                                <div class="flex-1 bg-gray-300 rounded-t" style="height: ${mediumHeight}%"></div>
-                                <div class="flex-1 bg-gray-400 rounded-t" style="height: ${hardHeight}%"></div>
-                            </div>
-                            <div class="flex gap-2 text-xs text-gray-500 justify-center font-light">
-                                <div class="flex items-center gap-1">
-                                    <div class="w-2 h-2 rounded-full bg-gray-300"></div>
-                                    <span>${day.easy}</span>
-                                </div>
-                                <div class="flex items-center gap-1">
-                                    <div class="w-2 h-2 rounded-full bg-gray-400"></div>
-                                    <span>${day.medium}</span>
-                                </div>
-                                <div class="flex items-center gap-1">
-                                    <div class="w-2 h-2 rounded-full bg-gray-500"></div>
-                                    <span>${day.hard}</span>
-                                </div>
-                            </div>
-                        </div>`;
-                    }).join('');
-                } else {
-                    progressContainer.innerHTML = `
-                        <div class="text-center py-8 text-gray-400 text-sm font-light">
-                            <i class="ph ph-chart-line text-xl mb-2"></i>
-                            <p>還沒有複習記錄</p>
-                        </div>`;
-                }
-            },
-            
-            toggleFolderStats: () => {
-                const detailed = document.getElementById('folder-stats-detailed');
-                const toggleText = document.getElementById('toggle-folder-stats-text');
-                
-                if (detailed.classList.contains('hidden')) {
-                    detailed.classList.remove('hidden');
-                    toggleText.textContent = '隱藏詳細';
-                } else {
-                    detailed.classList.add('hidden');
-                    toggleText.textContent = '顯示詳細';
-                }
-            },
-            
             showAddModal: () => {
                 window.state.currentEditCard = null;
                 document.getElementById('modal-title').innerText = '新增卡片';
@@ -1371,240 +739,6 @@
             closeCardModal: () => {
                 document.getElementById('card-modal').classList.add('hidden');
                 window.state.currentEditCard = null;
-            },
-            
-            toggleFilterModal: () => {
-                const modal = document.getElementById('filter-modal');
-                modal.classList.toggle('hidden');
-                if (!modal.classList.contains('hidden')) {
-                    const folderContainer = document.getElementById('filter-folders');
-                    const gradeContainer = document.getElementById('filter-grades');
-
-                    folderContainer.innerHTML = window.state.folders.length === 0
-                        ? `<p class="text-sm text-gray-400 text-center py-4 font-light">尚無記憶包</p>`
-                        : window.state.folders.map(f => {
-                            const count = window.state.cards.filter(c => c.folderId === f.id).length;
-                            const isChecked = window.state.selectedFolderIds.has(f.id);
-                            return `
-                            <label class="flex items-center gap-3 py-2 px-3 hover:bg-gray-50 rounded cursor-pointer transition-all-smooth ${isChecked ? 'selected' : ''}">
-                                <input type="checkbox" value="${f.id}" ${isChecked ? 'checked' : ''} 
-                                    class="folder-checkbox hidden">
-                                <span class="text-sm flex-1 font-light ${isChecked ? 'text-white' : 'text-gray-700'}">${f.name}</span>
-                                <span class="text-xs ${isChecked ? 'text-gray-300' : 'text-gray-500'}">${count}</span>
-                            </label>`;
-                        }).join('');
-
-                    const difficulties = [
-                        { id: 'new', label: '新' },
-                        { id: 'easy', label: '簡單' },
-                        { id: 'medium', label: '普通' },
-                        { id: 'hard', label: '困難' }
-                    ];
-                    
-                    gradeContainer.innerHTML = difficulties.map(d => {
-                        const count = window.state.cards.filter(c => 
-                            (c.difficulty || Algorithm.getDifficulty(c)) === d.id
-                        ).length;
-                        const isChecked = window.state.selectedDifficulties.has(d.id);
-                        
-                        return `
-                        <label class="cursor-pointer">
-                            <input type="checkbox" value="${d.id}" ${isChecked ? 'checked' : ''} 
-                                class="difficulty-checkbox hidden">
-                            <div class="difficulty-option flex flex-col items-center gap-1 py-3 px-2 rounded border transition-all-smooth ${isChecked ? 'selected border-black' : 'border-gray-300'}">
-                                <span class="text-sm font-light ${isChecked ? 'text-white' : 'text-gray-700'}">${d.label}</span>
-                                <span class="text-xs ${isChecked ? 'text-gray-300' : 'text-gray-500'}">${count} 張</span>
-                            </div>
-                        </label>`;
-                    }).join('');
-
-                    // 綁定難度選項點擊事件
-                    document.querySelectorAll('#filter-grades label').forEach(label => {
-                        label.onclick = (e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            
-                            const checkbox = label.querySelector('.difficulty-checkbox');
-                            const option = label.querySelector('.difficulty-option');
-                            
-                            checkbox.checked = !checkbox.checked;
-                            
-                            if (checkbox.checked) {
-                                option.classList.add('selected', 'border-black');
-                                option.classList.remove('border-gray-300');
-                                option.querySelector('span.text-sm').classList.remove('text-gray-700');
-                                option.querySelector('span.text-sm').classList.add('text-white');
-                                option.querySelector('span.text-xs').classList.remove('text-gray-500');
-                                option.querySelector('span.text-xs').classList.add('text-gray-300');
-                            } else {
-                                option.classList.remove('selected', 'border-black');
-                                option.classList.add('border-gray-300');
-                                option.querySelector('span.text-sm').classList.add('text-gray-700');
-                                option.querySelector('span.text-sm').classList.remove('text-white');
-                                option.querySelector('span.text-xs').classList.add('text-gray-500');
-                                option.querySelector('span.text-xs').classList.remove('text-gray-300');
-                            }
-                        };
-                    });
-                    
-                    // 綁定記憶包點擊事件
-                    document.querySelectorAll('#filter-folders label').forEach(label => {
-                        label.onclick = (e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            
-                            const checkbox = label.querySelector('.folder-checkbox');
-                            checkbox.checked = !checkbox.checked;
-                            
-                            if (checkbox.checked) {
-                                label.classList.add('selected');
-                                label.querySelector('span.text-sm').classList.remove('text-gray-700');
-                                label.querySelector('span.text-sm').classList.add('text-white');
-                                label.querySelector('span.text-xs').classList.remove('text-gray-500');
-                                label.querySelector('span.text-xs').classList.add('text-gray-300');
-                            } else {
-                                label.classList.remove('selected');
-                                label.querySelector('span.text-sm').classList.add('text-gray-700');
-                                label.querySelector('span.text-sm').classList.remove('text-white');
-                                label.querySelector('span.text-xs').classList.add('text-gray-500');
-                                label.querySelector('span.text-xs').classList.remove('text-gray-300');
-                            }
-                        };
-                    });
-                }
-            },
-            
-            clearAllFilters: () => {
-                window.state.selectedFolderIds.clear();
-                window.state.selectedDifficulties = new Set(['new', 'easy', 'medium', 'hard']);
-                ui.toggleFilterModal();
-                ui.init();
-            },
-            
-            selectAllFilters: () => {
-                // 記憶包全選
-                document.querySelectorAll('#filter-folders label').forEach(label => {
-                    const checkbox = label.querySelector('.folder-checkbox');
-                    checkbox.checked = true;
-                    label.classList.add('selected');
-                    label.querySelector('span.text-sm').classList.remove('text-gray-700');
-                    label.querySelector('span.text-sm').classList.add('text-white');
-                    label.querySelector('span.text-xs').classList.remove('text-gray-500');
-                    label.querySelector('span.text-xs').classList.add('text-gray-300');
-                });
-                
-                // 難度全選
-                document.querySelectorAll('#filter-grades label').forEach(label => {
-                    const checkbox = label.querySelector('.difficulty-checkbox');
-                    const option = label.querySelector('.difficulty-option');
-                    
-                    checkbox.checked = true;
-                    option.classList.add('selected', 'border-black');
-                    option.classList.remove('border-gray-300');
-                    option.querySelector('span.text-sm').classList.remove('text-gray-700');
-                    option.querySelector('span.text-sm').classList.add('text-white');
-                    option.querySelector('span.text-xs').classList.remove('text-gray-500');
-                    option.querySelector('span.text-xs').classList.add('text-gray-300');
-                });
-            },
-            
-            applyFilters: () => {
-                // 獲取記憶包選擇
-                const folderCheckboxes = document.querySelectorAll('#filter-folders .folder-checkbox');
-                const selectedFolderIds = new Set();
-                
-                folderCheckboxes.forEach(checkbox => {
-                    if (checkbox.checked) {
-                        selectedFolderIds.add(checkbox.value);
-                    }
-                });
-                window.state.selectedFolderIds = selectedFolderIds;
-                
-                // 獲取難度選擇
-                const difficultyCheckboxes = document.querySelectorAll('#filter-grades .difficulty-checkbox');
-                const selectedDifficulties = new Set();
-                
-                difficultyCheckboxes.forEach(checkbox => {
-                    if (checkbox.checked) {
-                        selectedDifficulties.add(checkbox.value);
-                    }
-                });
-                
-                if (selectedDifficulties.size === 0) {
-                    window.state.selectedDifficulties = new Set(['new', 'easy', 'medium', 'hard']);
-                } else {
-                    window.state.selectedDifficulties = selectedDifficulties;
-                }
-
-                ui.toggleFilterModal();
-                ui.init();
-            },
-            
-            showReviewStats: () => {
-                const modal = document.getElementById('review-stats-modal');
-                const content = document.getElementById('review-stats-content');
-                
-                const stats = window.state.reviewStats;
-                const totalDue = window.state.cards.filter(c => c.nextReview <= Date.now()).length;
-                
-                content.innerHTML = `
-                    <div class="space-y-4">
-                        <div>
-                            <div class="text-xs text-gray-500 mb-1 font-light">篩選範圍統計</div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="stat-card text-center">
-                                    <div class="text-base font-light">${stats.filteredTotal}</div>
-                                    <div class="text-xs text-gray-500">可複習卡片</div>
-                                </div>
-                                <div class="stat-card text-center">
-                                    <div class="text-base font-light">${stats.filteredDue}</div>
-                                    <div class="text-xs text-gray-500">到期卡片</div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <div class="text-xs text-gray-500 mb-1 font-light">整體統計</div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="stat-card text-center">
-                                    <div class="text-base font-light">${stats.total}</div>
-                                    <div class="text-xs text-gray-500">卡片總數</div>
-                                </div>
-                                <div class="stat-card text-center">
-                                    <div class="text-base font-light">${totalDue}</div>
-                                    <div class="text-xs text-gray-500">總到期數</div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <div class="text-xs text-gray-500 mb-1 font-light">難度分佈</div>
-                            <div class="grid grid-cols-4 gap-2">
-                                <div class="text-center p-2 rounded border border-gray-200">
-                                    <div class="text-sm font-light">${stats.new}</div>
-                                    <div class="text-xs text-gray-500">新</div>
-                                </div>
-                                <div class="text-center p-2 rounded border border-gray-200">
-                                    <div class="text-sm font-light">${stats.easy}</div>
-                                    <div class="text-xs text-gray-500">簡單</div>
-                                </div>
-                                <div class="text-center p-2 rounded border border-gray-200">
-                                    <div class="text-sm font-light">${stats.medium}</div>
-                                    <div class="text-xs text-gray-500">普通</div>
-                                </div>
-                                <div class="text-center p-2 rounded border border-gray-200">
-                                    <div class="text-sm font-light">${stats.hard}</div>
-                                    <div class="text-xs text-gray-500">困難</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>`;
-                
-                modal.classList.remove('hidden');
-            },
-            
-            closeReviewStats: () => {
-                document.getElementById('review-stats-modal').classList.add('hidden');
             }
         };
 
@@ -1659,10 +793,7 @@
                                     ...c,
                                     id: crypto.randomUUID(),
                                     folderId,
-                                    ef: c.ef || 2.0,
-                                    difficulty: 'new',
-                                    interval: 0,
-                                    repetition: 0,
+                                    interval: c.interval || 1,
                                     nextReview: Date.now(),
                                     createdAt: c.createdAt || Date.now()
                                 };
@@ -1699,12 +830,6 @@
             
             document.getElementById('card-modal').onclick = (e) => { 
                 if (e.target.id === 'card-modal') ui.closeCardModal(); 
-            };
-            document.getElementById('filter-modal').onclick = (e) => { 
-                if (e.target.id === 'filter-modal') ui.toggleFilterModal(); 
-            };
-            document.getElementById('review-stats-modal').onclick = (e) => { 
-                if (e.target.id === 'review-stats-modal') ui.closeReviewStats(); 
             };
             
             window.addEventListener('beforeunload', () => {
