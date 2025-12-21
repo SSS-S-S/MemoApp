@@ -11,33 +11,15 @@
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-    <!-- Tailwind Configuration -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', '-apple-system', 'sans-serif'],
-                    },
-                    backdropBlur: {
-                        xs: '2px',
-                    }
-                }
-            }
-        }
-    </script>
-
     <style>
         /* 極簡主義風格 */
         body {
             background-color: #ffffff;
             color: #000000;
             -webkit-font-smoothing: antialiased;
-            font-feature-settings: 'ss02' on;
             overflow-x: hidden;
         }
         
-        /* 動畫 */
         .fade-in { animation: fadeIn 0.2s ease-out; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(4px); }
@@ -46,30 +28,17 @@
 
         .hidden-view { display: none !important; }
 
-        /* 極細滾動條 */
-        ::-webkit-scrollbar { 
-            width: 2px; 
-            height: 2px;
-        }
-        ::-webkit-scrollbar-track { 
-            background: transparent; 
-        }
-        ::-webkit-scrollbar-thumb { 
-            background: rgba(0, 0, 0, 0.1); 
-            border-radius: 1px;
-        }
-        ::-webkit-scrollbar-thumb:hover { 
-            background: rgba(0, 0, 0, 0.2); 
-        }
+        ::-webkit-scrollbar { width: 2px; height: 2px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.1); border-radius: 1px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.2); }
 
-        /* 極簡輸入框 */
         .input-minimal {
             background: transparent;
             border: none;
             border-bottom: 1px solid rgba(0, 0, 0, 0.1);
             transition: all 0.2s;
             font-weight: 300;
-            letter-spacing: -0.01em;
         }
         
         .input-minimal:focus {
@@ -77,12 +46,10 @@
             border-bottom-color: #000000;
         }
         
-        /* 過渡效果 */
         .transition-all-smooth {
             transition: all 0.15s ease;
         }
         
-        /* 卡片樣式 */
         .minimal-card {
             border: 1px solid rgba(0, 0, 0, 0.06);
             background: #ffffff;
@@ -94,7 +61,6 @@
             border-color: rgba(0, 0, 0, 0.12);
         }
         
-        /* 按鈕樣式 */
         .btn-minimal {
             background: transparent;
             border: 1px solid rgba(0, 0, 0, 0.1);
@@ -119,13 +85,12 @@
             opacity: 0.9;
         }
         
-        /* 分割線 */
         .divider {
             height: 1px;
             background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.05), transparent);
         }
         
-        /* 難度標籤 - 極簡單色 */
+        /* 難度標籤 */
         .grade-new { 
             background: rgba(0, 0, 0, 0.04);
             color: rgba(0, 0, 0, 0.6);
@@ -150,7 +115,6 @@
             border-color: rgba(0, 0, 0, 0.16);
         }
         
-        /* 進度條 */
         .progress-bar {
             height: 2px;
             background-color: rgba(0, 0, 0, 0.04);
@@ -165,21 +129,16 @@
             transition: width 0.3s ease;
         }
         
-        /* 模態框 */
         .modal-backdrop {
             background-color: rgba(0, 0, 0, 0.05);
-            backdrop-filter: blur(2px);
-            -webkit-backdrop-filter: blur(2px);
         }
         
-        /* 選中狀態 */
         .selected {
             background: #000000 !important;
             color: #ffffff !important;
             border-color: #000000 !important;
         }
         
-        /* 統計卡片 */
         .stat-card {
             border: 1px solid rgba(0, 0, 0, 0.06);
             background: #ffffff;
@@ -193,17 +152,14 @@
             line-height: 1;
             color: #000000;
             margin-bottom: 4px;
-            letter-spacing: -0.02em;
         }
         
         .stat-label {
             font-size: 12px;
             font-weight: 300;
             color: rgba(0, 0, 0, 0.5);
-            letter-spacing: 0.02em;
         }
         
-        /* 分佈條 */
         .dist-bar {
             height: 3px;
             background-color: rgba(0, 0, 0, 0.04);
@@ -218,7 +174,6 @@
             transition: width 0.4s ease;
         }
         
-        /* 標題 */
         .section-title {
             font-size: 14px;
             font-weight: 300;
@@ -238,7 +193,6 @@
             background: #000000;
         }
         
-        /* 標籤頁指示器 */
         .tab-indicator {
             position: absolute;
             bottom: 0;
@@ -254,7 +208,6 @@
             transform: scaleX(1);
         }
         
-        /* 語音按鈕動畫 */
         .speech-playing {
             animation: pulse 1s ease-in-out infinite;
         }
@@ -308,7 +261,6 @@
         <main class="flex-1 overflow-hidden max-w-2xl mx-auto w-full px-6">
             <!-- 視圖：複習 -->
             <div id="view-review" class="view-section h-full flex flex-col">
-                <!-- 複習篩選欄 -->
                 <div class="flex-none pt-3 pb-2">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
@@ -369,23 +321,16 @@
             <!-- 視圖：統計資料 -->
             <div id="view-stats" class="view-section hidden-view h-full flex flex-col overflow-y-auto pt-4">
                 <div class="space-y-8 pb-20">
-                    <!-- 整體統計 -->
                     <div class="space-y-3">
                         <h3 class="section-title">整體統計</h3>
-                        <div id="overall-stats" class="grid grid-cols-2 gap-3">
-                            <!-- 將由JavaScript動態生成 -->
-                        </div>
+                        <div id="overall-stats" class="grid grid-cols-2 gap-3"></div>
                     </div>
                     
-                    <!-- 難度分佈 -->
                     <div class="space-y-3">
                         <h3 class="section-title">難度分佈</h3>
-                        <div id="difficulty-distribution" class="space-y-3">
-                            <!-- 將由JavaScript動態生成 -->
-                        </div>
+                        <div id="difficulty-distribution" class="space-y-3"></div>
                     </div>
                     
-                    <!-- 記憶包統計 -->
                     <div class="space-y-3">
                         <div class="flex items-center justify-between">
                             <h3 class="section-title">記憶包統計</h3>
@@ -393,20 +338,13 @@
                                 <span id="toggle-folder-stats-text">顯示詳細</span>
                             </button>
                         </div>
-                        <div id="folder-stats-summary" class="space-y-3">
-                            <!-- 摘要將由JavaScript動態生成 -->
-                        </div>
-                        <div id="folder-stats-detailed" class="hidden space-y-3">
-                            <!-- 詳細統計將由JavaScript動態生成 -->
-                        </div>
+                        <div id="folder-stats-summary" class="space-y-3"></div>
+                        <div id="folder-stats-detailed" class="hidden space-y-3"></div>
                     </div>
                     
-                    <!-- 複習進度 -->
                     <div class="space-y-3">
                         <h3 class="section-title">最近7天複習記錄</h3>
-                        <div id="review-progress" class="space-y-3">
-                            <!-- 將由JavaScript動態生成 -->
-                        </div>
+                        <div id="review-progress" class="space-y-3"></div>
                     </div>
                 </div>
             </div>
@@ -420,7 +358,7 @@
         </button>
     </div>
 
-    <!-- 卡片模態框 (新增/編輯) -->
+    <!-- 卡片模態框 -->
     <div id="card-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-backdrop">
         <div class="bg-white w-full max-w-md p-6 rounded-lg border border-gray-200 fade-in">
             <div class="flex justify-between items-center mb-6">
@@ -475,15 +413,11 @@
             <div class="space-y-6">
                 <div>
                     <p class="text-xs font-light text-gray-500 mb-3">記憶包</p>
-                    <div id="filter-folders" class="space-y-1 max-h-48 overflow-y-auto pr-2">
-                        <!-- 動態生成 -->
-                    </div>
+                    <div id="filter-folders" class="space-y-1 max-h-48 overflow-y-auto pr-2"></div>
                 </div>
                 <div>
                     <p class="text-xs font-light text-gray-500 mb-3">難度</p>
-                    <div id="filter-grades" class="grid grid-cols-2 gap-2">
-                        <!-- 動態生成 -->
-                    </div>
+                    <div id="filter-grades" class="grid grid-cols-2 gap-2"></div>
                 </div>
             </div>
             <div class="flex justify-between gap-3 mt-8">
@@ -503,9 +437,7 @@
                     <i class="ph ph-x text-lg"></i>
                 </button>
             </div>
-            <div id="review-stats-content" class="space-y-4">
-                <!-- 動態生成統計內容 -->
-            </div>
+            <div id="review-stats-content" class="space-y-4"></div>
         </div>
     </div>
 
@@ -547,9 +479,7 @@
                 utterance.volume = 1.0;
                 
                 const voices = speechManager.speechSynthesis.getVoices();
-                const englishVoice = voices.find(voice => 
-                    voice.lang === 'en-US'
-                );
+                const englishVoice = voices.find(voice => voice.lang === 'en-US');
                 
                 if (englishVoice) utterance.voice = englishVoice;
                 
@@ -594,7 +524,7 @@
         };
 
         /* =====================================================
-           優化演算法：簡化SM-2
+           演算法
         ===================================================== */
         const Algorithm = {
             calculateNextReview: (card, rating) => {
@@ -640,26 +570,11 @@
             
             getDifficultyDisplay: (difficulty) => {
                 switch(difficulty) {
-                    case 'new': return { 
-                        text: '新', 
-                        className: 'grade-new'
-                    };
-                    case 'easy': return { 
-                        text: '簡單', 
-                        className: 'grade-easy'
-                    };
-                    case 'medium': return { 
-                        text: '普通', 
-                        className: 'grade-medium'
-                    };
-                    case 'hard': return { 
-                        text: '困難', 
-                        className: 'grade-hard'
-                    };
-                    default: return { 
-                        text: '新', 
-                        className: 'grade-new'
-                    };
+                    case 'new': return { text: '新', className: 'grade-new' };
+                    case 'easy': return { text: '簡單', className: 'grade-easy' };
+                    case 'medium': return { text: '普通', className: 'grade-medium' };
+                    case 'hard': return { text: '困難', className: 'grade-hard' };
+                    default: return { text: '新', className: 'grade-new' };
                 }
             },
             
@@ -669,7 +584,7 @@
         };
 
         /* =====================================================
-           本地存儲數據層
+           本地存儲
         ===================================================== */
         const LS_KEYS = { 
             folders: "mc_folders", 
@@ -712,7 +627,7 @@
             activeTab: "review",
             currentReviewCard: null,
             selectedFolderIds: new Set(),
-            selectedDifficulties: new Set(['new', 'hard', 'medium', 'easy']),
+            selectedDifficulties: new Set(['new', 'easy', 'medium', 'hard']),
             currentEditCard: null,
             reviewStats: {
                 total: 0,
@@ -820,10 +735,10 @@
                 // 計算統計資料
                 const now = Date.now();
                 const dueCards = window.state.cards.filter(c => c.nextReview <= now);
-                const newCards = window.state.cards.filter(c => Algorithm.isNewCard(c));
-                const easyCards = window.state.cards.filter(c => Algorithm.getDifficulty(c) === 'easy');
-                const mediumCards = window.state.cards.filter(c => Algorithm.getDifficulty(c) === 'medium');
-                const hardCards = window.state.cards.filter(c => Algorithm.getDifficulty(c) === 'hard');
+                const newCards = window.state.cards.filter(c => Algorithm.isNewCard(c)).length;
+                const easyCards = window.state.cards.filter(c => Algorithm.getDifficulty(c) === 'easy').length;
+                const mediumCards = window.state.cards.filter(c => Algorithm.getDifficulty(c) === 'medium').length;
+                const hardCards = window.state.cards.filter(c => Algorithm.getDifficulty(c) === 'hard').length;
                 
                 // 計算篩選後的統計
                 let filteredCards = window.state.cards;
@@ -838,15 +753,14 @@
                 window.state.reviewStats = {
                     total: window.state.cards.length,
                     due: dueCards.length,
-                    new: newCards.length,
-                    easy: easyCards.length,
-                    medium: mediumCards.length,
-                    hard: hardCards.length,
+                    new: newCards,
+                    easy: easyCards,
+                    medium: mediumCards,
+                    hard: hardCards,
                     filteredTotal: filteredCards.length,
                     filteredDue: filteredDueCards.length
                 };
                 
-                // 更新到期卡片計數
                 document.getElementById('review-count').textContent = dueCards.length;
                 
                 // 更新篩選計數顯示
@@ -884,7 +798,6 @@
                     filterSummary.classList.add('hidden');
                 }
                 
-                // 顯示空狀態訊息
                 document.getElementById('empty-folders-msg').classList.toggle('hidden', window.state.folders.length > 0);
                 document.getElementById('empty-list-msg').classList.toggle('hidden', window.state.cards.length > 0);
             },
@@ -931,7 +844,6 @@
                 }
 
                 if (window.state.currentEditCard) {
-                    // 編輯現有卡片
                     const updatedCards = window.state.cards.map(c => 
                         c.id === window.state.currentEditCard.id 
                             ? {
@@ -946,7 +858,6 @@
                     );
                     db.saveCards(updatedCards);
                 } else {
-                    // 新增卡片
                     const newCard = {
                         id: crypto.randomUUID(),
                         front, 
@@ -973,7 +884,6 @@
                 ui.init();
             },
             
-            // 評分卡片：0=困難, 1=普通, 2=簡單
             rateCard: (rating) => {
                 const card = window.state.currentReviewCard;
                 if (!card) return;
@@ -1119,7 +1029,6 @@
                 const container = document.getElementById('review-container');
                 let pool = window.state.cards;
 
-                // 應用篩選
                 if (window.state.selectedFolderIds.size > 0) {
                     pool = pool.filter(w => window.state.selectedFolderIds.has(w.folderId));
                 }
@@ -1208,13 +1117,11 @@
                         </div>
                     </div>`;
                     
-                // 自動聚焦輸入框
                 setTimeout(() => {
                     const input = document.getElementById('answer-input');
                     if (input) input.focus();
                 }, 150);
                 
-                // 綁定輸入事件
                 const inputEl = document.getElementById('answer-input');
                 if (inputEl) {
                     inputEl.onkeydown = (e) => {
@@ -1262,7 +1169,6 @@
                 const folderStats = StatsCalculator.calculateFolderStats();
                 const reviewHistory = StatsCalculator.calculateReviewHistory();
                 
-                // 整體統計
                 const overallContainer = document.getElementById('overall-stats');
                 overallContainer.innerHTML = `
                     <div class="stat-card">
@@ -1270,7 +1176,7 @@
                         <div class="stat-label">卡片總數</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value ${overall.due > 0 ? 'text-black' : 'text-black'}">${overall.due}</div>
+                        <div class="stat-value">${overall.due}</div>
                         <div class="stat-label">到期卡片</div>
                     </div>
                     <div class="stat-card">
@@ -1283,7 +1189,6 @@
                     </div>
                 `;
                 
-                // 難度分佈
                 const diffContainer = document.getElementById('difficulty-distribution');
                 const difficulties = [
                     { id: 'new', label: '新', bg: 'bg-gray-200' },
@@ -1309,7 +1214,6 @@
                     </div>`;
                 }).join('');
                 
-                // 記憶包統計摘要
                 const folderSummary = document.getElementById('folder-stats-summary');
                 folderSummary.innerHTML = folderStats.map(f => {
                     const newPct = f.total > 0 ? (f.new / f.total * 100).toFixed(0) : 0;
@@ -1340,7 +1244,6 @@
                     </div>`;
                 }).join('');
                 
-                // 記憶包統計詳細
                 const folderDetailed = document.getElementById('folder-stats-detailed');
                 folderDetailed.innerHTML = folderStats.map(f => {
                     return `
@@ -1379,7 +1282,6 @@
                     </div>`;
                 }).join('');
                 
-                // 複習進度
                 const progressContainer = document.getElementById('review-progress');
                 if (reviewHistory.some(day => day.total > 0)) {
                     const maxReviews = Math.max(...reviewHistory.map(day => day.total));
@@ -1477,8 +1379,7 @@
                 if (!modal.classList.contains('hidden')) {
                     const folderContainer = document.getElementById('filter-folders');
                     const gradeContainer = document.getElementById('filter-grades');
-            
-                    // 記憶包篩選
+
                     folderContainer.innerHTML = window.state.folders.length === 0
                         ? `<p class="text-sm text-gray-400 text-center py-4 font-light">尚無記憶包</p>`
                         : window.state.folders.map(f => {
@@ -1492,8 +1393,7 @@
                                 <span class="text-xs ${isChecked ? 'text-gray-300' : 'text-gray-500'}">${count}</span>
                             </label>`;
                         }).join('');
-            
-                    // 難度篩選 - 修正版本
+
                     const difficulties = [
                         { id: 'new', label: '新' },
                         { id: 'easy', label: '簡單' },
@@ -1517,21 +1417,18 @@
                             </div>
                         </label>`;
                     }).join('');
-            
-                    // **重要修正：重新綁定點擊事件**
+
                     // 綁定難度選項點擊事件
                     document.querySelectorAll('#filter-grades label').forEach(label => {
-                        const option = label.querySelector('.difficulty-option');
-                        const checkbox = label.querySelector('.difficulty-checkbox');
-                        
-                        option.onclick = (e) => {
+                        label.onclick = (e) => {
                             e.preventDefault();
                             e.stopPropagation();
                             
-                            // 切換 checkbox 狀態
+                            const checkbox = label.querySelector('.difficulty-checkbox');
+                            const option = label.querySelector('.difficulty-option');
+                            
                             checkbox.checked = !checkbox.checked;
                             
-                            // 更新視覺狀態
                             if (checkbox.checked) {
                                 option.classList.add('selected', 'border-black');
                                 option.classList.remove('border-gray-300');
@@ -1596,7 +1493,7 @@
                     label.querySelector('span.text-xs').classList.add('text-gray-300');
                 });
                 
-                // 難度全選 - 確保視覺狀態更新
+                // 難度全選
                 document.querySelectorAll('#filter-grades label').forEach(label => {
                     const checkbox = label.querySelector('.difficulty-checkbox');
                     const option = label.querySelector('.difficulty-option');
@@ -1612,7 +1509,7 @@
             },
             
             applyFilters: () => {
-                // 獲取記憶包選擇 - 直接從隱藏的 checkbox 讀取
+                // 獲取記憶包選擇
                 const folderCheckboxes = document.querySelectorAll('#filter-folders .folder-checkbox');
                 const selectedFolderIds = new Set();
                 
@@ -1623,7 +1520,7 @@
                 });
                 window.state.selectedFolderIds = selectedFolderIds;
                 
-                // 獲取難度選擇 - 直接從隱藏的 checkbox 讀取
+                // 獲取難度選擇
                 const difficultyCheckboxes = document.querySelectorAll('#filter-grades .difficulty-checkbox');
                 const selectedDifficulties = new Set();
                 
@@ -1633,16 +1530,15 @@
                     }
                 });
                 
-                // 如果沒有任何難度被選擇，則選擇所有難度
                 if (selectedDifficulties.size === 0) {
                     window.state.selectedDifficulties = new Set(['new', 'easy', 'medium', 'hard']);
                 } else {
                     window.state.selectedDifficulties = selectedDifficulties;
                 }
-            
+
                 ui.toggleFilterModal();
                 ui.init();
-            }
+            },
             
             showReviewStats: () => {
                 const modal = document.getElementById('review-stats-modal');
@@ -1743,7 +1639,6 @@
                         const raw = JSON.parse(e.target.result);
                         let importedCount = 0;
                         
-                        // 處理記憶包
                         const localFolders = db.getFolders();
                         const idMap = {};
                         
@@ -1757,7 +1652,6 @@
                             }
                         });
                         
-                        // 處理卡片
                         (raw.cards || []).forEach(c => {
                             const folderId = idMap[c.folderId] || window.state.folders[0]?.id;
                             if (folderId) {
@@ -1796,16 +1690,13 @@
             db.init();
             ui.init();
             
-            // 初始化語音系統
             speechManager.initVoices();
             
-            // 綁定事件
             document.getElementById('btn-create-folder').onclick = () => dataManager.addFolder();
             document.getElementById('btn-open-add').onclick = ui.showAddModal;
             document.getElementById('btn-close-modal').onclick = ui.closeCardModal;
             document.getElementById('btn-save-card').onclick = dataManager.saveCard;
             
-            // 點擊模態框外部關閉
             document.getElementById('card-modal').onclick = (e) => { 
                 if (e.target.id === 'card-modal') ui.closeCardModal(); 
             };
@@ -1816,7 +1707,6 @@
                 if (e.target.id === 'review-stats-modal') ui.closeReviewStats(); 
             };
             
-            // 頁面關閉時停止語音
             window.addEventListener('beforeunload', () => {
                 speechManager.stopSpeaking();
             });
