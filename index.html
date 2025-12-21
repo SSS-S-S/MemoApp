@@ -1405,41 +1405,35 @@
                         ).length;
                         const isChecked = window.state.selectedDifficulties.has(d.id);
                         
+                        // 確保有對應的 checkbox 元素
                         return `
                         <label class="flex-1 cursor-pointer">
                             <input type="checkbox" value="${d.id}" ${isChecked ? 'checked' : ''} 
-                                class="difficulty-checkbox hidden">
-                            <div class="difficulty-option flex flex-col items-center gap-1 py-3 px-2 rounded-lg border ${isChecked ? 'border-gray-900 filter-selected' : 'border-gray-300'} ${isChecked ? d.selectedBg : d.defaultBg} transition-all-smooth">
+                                class="difficulty-checkbox hidden"
+                                onchange="this.closest('label').querySelector('.difficulty-option').classList.toggle('filter-selected', this.checked)">
+                            <div class="difficulty-option flex flex-col items-center gap-1 py-3 px-2 rounded-lg border transition-all-smooth
+                                ${isChecked ? 'filter-selected border-gray-900' : 'border-gray-300 bg-gray-100'}"
+                                style="cursor: pointer;">
                                 <span class="text-sm font-light ${isChecked ? 'text-white' : 'text-gray-700'}">${d.label}</span>
                                 <span class="text-xs ${isChecked ? 'text-gray-300' : 'text-gray-500'}">${count} 張</span>
                             </div>
                         </label>`;
                     }).join('');
-
-                    // 綁定變更事件 - 點擊時立即更新視覺效果
-                    document.querySelectorAll('.difficulty-option').forEach((option, index) => {
+                    
+                    // 移除原本的事件綁定代碼，改用更簡單的方式
+                    document.querySelectorAll('.difficulty-option').forEach((option) => {
                         option.onclick = (e) => {
                             e.preventDefault();
-                            const checkbox = option.querySelector('.difficulty-checkbox');
+                            e.stopPropagation();
+                            
+                            const label = option.closest('label');
+                            const checkbox = label.querySelector('.difficulty-checkbox');
+                            
+                            // 直接切換 checkbox 狀態（這是 applyFilters 真正讀取的）
                             checkbox.checked = !checkbox.checked;
                             
-                            if (checkbox.checked) {
-                                option.classList.add('filter-selected');
-                                option.classList.remove('border-gray-300');
-                                option.classList.add('border-gray-900');
-                                option.querySelector('span').classList.remove('text-gray-700');
-                                option.querySelector('span').classList.add('text-white');
-                                option.querySelector('span.text-xs').classList.remove('text-gray-500');
-                                option.querySelector('span.text-xs').classList.add('text-gray-300');
-                            } else {
-                                option.classList.remove('filter-selected');
-                                option.classList.add('border-gray-300');
-                                option.classList.remove('border-gray-900');
-                                option.querySelector('span').classList.add('text-gray-700');
-                                option.querySelector('span').classList.remove('text-white');
-                                option.querySelector('span.text-xs').classList.add('text-gray-500');
-                                option.querySelector('span.text-xs').classList.remove('text-gray-300');
-                            }
+                            // 觸發 change 事件以更新視覺
+                            checkbox.dispatchEvent(new Event('change'));
                         };
                     });
                 }
